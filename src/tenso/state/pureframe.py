@@ -171,7 +171,6 @@ class Frame:
 
     def construct_from_graph(self, graph: dict[Node, list[Point]]) -> None:
         assert not self._neighbor and not self._duality and not self._axes
-        graph = self.get_graph()
         added = set()
         for n, children in graph.items():
             for child in children:
