@@ -116,7 +116,7 @@ def _adaptive_two_site_split(
     final_q_axes = None
     for l_axes, r_axes in partitions: 
         l_shape = [full_shape[ax] for ax in l_axes]
-        r_shape = [full_shape[ax] for ax in l_axes]
+        r_shape = [full_shape[ax] for ax in r_axes]
         mat = from_.permute(l_axes + r_axes).reshape(prod(l_shape), prod(r_shape))
         u, s, vh = opt_svd(mat)
         entropy_i = (s**4).sum().item() / (s**2).sum().item()
