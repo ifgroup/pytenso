@@ -293,7 +293,7 @@ def spin_boson_bath_q(
         bath_dims = [dim] * bath.k_max
     elif isinstance(dim, list):
         assert len(dim) == bath.k_max
-        assert all_propagators(isinstance(d, int) for d in dim)
+        assert all(isinstance(d, int) for d in dim)
         bath_dims = list(dim)
     else:
         raise NotImplementedError(f'Not dim type {type(dim)}.')
