@@ -15,7 +15,6 @@ def triangular(n_list):
     prod_list = [1]
     for n in n_list:
         prod_list.append(prod_list[-1] * n)
-    prod_list = prod_list
 
     def key(case):
         return sum(n * i for n, i in zip(prod_list, case))

@@ -231,7 +231,7 @@ def gen_bcf(
     # Add the Lindblad rate
     if include_lindblad and beta is not None:
         # summerize the lindblad rate from the reorganization energy and temperature
-        if self.lindblad_rate is not None:
+        if corr.lindblad_rate is not None:
             raise NotImplementedError(
                 'Lindblad rate calculation is not implemented yet. '
                 'Specify .lindblad_rate manually if needed.'
