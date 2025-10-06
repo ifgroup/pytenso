@@ -1,7 +1,11 @@
 # TENSO: Tensor Equations for Non-Markovian Structured Open systems
 
 For Paper: X. Chen and I. Franco. Tree tensor network hierarchical equations of motion based on time-dependent variational principle for efficient open quantum dynamics in structured thermal environments. 
-[arXiv:2505.00126](https://arxiv.org/pdf/2505.00126)
+
+- [arXiv:2505.00126](https://arxiv.org/pdf/2505.00126)
+- [doi:10.1063/5.0278591](https://doi.org/10.1063/5.0278591)
+
+![TENSO cover image](./cover.png)
 
 ## Overview
 

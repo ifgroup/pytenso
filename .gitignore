@@ -7,6 +7,7 @@
 *.pdf
 *.log
 *.png
+!cover.png
 *.svg
 *.json
 *.zip
