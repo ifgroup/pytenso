@@ -13,9 +13,16 @@ from tenso.libs.utils import iter_round_visitor, iter_visitor, depths
 
 
 class Point:
+    """An abstract class representing a vertex in the graph of the tensor network which 
+    is extended by Node and End.
+    :param __cache: A weak valued dictionary with keyts of tuple[str, str] and values of Point
+    :type __cache: WeakValueDictionary
+    """
     __cache = WeakValueDictionary()  # type: WeakValueDictionary[tuple[str, str], Point] # noqa
 
     def __new__(cls, name: Optional[str] = None):
+        """Allocates memory prior to call of the constructor.
+        """
         if name is None:
             obj = object.__new__(cls)
         else:
@@ -27,24 +34,38 @@ class Point:
         return obj
 
     def __init__(self, name: Optional[str] = None) -> None:
+        """Constructor which provides an identifying string
+        :param name: Identifying string
+        :type name: string, optional
+        """
         self.name = str(hex(id(self))) if name is None else str(name)
         return
 
 
 class Node(Point):
-
+    """Class representing a vertex in the graph of the tensor network which has more than
+    one neighbor. This extends :class: Point.
+    """
     def __repr__(self) -> str:
+        """Returns a string giving the Node's unique name.
+        """
         return f'({self.name})'
 
 
 class End(Point):
-
+    """Class representing a vertex in the graph of the tensor network which has only
+    one neighbor. This extends :class: Point
+    """
     def __repr__(self) -> str:
+        """Return a string giving the End's unique name.
+        """
         return f'<{self.name}>'
 
 
 class Frame:
-
+    """Class which holds the topology of the tensor network graph, the :class: Nodes and :class: Ends
+    and the edges that link them together.
+    """
     def __init__(self):
         self._neighbor = dict()  # type: dict[Point, list[Point]]
 
@@ -68,6 +89,8 @@ class Frame:
         return p in self._neighbor
 
     def copy(self):
+        """Return a full copy of the Frame.
+        """
         new_frame = Frame()
         new_frame._neighbor = self._neighbor.copy()
         new_frame._duality = self._duality.copy()
@@ -75,8 +98,13 @@ class Frame:
         return new_frame
 
     def add_link(self, p: Point, q: Point) -> None:
-        """Add a link between two points. 
-        End can only have one link. Node can have multiple links."""
+        """Add a link between two :class: Points.
+        :class: End can only have one link. :class: Node can have multiple links.
+        :param p: First :class: Point to be connected.
+        :type p: :class: Point
+        :param 1: Second :class: Point to be connected.
+        :type q: :class: Point
+        """
 
         is_p_node = isinstance(p, Node)
         is_q_node = isinstance(q, Node)

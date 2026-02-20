@@ -17,8 +17,31 @@ PI = np.pi
 
 
 class Correlation(object):
+    """ This class represents a correlation function for a single bath which
+    may be coupled to the system which is stored in a decomposed form such that
+    C(t) = \sum_k c_k e^{-\gamma_k}, with c_k and \gamma_k being complex. For
+    MCTDH-use baths which are not decomposed in this way, information about the
+    discretized harmonic modes of the bath is stored.
+
+    :param coefficients: The values of c_k
+    :type coefficients: list, complex
+    :param conj_coefficients: The complex conjucates of coefficients
+    :type conj_coefficients: list, complex
+    :param zeropoints: Information on the energy of discretized bath modes
+    :type zeropoints": list, real
+    :param derivatives: The values of \gamma_k in a dictionary where teh keys are
+        the pair of integers [k, k] and the value is \gamma_k. Format as a dictionary
+        is for historical reasons.
+    :type derivatives: dictionary 
+    :param lindblad_rate: Experimental parameter for use in more complicated 
+        equations of motion
+    :type linblda_rate: list, optional
+
+    """
 
     def __init__(self) -> None:
+        """ Constructor of an empty correlation function.
+        """
         self.coefficients = list()  # type: list[complex]
         self.conj_coefficents = list()  # type: list[complex]
         self.zeropoints = list()  # type: list[complex]
@@ -27,6 +50,11 @@ class Correlation(object):
         return
 
     def dump(self, output_file: str) -> None:
+        """ Outputs internal state of the correlation function to the output file.
+
+        :param output_file: File to write correlation function state to.
+        :type output_file: string
+        """
         with open(output_file, 'w') as f:
             c = [(_c.real, _c.imag) for _c in self.coefficients]
             cc = [(_cc.real, _cc.imag) for _cc in self.conj_coefficents]
@@ -46,6 +74,10 @@ class Correlation(object):
         return
 
     def remove_heom_terms(self) -> None:
+        """ Erases all coefficient, zeropoint, derivative and conjugate coefficient
+        information from the correlation function. Note output is in TENSO's internal
+        units.
+        """
         self.coefficients = list()
         self.conj_coefficents = list()
         self.zeropoints = list()
@@ -53,6 +85,12 @@ class Correlation(object):
         return
 
     def load(self, input_file: str) -> None:
+        """ Imports information from a previously dumped correlation function file.
+        Note that the imported file must be in TENSO's internal units.
+
+        :param input_file: File formated as from :class: Correlation.dump
+        :type input_file: string
+        """
         with open(input_file, 'r') as f:
             kwargs = json.load(f)
             c = [complex(x, y) for x, y in kwargs['coefficients']]
@@ -76,6 +114,10 @@ class Correlation(object):
 
     @property
     def k_max(self):
+        """ Returns the number of features in the correlation function.
+        :return: The number of features in the correlation function.
+        :rtype: integer
+        """
         assert len(self.coefficients) == len(self.zeropoints)
         return len(self.coefficients)
 
@@ -145,8 +187,8 @@ class Correlation(object):
                 k = len(self.derivatives)
                 self.derivatives[k, k] = -1.0j * ps[0]
             elif len(rs) == 2:
-                c1 = complex(rs[0] * f(np.array([ps[0]])) / zeropoint)
-                c2 = complex(rs[1] * f(np.array([ps[1]])) / zeropoint)
+                c1 = complex(rs[0] * f(np.array([ps[0]]))[0] / zeropoint)
+                c2 = complex(rs[1] * f(np.array([ps[1]]))[0] / zeropoint)
                 self.coefficients.extend([c1, c2])
                 self.conj_coefficents.extend([c2.conjugate(), c1.conjugate()])
                 self.zeropoints.extend([zeropoint, zeropoint])

@@ -6,7 +6,7 @@ import json as json
 import numpy as np
 from tqdm import tqdm
 
-from tenso.prototypes.heom import spin_boson
+from tenso.prototypes.heom import system_single_bath 
 from tenso.prototypes.bath import gen_bcf
 
 if __name__ == '__main__':
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     end_time = 1000.0
     dt = 1.0
     wfn = np.array([1.0, 1.0], dtype=np.complex128) / np.sqrt(2.0)
-    propagator = spin_boson(
+    propagator = system_single_bath(
         fname=out,
         init_rdo=np.outer(wfn, wfn.conj()),
         sys_ham=np.array([[-0.0, 1000.0], [1000.0, 0.0]], dtype=np.complex128),

@@ -223,12 +223,6 @@ def opt_transform(op: OptArray, tensor: OptArray, op_ax: int, tensor_ax: int):
 # @_opt.compile
 def opt_multitransform(op_dict: dict[int, OptArray],
                        tensor: OptArray) -> OptArray:
-    # ax_list = list(sorted(op_dict.keys(),
-    #                       key=(lambda ax: tensor.shape[ax])))
-    # mat_list = [op_dict[ax] for ax in ax_list]
-    # ans = tensor
-    # for ax, mat in zip(ax_list, mat_list):
-    #     ans = opt_transform(mat, ans, 1, ax)
 
     ans = tensor
     for ax, mat in op_dict.items():
@@ -261,29 +255,3 @@ def opt_inner_product(tensor1: OptArray, tensor2: OptArray) -> complex:
     right = tensor2.flatten()
     return (left @ right).item()
 
-
-# def opt_unfold(tensor: OptArray, ax: int) -> OptArray:
-#     dim = tensor.shape[ax]
-#     ans = tensor.moveaxis(ax, 0).reshape((dim, -1))
-#     return ans
-
-# def opt_fold(vectors: OptArray, shape: list[int], ax: int):
-#     dim = shape[ax]
-#     _shape = [dim] + [n for i, n in enumerate(shape) if i != ax]
-#     assert dim == vectors.shape[0]
-#     ans = vectors.reshape(_shape).moveaxis(0, ax)
-#     return ans
-
-# def opt_transform(tensor: OptArray, ax: int, op: OptArray) -> OptArray:
-#     """Tensor-matrix contraction that keeps the indices convension of tensor.
-#     """
-#     shape = list(tensor.shape)
-#     ans_vectors = op @ opt_unfold(tensor, ax)
-#     return opt_fold(ans_vectors, shape, ax)
-
-# def opt_trace(tensor1: OptArray, tensor2: OptArray, ax: int) -> OptArray:
-#     assert tensor1.shape == tensor2.shape
-#     assert 0 <= ax < tensor1.ndim
-#     vectors1 = opt_unfold(tensor1, ax)
-#     vectors2 = opt_unfold(tensor2, ax).transpose()
-#     return vectors1 @ vectors2

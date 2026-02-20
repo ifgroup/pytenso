@@ -22,7 +22,12 @@ def _stack_orth(tensor1: OptArray,
                 tensor2: OptArray,
                 axis: int,
                 _dummy=True) -> OptArray:
-    """Stack the tensor1 and tensor2 along axis."""
+    """Stack the tensor1 and tensor2 along axis.
+    :param tensor1: First tensor, assumed to be orthogonalized
+    :type tensor1: class:OptArray
+    :param tensor2: Second tensor, not assumed to be orthogonalized
+    :type tensor2: class:OptArray
+    """
     # assume tensor1 is already orthogonalized
     return tensor1
     shape1 = list(tensor1.shape)
@@ -39,7 +44,14 @@ def _stack_orth(tensor1: OptArray,
 
 
 def _truncate(tensor: OptArray, rank: int, axis: int):
-    """Truncate the tensor along axis."""
+    """Truncate the tensor along the given axis.
+    :param tensor: Tensor to be truncated
+    :type tensor: class:OptArray
+    :param rank: Rank of truncation of the tensor
+    :type rank: int
+    :param axis: Dimension to truncate along
+    :type axis: int
+    """
     shape = list(tensor.shape)
     dim = shape.pop(axis)
     dim_left = prod(shape)
@@ -48,13 +60,13 @@ def _truncate(tensor: OptArray, rank: int, axis: int):
 
 
 def _find_truncate_index(s: OptArray, atol: float) -> int:
-    # # This is the original cummulatve method
-    # total_error = 0.0
-    # for _k, s_k in reversed(list(enumerate(s))):
-    #     total_error += s_k
-    #     if total_error > atol:
-    #         break
-    # return _k + 1
+    """Find the index at which to truncate the tensor by comparing
+    with an absolute tolerance.
+    :param s: Tensor to be analyzed
+    :type s: class:OptArray
+    :param atol: Tolerance for truncation analysis
+    :type atol: float
+    """
     for _k, s_k in reversed(list(enumerate(s))):
         if s_k > atol:
             break
@@ -62,6 +74,8 @@ def _find_truncate_index(s: OptArray, atol: float) -> int:
 
 
 def _one_site_split(array: OptArray, i: int) -> tuple[OptArray, OptArray]:
+    """I don't know yet.
+    """
     shape = list(array.shape)
     l_shape = shape[:i] + shape[i + 1:]
     dim = shape[i]
@@ -147,8 +161,7 @@ def _adaptive_two_site_split(
 
 
 def _modify_frame(frame: Frame, p, p_axes, q, q_axes) -> Frame:
-    """
-    Modify the frame to include the new axes for p and q.
+    """ Modify the frame to include the new axes for p and q.
     """
     p_neighbors = frame._neighbor[p]
     q_neighbors = frame._neighbor[q]
@@ -195,13 +208,36 @@ def _two_site_split(state: Model,
 
 
 class SparseSPO:
+    """Class representing the sum of products form operator.
+    :param op_list: List of dictionaries where keys are the ends in the tensor network and 
+        values are the associated operators in tensor form
+    :type op_list: dictionary
+    :param initial_time: Start time for the propagation, defaults to 0.0
+    :type initial_time: float, optional
+    :param f_list: Functions representing time dependent operator parts with the
+        return value of the function being a list of dictionaries whose keys are
+        the ends and whose values are the tensor representation of the time dependent
+        operator
+    :type f_list: callable
+    """
 
     def __init__(self,
                  op_list: list[dict[End, OptArray]],
                  f_list: None
                  | Callable[[float], list[dict[End, OptArray]]] = None,
                  initial_time: float = 0.0) -> None:
-
+        """Constructor method for the sparse sum of products operator.
+        :param op_list: List of dictionaries where keys are the ends in the tensor network and 
+            values are the associated operators in tensor form
+        :type op_list: dictionary
+        :param initial_time: Start time for the propagation, defaults to 0.0
+        :type initial_time: float, optional
+        :param f_list: Functions representing time dependent operator parts with the
+            return value of the function being a list of dictionaries whose keys are
+            the ends and whose values are the tensor representation of the time dependent
+            operator
+        :type f_list: callable
+        """
         dims = dict()
         # Check the consistency of the dimensions.
         n_ti = len(op_list)
@@ -233,6 +269,13 @@ class SparseSPO:
         return
 
     def __add__(self, other: SparseSPO) -> SparseSPO:
+        """Add a new list of time dependent operators to the sum of products
+        operator
+        :param other: Another SparseSPO from which to acquire the list to concatenate
+        :type other: :class: SparseSPO
+        :returns: The modified :class: SparseSPO with the expanded f_list
+        :rtype: :class: SparseSPO
+        """
 
         def f_list(t):
             return self.f_list(t) + other.f_list(t)
@@ -240,9 +283,19 @@ class SparseSPO:
         return SparseSPO(self.op_list + other.op_list, f_list)
 
     def get_ti_terms(self) -> list[dict[End, OptArray]]:
+        """Return time independent operators in the sum of products form.
+        :returns: List of dictionaries with keys ends and values operators in 
+            tensor form
+        :rtype: list
+        """
         return self.op_list
 
     def get_td_terms(self, t: float) -> list[dict[End, OptArray]]:
+        """Returns the time dependent operators in the sum of products form.
+        :returns: List of dictionaries with keys ends and values operators in 
+            tensor form
+        :rtype: list
+        """
         if self.f_list is None:
             return []
         else:
@@ -254,8 +307,7 @@ class SparseSPO:
 
 
 class SPOKet:
-    """
-    Intermediate class for the sparse operations in the model.
+    """Intermediate class for the sparse operations in the model.
     """
 
     def __init__(self,
@@ -335,6 +387,8 @@ class SPOKet:
 
 
 class ListModelInnerProduct:
+    """Class used to calculate the inner product of the system.
+    """
 
     def __init__(self,
                  frame: Frame,
@@ -378,11 +432,6 @@ class SparseSandwich:
         self.root = root
         self.ket = ket_state
         self.bra = bra_state.conjugate()
-        # for n in frame.nodes:
-        #     print(n,
-        #           self.ket[n].flatten()[0],
-        #           self.bra[n].flatten()[0],
-        #           flush=True)
 
         # Construct pools for the each term
         n_ti, n_td = op.n_ti, op.n_td

@@ -1,5 +1,6 @@
 # coding: utf-8
-"""Generating the derivative of the extended rho in SoP formalism.
+"""This file handles generating the derivative of the extend density operator
+with sum of products form operators.
 """
 
 from itertools import chain
@@ -36,8 +37,14 @@ def terminate(tensor: OptArray, term_dict: dict[int, OptArray]):
 
 
 class _BathOp:
-
+    """Produce the creation, destruction and number operators for the
+    bath degrees of freedom in the number basis.
+    """
     def __init__(self, dim: int) -> None:
+        """Constructor function.
+        :param dim: Basis size of the operator.
+        :type dim: int
+        """
         self.up = opt_array(np.diag(np.sqrt(np.arange(1, dim)), k=-1))
         self.down = opt_array(np.diag(np.sqrt(np.arange(1, dim)), k=1))
         self.number = opt_array(np.diag(np.arange(dim)))
@@ -45,8 +52,14 @@ class _BathOp:
 
 
 class _DVRBathOp(_BathOp):
-
+    """Produce the creation, destruction and number operators for the
+    bath degrees of freedom in the DVR basis.
+    """
     def __init__(self, dvr: Dvr) -> None:
+        """Constructor function.
+        :param dim: Basis size of the operator.
+        :type dim: int
+        """
         self.up = opt_array(dvr.creation_mat)
         self.down = opt_array(dvr.annihilation_mat)
         self.number = opt_array(dvr.numberer_mat)
@@ -213,8 +226,8 @@ class Hierachy:
         return f_k
 
     def initialize_state(self, rdo: ArrayLike, rank: int) -> Model:
-        """
-        Assume Ends sys_i and sys_j are attached to the root node axes 0 and 1.
+        """Initialize the state of the tensor network with the assumption that the system
+        ends, sys_i and sys_j, are attached to the root node axes 0 and 1.
         """
         rdo = np.array(rdo, dtype=complex)
         rdo /= np.trace(rdo)
@@ -281,9 +294,26 @@ class Hierachy:
 
 
 class FrameFactory:
+    """This class produces the frame (tensor network graph structure) for use in 
+    a calculation of HEOM with multiple baths.
+    :param bath_dofs: A list of integers associated with a degree of freedom
+    :type bath_dofs: list, int
+    :param bath_dof: The number of degrees of freedom total
+    :type bath_dof: int
+    :param sys_ket_end: String to identify the ket of the system in the graph
+    :type sys_ket_end: string
+    :param sys_bra_end: String to identify the bra of the system in the graph
+    :param chained_bath_ends: List of identifying strings for bath degrees of
+        freedom in the graph
+    :type chained_bath_ends: list, string
+    """
     prefix = '[H]'
 
     def __init__(self, bath_dofs: list[int]) -> None:
+        """Constructor method
+        :param bath_dofs: List of bath degrees of freedom
+        :type bath_dofs: int
+        """
         self.bath_dofs = bath_dofs  # type: int
         self.bath_dof = sum(bath_dofs)
         self.sys_ket_end = End(self.prefix + 'i')  # type: End
@@ -292,20 +322,33 @@ class FrameFactory:
             End(self.prefix + f'{n}-{k}') for (n, dof) in enumerate(bath_dofs)
             for k in range(dof)
         ]  # type: list[End]
-        self.bath_ends = [[
-            self.chained_bath_ends[n * dof + k] for k in range(dof)
-        ] for n, dof in enumerate(bath_dofs)]
-
+        self.bath_ends = [] # 2D list of bath [End]'s, organized by feature
+        offset = 0 # Loop temporary to avoid off-by-one errors
+        for n, dof in enumerate(bath_dofs):
+            level = []  # Bath ends for this degree of freedom
+            for k in range(dof):
+                level.append(self.chained_bath_ends[offset + k])
+            self.bath_ends.append(level)  # Append as layer in 2D list
+            offset = offset + dof
         self._node_counter = 0  # type: int
         return
 
     def _new_node(self) -> Node:
+        """Make a new node (vertex) to add to the graph structure.
+        :return: A new node
+        :rtype: :class: Node 
+        """
         n = Node(self.prefix + str(self._node_counter))
         assert isinstance(n, Node)
         self._node_counter += 1
         return n
 
     def naive(self) -> tuple[Frame, Node]:
+        """Set up a graph structure with every node linked to the
+        root node.
+        :return: A tuple containing the produced :class: Frame and the :class: Node
+        :rtype: tuple
+        """
         frame = Frame()
         root = self._new_node()
         for e in chain([self.sys_ket_end, self.sys_bra_end],
@@ -316,6 +359,16 @@ class FrameFactory:
     def tree(self,
              bath_importances: None | list[int] = None,
              n_ary: int = 2) -> tuple[Frame, Node]:
+        """Set up a graph structure in the form of an n-ary Huffman tree (default is a
+        binary tree).
+        :param bath_importances: A list of which baths should be deemed most influential
+            when constructing the Huffman tree
+        :type bath_importances: list, optional
+        :param n_ary: The number of links between nodes in the tree, defaults to 2
+        :type n_vary: int, optional
+        :return: A tuple containing the produced :class: Frame and the :class: Node
+        :rtype: tuple
+        """
         if bath_importances is None:
             bath_importances = [1] * self.bath_dof
         frame = Frame()
@@ -333,6 +386,10 @@ class FrameFactory:
         return frame, root
 
     def train(self) -> tuple[Frame, Node]:
+        """Set up a graph structure in the form of a train.
+        :return: A tuple containing the produced :class: Frame and the :class: Node
+        :rtype: tuple
+        """
         k_max = self.bath_dof
         frame = Frame()
         train_nodes = [self._new_node() for _ in range(k_max)]

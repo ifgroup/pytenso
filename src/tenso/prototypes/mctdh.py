@@ -1,5 +1,5 @@
 # coding: utf-8
-"""MCTDH prototype for the spin-boson model.
+"""MCTDH interface functions
 """
 from math import ceil, floor
 from typing import Callable, Generator
@@ -23,7 +23,7 @@ MatList = list[list[complex]]
 parameters = get_default_kwargs(['tn', 'mctdh', 'propagation'])
 
 
-def spin_boson(
+def system_single_bath(
     fname: str,
     # System
     init_wfn: VecList,
@@ -101,6 +101,7 @@ def spin_boson(
 
     # Connect the system part and the bath branch
     ue = quantity(1.0, 'energy')
+    ut = quantity(1.0, 'time')
     print('System H:\n', sys_ham, flush=True)
     rank = parameters['rank']
     if parameters['load_checkpoint_from_file']:
@@ -121,7 +122,7 @@ def spin_boson(
         zeros = opt_array(np.zeros_like(td_op))
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
-            _f = td_f(time)
+            _f = td_f(time/ut)*ue
             _i_end = hierachy.sys_ends[0]
             if abs(_f) > 1e-14:
                 ans = [
@@ -225,7 +226,7 @@ def spin_boson(
     return
 
 
-def spin_boson_bath_q(
+def system_single_bath_q(
     fname: str,
     # System
     init_wfn: VecList,
@@ -303,6 +304,7 @@ def spin_boson_bath_q(
 
     # Connect the system part and the bath branch
     ue = quantity(1.0, 'energy')
+    ut = quantity(1.0,'time')
     print('System H:\n', sys_ham, flush=True)
     rank = parameters['rank']
     if parameters['load_checkpoint_from_file']:
@@ -325,7 +327,7 @@ def spin_boson_bath_q(
         zeros = opt_array(np.zeros_like(td_op))
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
-            _f = td_f(time)
+            _f = td_f(time/ut)*ue
             _i_end = hierachy.sys_ends[0]
             if abs(_f) > 1e-14:
                 ans = [
@@ -352,14 +354,6 @@ def spin_boson_bath_q(
     bath_q2_op = SparseSPO(q2_list)
     bath_q_state_operation = SPOKet(bath_q_op, state, frame, root)  # q|0>
     bath_q2_state_operation = SPOKet(bath_q2_op, state, frame, root)  # q^2|0>
-    # print('<q>:', bath_q_state_operation.close_with_bra(), flush=True)
-    # print('<0|q|0>',
-    #       SparseInnerProduct(frame, root, state, state, bath_q_op).forward(),
-    #       flush=True)
-    # print('<q^2>:', bath_q2_state_operation.close_with_bra(), flush=True)
-    # print('<0|q^2|0>',
-    #       SparseInnerProduct(frame, root, state, state, bath_q2_op).forward(),
-    #       flush=True)
 
     bath_q_state_operation.canonicalize()
     bath_q2_state_operation.canonicalize()
@@ -371,16 +365,6 @@ def spin_boson_bath_q(
           ListModelInnerProduct(
               frame, root, bath_q_state_operation.state_list).forward() / ue,
           flush=True)
-    # return
-    # print('use canonicalize:', flush=True)
-    # print('<q>:', bath_q_state_operation.close_with_bra(), flush=True)
-    # print('<0|q|0>',
-    #       SparseInnerProduct(frame, root, state, state, bath_q_op).forward(),
-    #       flush=True)
-    # print('<q^2>:', bath_q2_state_operation.close_with_bra(), flush=True)
-    # print('<0|q^2|0>',
-    #       SparseInnerProduct(frame, root, state, state, bath_q2_op).forward(),
-    #       flush=True)
 
     sp_kwargs = {
         k: v
@@ -394,29 +378,10 @@ def spin_boson_bath_q(
         for _s in bath_q_state_operation.state_list
     ]
 
-    #propagation_method = parameters['stepwise_method']
-    #ps_method = parameters['ps_method']
     # Use PS1 only for now
     end = quantity(parameters['end_time'], 'time')
     dt = quantity(parameters['step_time'], 'time')
     all_propagators = [state_propagator] + bath_q_state_propagators
-    # if propagation_method == 'simple':
-    #     _it = _p.propagate(end, dt, ps_method)
-    # elif propagation_method == 'mix':
-    #     if (dt1 := parameters['auxiliary_step_time']) is not None:
-    #         dt1 = quantity(dt1, 'time')
-    #     _it = state_propagator.mixed_propagate(
-    #         end,
-    #         dt,
-    #         ending_ps_method=ps_method,
-    #         starting_dt=dt1,
-    #         starting_ps_method=parameters['auxiliary_ps_method'],
-    #         max_starting_rank=parameters['max_auxiliary_rank'],
-    #         max_starting_steps=parameters['max_auxiliary_steps'],
-    #     )
-    # else:
-    #     raise NotImplementedError(
-    #         f'No propagation method {propagation_method}.')
 
     if parameters['visualize_frame'] == True:
         from tenso.libs.drawing import visualize_frame
@@ -571,6 +536,7 @@ def system_multibath(
 
     # Connect the system part and the bath branch
     ue = quantity(1.0, 'energy')
+    ut = quantity(1.0,'time')
     print(sys_ham, flush=True)
     rank = parameters['rank']
     if parameters['load_checkpoint_from_file']:
@@ -592,7 +558,7 @@ def system_multibath(
         zeros = opt_array(np.zeros_like(td_op))
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
-            _f = td_f(time)
+            _f = td_f(time/ut)*ue
             _i_end = hierachy.sys_ends[0]
             if abs(_f) > 1e-14:
                 ans = [

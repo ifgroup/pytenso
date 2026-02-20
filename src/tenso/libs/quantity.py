@@ -41,8 +41,15 @@ synonyms = {
 
 class Quantity(object):
     def __init__(self, value: float, unit: Optional[str] = None) -> None:
-        """
-        Parameters:
+        """Class dedicated to unit conversions between the default input
+        units and the internal program units.
+
+        :param value: The value under consideration
+        :type value: float
+        :param unit: Whether energy, time, or inverse temperature is 
+            under consideration, designated as 'time', 'energy', or
+            'inverse_temperature' respectively
+        :type unit: string, optional
         """
         self.value = float(value)
         self.unit = self.standardize(unit)
@@ -50,6 +57,13 @@ class Quantity(object):
 
     @staticmethod
     def standardize(unit: Optional[str]) -> Optional[str]:
+        """Search the list of synonyms for units that may be supplied and
+        choose the standard representation for that unit.
+        :param unit: Potentially non-standard string representing a unit
+        :type unit: string, optional
+        :returns: The standardized string representing the unit
+        :rtype: string
+        """
         if unit is not None and unit not in atomic_unit_in:
             found = False
             for key, l in synonyms.items():
@@ -67,12 +81,20 @@ class Quantity(object):
         return self.value / atomic_unit_in[self.unit]
 
     def convert_to(self, unit: Optional[str] = None) -> Quantity:
+        """Change the value in the given unit to atomic units.
+        :param unit: The current unit in use
+        :type unit: string, optional
+        """
         unit = self.standardize(unit)
         self.value = self.au * atomic_unit_in[unit]
         self.unit = unit
         return self
 
     def to(self, unit: Optional[str] = None) -> Quantity:
+        """Change the value in the given unit to atomic units.
+        :param unit: The current unit in use
+        :type unit: string, optional
+        """
         return self.convert_to(unit)
 
     # A simplified and incomplete implementation for +, -, *, /

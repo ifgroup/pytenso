@@ -8,6 +8,18 @@ from typing import Literal, Optional
 
 
 class Logger(object):
+    """Class used to interface with infrastructure for logging at various levels 
+    of verbosity ranging from 'debug' to 'critical'.
+    :param level: The degree of information to log with options being 'debug',
+        'info', 'warning', 'error' and 'critical'
+    :type level: Literal
+    :param filename: File for logging
+    :type filename: string, optional
+    :param stream_fmt: Formating string for the stream
+    :type stream_fmt: string, optional
+    :param file_fmt: File formatting string, default '%(message)s'
+    :type file_fmg: string, optional
+    """
     levels = {
         'debug': logging.DEBUG,
         'info': logging.INFO,
@@ -37,23 +49,38 @@ class Logger(object):
         self._logger.addHandler(th)
 
     def info(self, message: str):
-        """Log an info message."""
+        """Log an info message.
+        :param str: Message to log
+        :type str: string
+        """
         self._logger.info(message)
 
     def debug(self, message: str):
-        """Log a debug message."""
+        """Log a debug message.
+        :param str: Message to log
+        :type str: string
+        """
         self._logger.debug(message)
 
     def warning(self, message: str):
-        """Log a warning message."""
+        """Log a warning message.
+        :param str: Message to log
+        :type str: string
+        """
         self._logger.warning(message)
 
     def error(self, message: str):
-        """Log an error message."""
+        """Log an error message.
+        :param str: Message to log
+        :type str: string
+        """
         self._logger.error(message)
 
     def critical(self, message: str):
-        """Log a critical message."""
+        """Log a critical message.
+        :param str: Message to log
+        :type str: string
+        """
         self._logger.critical(message)
 
     def __del__(self):

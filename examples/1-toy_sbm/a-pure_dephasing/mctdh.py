@@ -7,7 +7,7 @@ import json as json
 import numpy as np
 from tqdm import tqdm
 
-from tenso.prototypes.mctdh import spin_boson, spin_boson_bath_q
+from tenso.prototypes.mctdh import system_single_bath, system_single_bath_q
 from tenso.prototypes.bath import gen_star_boson
 
 if __name__ == '__main__':
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     wfn = np.array([1.0, 1.0], dtype=np.complex128) / np.sqrt(2.0)
     end_time = 400.0
     dt = 1.0
-    propagator = spin_boson(
+    propagator = system_single_bath(
         fname=out,
         init_wfn=wfn,
         sys_ham=np.array([[0.0, 0.0], [0.0, 0.0]], dtype=np.complex128),

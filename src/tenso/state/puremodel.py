@@ -9,8 +9,10 @@ from tenso.state.pureframe import Frame, Node
 
 
 def triangular(n_list):
-    """A Generator yields the natural number in a triangular order.
-        """
+    """Produces a Generator which yields the natural number in a triangular order.
+    :param n_list: List of integers
+    "type n_list: list
+    """
     length = len(n_list)
     prod_list = [1]
     for n in n_list:
@@ -37,13 +39,15 @@ def triangular(n_list):
 
 
 class Model:
-    """A Model is a Frame with valuation for each node.
+    """A class representing a, Model, a :class: Frame with valuation for each Node.
     """
 
     def __init__(self,
                  valuation: dict[Node, OptArray]
                  | Iterable[tuple[Node, OptArray]]) -> None:
-        """
+        """Constructor for the Model.
+        :param valuation: A dictionary associating with each Node a tensor
+        :type valuation: dictionary
         Args:
             frame: Topology of the tensor network;
         """
@@ -83,11 +87,12 @@ class Model:
         return self._valuation[p].shape[i]
 
     def copy(self) -> Model:
-        """A shallow copy of the model."""
+        """Produce a shallow copy of the model."""
         return Model(self._valuation)
 
     def conjugate(self) -> Model:
-        """Conjugate the model."""
+        """Take the conjugate the model by complex conjugation
+        of all tensor valuations."""
         new_valuation = {p: a.conj() for p, a in self._valuation.items()}
         new_model = Model(new_valuation)
         return new_model
@@ -105,10 +110,6 @@ class Model:
         """
         Update the valuation of the model.
         """
-        # v, s = zip(*(((n, a), (n, list(a.shape)))
-        #            for n, a in valuation.items()))
-        # self._valuation.update(v)
-        # self._shapes.update(s)
         self._valuation.update(valuation)
         return
     
@@ -118,15 +119,17 @@ class Model:
 
 
 def zeros_model(shapes: dict[Node, list[int]]) -> Model:
-    """
-    A model with proper shape arrays.
-    Specify the dimension for each Edge in dims (default is 1).
+    """Produce a model with the specified shapes given by a dictionary
+    and all zero valuations.  The dimension for each Edge is given in dims
+    with adefault of 1.
     """
     valuation = {p: opt_array(np.zeros(shape)) for p, shape in shapes.items()}
     return Model(valuation)
 
 
 def eye_model(frame: Frame, root: Node, shapes: dict[Node, list[int]]) -> Model:
+    """Get a model with an identity-matrix like valuation.
+    """
     assert root in frame
     axes = frame.get_node_axes(root)
 
