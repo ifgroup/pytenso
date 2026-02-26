@@ -15,6 +15,7 @@ from tenso.libs.utils import iter_round_visitor, iter_visitor, depths
 class Point:
     """An abstract class representing a vertex in the graph of the tensor network which 
     is extended by Node and End.
+
     :param __cache: A weak valued dictionary with keyts of tuple[str, str] and values of Point
     :type __cache: WeakValueDictionary
     """
@@ -35,6 +36,7 @@ class Point:
 
     def __init__(self, name: Optional[str] = None) -> None:
         """Constructor which provides an identifying string
+
         :param name: Identifying string
         :type name: string, optional
         """
@@ -98,10 +100,11 @@ class Frame:
         return new_frame
 
     def add_link(self, p: Point, q: Point) -> None:
-        """Add a link between two :class: Points.
-        :class: End can only have one link. :class: Node can have multiple links.
+        """Add a link between two :class: Points. :class: End can only have one link. :class: Node can have multiple links.
+
         :param p: First :class: Point to be connected.
         :type p: :class: Point
+
         :param 1: Second :class: Point to be connected.
         :type q: :class: Point
         """

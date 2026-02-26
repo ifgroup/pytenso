@@ -1,5 +1,6 @@
 # coding: utf-8
-r"""A Simple DVR Program
+r"""A simple implementation of a discrete variable representation integrator
+based on the implementation found in the Heidelberg MCTDH documentation. 
 
 References
 ----------
@@ -13,8 +14,11 @@ import numpy as np
 
 
 class DiscreteVariationalRepresentation:
-
+    """Abstract class for any discrete variable representation basis.
+    """
     def __init__(self, num: int) -> None:
+        """General constructor for a DVR basis.
+        """
         self.n = num
         self.grid_points = [None] * num
         self.dvr2fbr_mat = None  # type: Optional[NDArray]
@@ -22,7 +26,11 @@ class DiscreteVariationalRepresentation:
 
     @property
     def q_mat(self) -> NDArray:
-        """q in DVR basis."""
+        """Get the position operator in DVR basis.
+
+        :returns: Position operator, diagonal in the grid points
+        :rtype: numpy array
+        """
         return np.diag(self.grid_points)
 
     @property
@@ -35,10 +43,20 @@ class DiscreteVariationalRepresentation:
 
     @property
     def creation_mat(self) -> NDArray:
+        """Get the creation operator in the DVR basis
+
+        :returns: the creation operator
+        :rtype: numpy array
+        """
         return (self.q_mat - self.dq_mat) / np.sqrt(2.0)
 
     @property
     def annihilation_mat(self) -> NDArray:
+        """Get the annihilation operator in the DVR basis
+
+        :returns: the annihilation operator
+        :rtype: numpy array
+        """
         return (self.q_mat + self.dq_mat) / np.sqrt(2.0)
 
     @property
@@ -69,8 +87,21 @@ class DiscreteVariationalRepresentation:
 
 
 class SincDVR(DiscreteVariationalRepresentation):
+    """ Class for performing the universal Sinc DVR basis of Colbert and Miller (1982)
+    """
 
     def __init__(self, start: float, stop: float, num: int) -> None:
+        """Constructor for the Sinc DVR
+
+        :param start: One end of the basis extent
+        :type start: float
+
+        :param stop: Other end of the basis extent
+        :type stop: float
+
+        :param num: Number of grid points for the basis
+        :type num: int
+        """
         self.length = abs(stop - start)
         self.grid_points = np.array(
             [start + i * self.length / (num + 1) for i in range(1, num + 1)],
@@ -83,6 +114,10 @@ class SincDVR(DiscreteVariationalRepresentation):
 
     @property
     def dq_mat(self) -> NDArray:
+        """Get the volume element `d/dq` matrix, alternately -i times momentum, in the DVR basis
+
+        :returns: The volume element `d/dq` matrix `(<alpha| d/dq |beta>)`
+        :rtype: array[complex]"""
         _i = np.arange(1, self.n + 1, dtype=complex)[:, np.newaxis]
         _j = np.arange(1, self.n + 1, dtype=complex)[np.newaxis, :]
         with np.errstate(divide='ignore', invalid='ignore'):
@@ -92,6 +127,10 @@ class SincDVR(DiscreteVariationalRepresentation):
 
     @property
     def dq2_mat(self) -> NDArray:
+        """Get the square volume element `d2/dq2` matrix, alternately -momentum^2, in the DVR basis
+
+        :returns: The squared volume element `dq2` matrix `(<alpha| d2/dq2 |beta>)`
+        :rtype: array[complex]"""
         _i = np.arange(1, self.n + 1, dtype=complex)[:, np.newaxis]
         _j = np.arange(1, self.n + 1, dtype=complex)[np.newaxis, :]
         with np.errstate(divide='ignore', invalid='ignore'):
@@ -102,8 +141,20 @@ class SincDVR(DiscreteVariationalRepresentation):
 
 
 class SineDVR(DiscreteVariationalRepresentation):
-
+    """ Class for the Sine-DVR
+    """
     def __init__(self, start: float, stop: float, num: int) -> None:
+        """Constructor for the Sine DVR
+
+        :param start: One end of the basis extent
+        :type start: float
+
+        :param stop: Other end of the basis extent
+        :type stop: float
+
+        :param num: Number of grid points for the basis
+        :type num: int
+        """
         self.grid_points = np.linspace(start, stop, num)
         self.n = num
         self.length = abs(start - stop)
@@ -120,12 +171,12 @@ class SineDVR(DiscreteVariationalRepresentation):
 
     @property
     def q_mat(self) -> NDArray:
-        """q in DVR basis."""
+        """Get the position operator, q in the DVR basis."""
         return np.diag(self.grid_points)
 
     @property
     def abs_q_mat(self) -> NDArray:
-        """q in DVR basis."""
+        """Get the absolute value of the position operator, q in the DVR basis."""
         return np.diag(np.abs(self.grid_points))
 
     @property
@@ -138,8 +189,11 @@ class SineDVR(DiscreteVariationalRepresentation):
 
     @property
     def dq_mat(self) -> NDArray:
-        """d/dq in DVR basis."""
-        # fbr_mat = np.zeros((self.n, self.n), dtype=complex)
+        """Get the volume element `d/dq` matrix, alternately -i times momentum, in the DVR basis
+
+        :returns: The volume element `d/dq` matrix `(<alpha| d/dq |beta>)`
+        :rtype: array[complex]"""
+         # fbr_mat = np.zeros((self.n, self.n), dtype=complex)
         l = self.length
         n = self.n
         _i = np.arange(1, n + 1, dtype=int)[:, np.newaxis]
@@ -154,7 +208,10 @@ class SineDVR(DiscreteVariationalRepresentation):
 
     @property
     def dq2_mat(self) -> NDArray:
-        """d^2/dq^2 in DVR basis."""
+        """Get the square volume element `d2/dq2` matrix, alternately `-p^2`, in the DVR basis
+
+        :returns: The squared volume element `dq2` matrix `(<alpha| d2/dq2 |beta>)`
+        :rtype: array[complex]"""
         j = np.arange(1, self.n + 1)
         fbr_mat = np.diag(-(j * np.pi / self.length)**2)
         u = self.dvr2fbr_mat
@@ -162,10 +219,10 @@ class SineDVR(DiscreteVariationalRepresentation):
 
     @property
     def t_mat(self):
-        """Return the kinetic energy matrix in DVR.
+        """Return the kinetic energy matrix in the DVR basis in internal energy units.
         Returns
         -------
-        (n, n) np.ndarray
+        `(n, n)` np.ndarray
             A 2-d matrix.
         """
         return -0.5 * self.dq2_mat

@@ -44,11 +44,8 @@ def system_single_bath(
     # other settings
     **kwargs,
 ) -> Generator[float, None, None]:
-    """Spin-Boson model using HEOM with tensor network.
-    Assuming one bath correlation function.
+    """Spin-Boson model using HEOM with tensor network. Assuming one bath correlation function.
 
-    Parameters:
-    -----------
     :type fname: str
     :param fname: The output file name.
     :type init_rdo: MatList
@@ -65,7 +62,7 @@ def system_single_bath(
     :param Matlist: The operator associated with the time-dependent field, default none.
     :type kwargs: dictionary
     :param kwargs: Other settings. See `default_parameters.py` for details.
-    :return: The current time in unit in `default_parameters.py`.
+    :returns: The current time in unit in `default_parameters.py`.
     :rtype: float
     """
     print(kwargs, flush=True)
@@ -295,28 +292,35 @@ def system_multibath(
     # other settings
     **kwargs,
 ) -> Generator[float, None, None]:
-    """Spin-Boson model using HEOM with tensor network allowing multiple
-    bath correlation functions.
+    """Spin-Boson model using HEOM with tensor network allowing multiple bath correlation functions.
 
     Parameters:
     -----------
     :type fname: str
     :param fname: The output file name.
+
     :type init_rdo: MatList
     :param init_rdo: The initial reduced density operator.
+
     :type h: MatList
     :param h: The system Hamiltonian.
+
     :type op: MatList
     :param op: The system operator in the system-bath interaction hamiltonian.
+
     :type bath_correlation: :class: Correlation
     :param bath_correlation: The bath correlation function for HEOM.
+
     :type td_f: Callable[[float], float] | None
     :param td_f: The time-dependent field.
+
     :type td_op: MatList | None
     :param td_op: The operator associated with the time-dependent field.
+
     :type kwargs: dict
     :param kwargs: Other settings. See `default_parameters.py` for details.
-    :return: The current time in unit in `default_parameters.py`.
+
+    :returns: The current time in unit in `default_parameters.py`.
     :rtype: float
     """
     for _k, v in kwargs.items():

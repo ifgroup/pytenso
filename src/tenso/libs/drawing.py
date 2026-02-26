@@ -1,3 +1,5 @@
+"""A tool to draw graphs from the Frames
+"""
 import networkx as nx
 from networkx.drawing.nx_agraph import to_agraph
 
@@ -5,6 +7,15 @@ from tenso.state.pureframe import Frame
 
 
 def visualize_frame(frame: Frame, fname='frame_graph_output'):
+    """Function to draw a simple representation of the graph structure of
+    a given frame to a pdf file.
+
+    :param frame: The :class: Frame whose graph is to be drawn
+    :type frame: :class: Frame
+
+    :param fname: The file name where the graph will be drawn, default 'frame_graph_output'
+    :type fname: string
+    """
     G = nx.MultiGraph()
     graph = frame.get_graph()
     nodes = frame.nodes
@@ -24,7 +35,6 @@ def visualize_frame(frame: Frame, fname='frame_graph_output'):
         plotted.add(p)
 
     A = to_agraph(G)
-    #A.node_attr['fontname'] = 'Arial'
 
     A.draw(fname + '.pdf', format='pdf', prog='neato')
 

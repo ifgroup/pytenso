@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 """
-Correlation function object
+Object for handling the correlation function
 """
 from __future__ import annotations
 
@@ -19,22 +19,23 @@ PI = np.pi
 class Correlation(object):
     """ This class represents a correlation function for a single bath which
     may be coupled to the system which is stored in a decomposed form such that
-    C(t) = \sum_k c_k e^{-\gamma_k}, with c_k and \gamma_k being complex. For
+    `C(t) = \sum_k c_k e^{-\gamma_k}`, with `c_k` and `\gamma_k` being complex. For
     MCTDH-use baths which are not decomposed in this way, information about the
     discretized harmonic modes of the bath is stored.
 
-    :param coefficients: The values of c_k
+    :param coefficients: The values of`c_k`
     :type coefficients: list, complex
+
     :param conj_coefficients: The complex conjucates of coefficients
     :type conj_coefficients: list, complex
+
     :param zeropoints: Information on the energy of discretized bath modes
     :type zeropoints": list, real
-    :param derivatives: The values of \gamma_k in a dictionary where teh keys are
-        the pair of integers [k, k] and the value is \gamma_k. Format as a dictionary
-        is for historical reasons.
+
+    :param derivatives: The values of `\gamma_k` in a dictionary where teh keys are the pair of integers [k, k] and the value is `\gamma_k.` Format as a dictionary is for historical reasons.
     :type derivatives: dictionary 
-    :param lindblad_rate: Experimental parameter for use in more complicated 
-        equations of motion
+    
+    :param lindblad_rate: Experimental parameter for use in more complicated equations of motion
     :type linblda_rate: list, optional
 
     """
@@ -115,7 +116,8 @@ class Correlation(object):
     @property
     def k_max(self):
         """ Returns the number of features in the correlation function.
-        :return: The number of features in the correlation function.
+
+        :returns: The number of features in the correlation function.
         :rtype: integer
         """
         assert len(self.coefficients) == len(self.zeropoints)
@@ -238,6 +240,14 @@ class Correlation(object):
         return
 
     def real_correlation_function(self, t):
+        """Get the real part of the correlation function at time 't'
+
+        :param t: The time in internal units at which to evaluate the correlation function
+        :type t: float
+
+        :returns: The real part of the correlation function
+        :rtype: float
+        """
         ans = np.zeros_like(t)
         for k, c in enumerate(self.coefficients):
             g = complex(self.derivatives[k, k])
@@ -246,6 +256,14 @@ class Correlation(object):
         return ans
 
     def imag_correlation_function(self, t):
+        """Get the imaginary part of the correlation function at time 't'
+
+        :param t: The time in internal units at which to evaluate the correlation function
+        :type t: float
+
+        :returns: The imarinary part of the correlation function
+        :rtype: float
+        """
         ans = np.zeros_like(t)
         for k, c in enumerate(self.coefficients):
             g = complex(self.derivatives[k, k])
@@ -253,7 +271,13 @@ class Correlation(object):
             ans += c.imag * np.exp(g.real * t) * np.cos(g.imag * t)
         return ans
 
+
     def __str__(self) -> str:
+        """Get a string represenation of the correlation function
+
+        :returns: string description
+        :rval: string
+        """
         if self.k_max > 0:
             string = f"Correlation ( c | c* | z ) x{self.k_max} :"
             for c, cc, z in zip(self.coefficients, self.conj_coefficents,

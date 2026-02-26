@@ -1,5 +1,6 @@
 # coding: utf-8
-r"""Unit transformations.
+r"""Objects and functions handling transformation between default, external units
+and internal TENSO units
 """
 from __future__ import annotations
 
@@ -78,6 +79,8 @@ class Quantity(object):
 
     @property
     def au(self) -> float:
+        """Return the value in atomic units.
+        """
         return self.value / atomic_unit_in[self.unit]
 
     def convert_to(self, unit: Optional[str] = None) -> Quantity:
@@ -102,26 +105,57 @@ class Quantity(object):
     # * / only allowed between Quantities float
 
     def __neg__(self) -> Quantity:
+        """Negate in experimental arithmetic implementation."""
         cls = type(self)
         return cls(-self.value, self.unit)
 
     def __add__(self, other: Quantity) -> Quantity:
+        """Add two quantities in experimental arithmetic implementation.
+        :param other: Quantity to add to self
+        :type other: :class: Quantity
+        :returns: The sum of the two quantities
+        "rtype: :class: Quantity
+        """
         cls = type(self)
         return cls(self.au + other.au)
 
     def __sub__(self, other: Quantity) -> Quantity:
+        """Subtract a quantity in experimental arithmetic implementation.
+        :param other: Quantity to subtract from self
+        :type other: :class: Quantity
+        :returns: The result of subtracting other from self
+        "rtype: :class: Quantity
+        """
         cls = type(self)
         return cls(self.au - other.au)
 
     def __mul__(self, other: float) -> Quantity:
+        """Multiply two quantities in experimental arithmetic implementation.
+        :param other: Quantity to multiply with the given quanitty
+        :type other: :class: Quantity
+        :returns: The product of the two quantities
+        "rtype: :class: Quantity
+        """
         cls = type(self)
         return cls(self.value * other, unit=self.unit)
 
     def __truediv__(self, other: float) -> Quantity:
+        """Divide by the quantity other in experimental arithmetic implementation.
+        :param other: Quantity to divide the self by
+        :type other: :class: Quantity
+        :returns: The quotient of self over other
+        "rtype: :class: Quantity
+        """
         cls = type(self)
         return cls(self.value / other, unit=self.unit)
 
-    def __eq__(self, other: Quantity | Literal[0]) -> Quantity:
+    def __eq__(self, other: Quantity | Literal[0]) -> boolean:
+        """Determines if two quantities are equal in experimental arithmetic implementation.
+        :param other: Quantity to compare to the given quantity
+        :type other: :class: Quantity
+        :returns: True if the two quantites are equal, otherwise false
+        "rtype: boolean
+        """
         if hasattr(other, "au"):
             return self.au == other.au
         elif other == 0:
@@ -129,7 +163,13 @@ class Quantity(object):
         else:
             raise TypeError(f"Quantity can only compare with Quantity or 0, not {type(other)}.")
 
-    def __gt__(self, other: Quantity | Literal[0]) -> Quantity:
+    def __gt__(self, other: Quantity | Literal[0]) -> boolean:
+        """Compare two quantities in experimental arithmetic implementation.
+        :param other: Quantity to compare to the given quantity
+        :type other: :class: Quantity
+        :returns: Whether the Quantity it is called on is larger than the argument.
+        :rtype: boolean
+        """
         if hasattr(other, "au"):
             return self.au > other.au
         elif other == 0:
@@ -138,8 +178,16 @@ class Quantity(object):
             raise TypeError(f"Quantity can only compare with Quantity or 0, not {type(other)}.")
 
     def __str__(self) -> str:
+        """Return a string representation of the quantity consisting of the value and unit.
+        :returns: Descriptive string
+        :rtype: string
+        """
         unit = "a.u." if self.unit is None else self.unit
         return f"{self.value:.8f}_{unit}"
 
     def __repr__(self) -> str:
+        """Return a descriptive string
+        :returns: Descriptive string
+        :rtype: string
+        """
         return f"<{str(self)}>"

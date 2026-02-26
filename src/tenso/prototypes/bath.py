@@ -132,49 +132,58 @@ def gen_bcf(
     use_ht_function: bool = False,
     **kwargs,
 ) -> Correlation:
-    """
-    Generate a correlation function for a composite spectral density for HEOM.
+    """Generate a correlation function for a composite spectral density for HEOM.
 
-    Parameters
-    ----------
-    include_drude : bool
-        Whether to include the Drude term for the low-frequency modes.
-    re_d : list[float]
-        Reorganization energies of every Drude modes.
-    width_d : list[float]
-        Cutoff frequencies of every Drude modes.
-    include_brownian : bool
-        Whether to include the Brownian term for the high-frequency modes.
-    freq_b : list[float]
-        Frequencies of every Brownian modes.
-    re_b : list[float]
-        Reorganization energies of every Brownian modes.
-    width_b : list[float]
-        Broadening of every Brownian modes.
-    include_discrete : bool
-        Whether to include the discrete vibrational modes.
-    freq_v : list[float]
-        Frequencies of every discrete vibrational modes.
-    re_v : list[float]
-        Reorganization energies of every discrete vibrational modes.
-    temperature : float
-        Temperature of the bath.
-    decomposition_method : str
-        Method to decompose the Bose-Einstein distribution.
-    n_ltc : int
-        Number of low-temperature correction terms in the decomposition of the Bose-Einstein distribution.
-    include_lindblad : bool
-        Whether to include the Lindblad rate as in Tanimura's HEOM.
-    use_cross : bool
-        Whether to use the cross-correlation that includes the trigonometric functions.
-    use_ht_function : bool
-        Whether to use the high-temperature approximation [2 / (beta omega)] of the Bose-Einstein distribution
-        instead of the hyperbolic tangent function.
-    
-    Returns
-    -------
-    Correlation
-        The correlation function for the composite spectral density.
+    :type include_drude : boolean
+    :param include_drude: Whether to include the Drude term for the low-frequency modes, defaults to True
+
+    :type re_d: list[float]
+    :param re_d: Reorganization energy of every Drude mode
+
+    :type width_d: list[float]
+    :param width_d: Cutoff frequencies of every Drude mode
+
+    :type include_brownian: bool
+    :param include_brownian: Whether to include the Brownian term for the high-frequency modes
+
+    :type freq_b: list[float]
+    :param freq_b: Frequencies of every Brownian mode
+
+    :type re_b: list[float]
+    :param re_b: Reorganization energy of every Brownian mode
+
+    :type width_b: list[float]
+    :param width_b: Width of every Brownian modes
+
+    :type include_discrete: boolean
+    :param include_discrete: Whether to include the discrete vibrational mode, defaults to True
+
+    :type freq_v: list[float]
+    :param freq_v: Frequency of every discrete vibrational mod
+
+    :type re_v: list[float]
+    :param re_v: Reorganization energy of every discrete vibrational mode
+
+    :type temperature: float
+    :param temperature: Temperature of the bath
+
+    :type decomposition_method: string
+    :param decomposition_method: Method to decompose the Bose-Einstein distribution, either 'Pade' or 'Matsubara'
+
+    :type n_ltc: int
+    :param n_ltc: Number of low-temperature correction terms in the decomposition of the Bose-Einstein distribution
+
+    :type include_lindblad: boolean
+    :param include_lindblad: Whether to include the Lindblad rate as in Tanimura's HEOM, defaults to False
+
+    :type use_cross: boolean
+    :param use_cross: Whether to use the cross-correlation that includes the trigonometric functions, defaults to False
+
+    :type use_ht_function: bool
+    :param use_ht_function: Whether to use the high-temperature approximation [2 / (beta omega)] of the Bose-Einstein distribution instead of the hyperbolic tangent function, defaults to False
+
+    :returns: The correlation function for the composite spectral density.
+    :rtype: :class: Correlation
     """
     # Bath settings:
     corr = Correlation()
@@ -236,17 +245,6 @@ def gen_bcf(
                 'Lindblad rate calculation is not implemented yet. '
                 'Specify .lindblad_rate manually if needed.'
             )
-        # print('Calculating Lindblad rate', flush=True)
-        # print('Current')
-        # re = 0.0
-        # if include_drude:
-        #     re += sum(re_d)
-        # if include_brownian:
-        #     re += sum(re_b)
-        # if include_discrete:
-        #     re += sum(re_v)
-        # re = quantity(re, 'energy')
-        # corr.lindblad_rate = 2.0 * re / beta
     return corr
 
 
@@ -520,51 +518,61 @@ def gen_star_boson(
 ) -> StarBosons:
     """
     Generate a correlation function for a composite spectral density for the star-like decomposition as in spin-boson model.
+    All inputs should be in default units and will be converted to TENSO's internal units.
     
-    Parameters
-    ----------
-    include_drude : bool
-        Whether to include the Drude term for the low-frequency modes.
-    re_d : list[float]
-        Reorganization energies of the Drude modes.
-    width_d : list[float]
-        Cutoff frequencies of the Drude modes.
-    include_brownian : bool
-        Whether to include the Brownian term for the high-frequency modes.
-    freq_b : list[float]
-        Frequencies of the Brownian modes.
-    re_b : list[float]
-        Reorganization energies of the Brownian modes.
-    width_b : list[float]
-        Broadening of the Brownian modes.
-    include_discrete : bool
-        Whether to include the discrete vibrational modes.
-    freq_v : list[float]    
-        Frequencies of the discrete vibrational modes.
-    re_v : list[float]
-        Reorganization energies of the discrete vibrational modes.
-    temperature : float
-        Temperature of the bath.
-    cutoff : float
-        Cutoff frequency for the spectral density.
-    n_discretization : int
-        Number of discretization points for the spectral density.
-    discretization_method : str
-        Method to discretize the spectral density.
-        Allowed values are 'Fourier', 'LogFourier', 'EqualReorganizationEnergy', 'Chebyshev', and 'TEDOPA'.
-        Currently, only 'Fourier', 'LogFourier', 'EqualReorganizationEnergy' are tested.
-    ohmic_type : str
-        Type of the Drude term.
-        Allowed values are 'Lorentz' (Drude-Lorentz) and 'Exp' (Ohmic with exponential cutoff).
-    shift_frequency : bool
-        Whether to shift the frequency to the positive domain.
-    **kwargs : dict
-        Ignored arguments.
+    :type include_drude: boolean
+    :param include_drude: Whether to include the Drude term for the low-frequency modes.
 
-    Returns
-    -------
-    StarBosons
-        The correlation function for the composite spectral density.
+    :type re_d: list[float]
+    :param re_d: Reorganization energies of the Drude modes as a list
+
+    :type width_d: list[float]
+    :param width_d: Cutoff frequencies of the Drude modes.
+
+    :type include_brownian : boolean
+    :param include_brownian: Whether to include the Brownian term for the high-frequency modes, defaults to True
+
+    :type freq_b: list[float]
+    :param freq_b: Frequencies of the Brownian modes as a list
+
+    :type re_b: list[float]
+    :param re_b: Reorganization energies of the Brownian modes as a list
+
+    :type width_b: list[float]
+    :param width_b: Broadening of the Brownian modes
+
+    :type include_discrete: bool
+    :param include_discrete: Whether to include the discrete vibrational modes, defaults to True
+
+    :type freq_v: list[float]    
+    :param freq_v: Frequencies of the discrete vibrational modes
+
+    :type re_v: list[float]
+    :param re_v: Reorganization energies of the discrete vibrational modes.
+
+    :type temperature: float
+    :param temperature: Temperature of the bath.
+
+    :type cutoff: float
+    :param cutoff: Cutoff frequency for the spectral density. Frequencies above this will not be considered
+
+    :type n_discretization: int
+    :param n_discretization: Number of discretization points for the spectral density.
+
+    :type discretization_method : str
+    :param discretization method: Method to discretize the spectral density.  Allowed values are `Fourier`, `LogFourier`, `EqualReorganizationEnergy`, `Chebyshev`, and `TEDOPA`.  Currently, only `Fourier`, `LogFourier`, `EqualReorganizationEnergy` are tested.  :type ohmic_type: str
+
+    :param ohmic_type: Type of the Drude term. Allowed values are `Lorentz` (Drude-Lorentz) and `Exp` (Ohmic with exponential cutoff), defaults to `Lorentz`
+    :type ohmic_type: string
+
+    :type shift_frequency: boolean
+    :param shift_frequency:  Whether to shift the frequency to the positive domain.
+
+    :type **kwargs: dictionary
+    :param **kwargs: Ignored arguments.
+
+    :returns: StarBosons, the correlation function for the composite spectral density.
+    :rtype: :class: StarBosons
     """
 
     if temperature is not None:

@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Metas."""
+"""This file includes miscellaneous utility functions without another obvious home."""
 from __future__ import annotations
 
 from builtins import map, zip
@@ -13,6 +13,8 @@ T = TypeVar('T')
 
 
 def lazyproperty(func: Callable[..., T]) -> Callable[..., T]:
+    """Experimental function to implement just in time evaluation
+    of a property (lazy evaluation)"""
     name = '__lazy_' + func.__name__
 
     @property
@@ -28,7 +30,7 @@ def lazyproperty(func: Callable[..., T]) -> Callable[..., T]:
 
 
 def count_calls(f: Callable[..., T]) -> Callable[..., T]:
-
+    """Debugging function used to measure call counts"""
     def wrapped(*args: ..., **kwargs: ...) -> T:
         wrapped.calls += 1
         return f(*args, **kwargs)
@@ -40,11 +42,16 @@ def count_calls(f: Callable[..., T]) -> Callable[..., T]:
 def iter_round_visitor(
         start: T,
         r: Callable[[T], list[T]]) -> Generator[tuple[T, bool], None, None]:
-    """Iterative round-trip visitor. Only support 'DFS' (depth first) method.
+    """Generator used as a round-trip tree visitor with the 'DFS' (depth first search) method
 
-    Args:
-        start: Initial object
-        r: Relation function.
+    :param start: The object to begin search from
+    :type start: :class: Node
+
+    :param r: Callable relation function taking start and returning the neighbor list of start
+    :type r: Callable
+
+    :returns: A tuple containing the next node in the tree
+    :rtype: :class: Node
     """
     stack, visited = [start], set()
     while stack:
@@ -61,12 +68,19 @@ def iter_visitor(
         start: T,
         r: Callable[[T], list[T]],
         method: Literal['DFS', 'BFS'] = 'DFS') -> Generator[T, None, None]:
-    """Iterative visitor.
+    """Generator used as an iterative visitor supporting depth first or breadth first 
 
-    Args:
-        start: Initial object
-        r: Relation function.
-        method: in {'DFS', 'BFS'}. 'DFS': Depth first; 'BFS': Breadth first.
+    :param start: The object to begin search from
+    :type start: :class: Node
+
+    :param r: Callable relation function taking start and returning the neighbor list of start
+    :type r: Callable
+
+    :param method: Either 'DFS', depth first, or 'BFS', breadth first method, will be used
+    :type method: string
+
+    :returns: A tuple containing the next node in the tree
+    :rtype: :class: Node
     """
     stack, visited = [start], set()
     while stack:
@@ -82,11 +96,16 @@ def iter_visitor(
 
 
 def depths(start: T, r: Callable[[T], list[T]]) -> dict[T, int]:
-    """Iteratively geerate the depth of each component.
+    """Iteratively generate the depth of each component in the tree
 
-    Args:
-        start: Initial object
-        r: Relation function.
+    :param start: The object to begin search from
+    :type start: :class: Node
+
+    :param r: Callable relation function taking start and returning the neighbor list of start
+    :type r: Callable
+
+    :returns: Dictionary where keys are :class: Nodes in the tree and values are their depths
+    :rtype: dictionary
     """
     ans = {start: 0}
     stack, visited = [start], set()
@@ -101,11 +120,19 @@ def depths(start: T, r: Callable[[T], list[T]]) -> dict[T, int]:
 
 
 def path(start: T, stop: T, r: Callable[[T], list[T]]) -> None | list[T]:
-    """Iteratively generate the depth of each component.
+    """Determine the path through the tree between the :class: Nodes start and stop
 
-    Args:
-        start: Initial object
-        r: Relation function.
+    :param start: The object to begin search from
+    :type start: :class: Node
+
+    :param start: The object to search for
+    :type start: :class: Node
+
+    :param r: Callable relation function taking start and returning the neighbor list of start
+    :type r: Callable
+
+    :returns: Nothing if start and stop are the same, otherwise a list containing the path between start and stop
+    :rtype: list or None
     """
     stack, visited = [[start]], set()
     while stack:
@@ -125,7 +152,19 @@ def huffman_tree(sources: list[T],
                  new_obj: Callable[[], T],
                  importances: Optional[list[int]] = None,
                  n_ary: int = 2) -> tuple[OrderedDict[T, list[T]], T]:
-    """Generate a Tree for the soureces as leaves using Huffman coding method.
+    """Generate a Tree for the sources as leaves using Huffman coding method.
+
+    :param sources: The leaves, :class: Ends, for the tree
+    :type sources: list of :class: Ends
+
+    :param importances: Importance ranking of the leaves to guide generation
+    :type importances: list[int], Optional
+
+    :param n_ary: Order of the tree (how many links an interior :class: Node should have)
+    :type n_ary: int
+
+    :returns: The tree as a tuple containing 1. an ordered dictionary representing the graph where each key is a :class: Node and the values are a list of :class: Nodes representing its neighbors 2. the root of the tree
+    :rtype: tuple[OrderedDict, :class: Node]
     """
     if importances is None:
         importances = [1] * len(sources)

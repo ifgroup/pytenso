@@ -335,7 +335,7 @@ class FrameFactory:
 
     def _new_node(self) -> Node:
         """Make a new node (vertex) to add to the graph structure.
-        :return: A new node
+        :returns: A new node
         :rtype: :class: Node 
         """
         n = Node(self.prefix + str(self._node_counter))
@@ -346,7 +346,7 @@ class FrameFactory:
     def naive(self) -> tuple[Frame, Node]:
         """Set up a graph structure with every node linked to the
         root node.
-        :return: A tuple containing the produced :class: Frame and the :class: Node
+        :returns: A tuple containing the produced :class: Frame and the :class: Node
         :rtype: tuple
         """
         frame = Frame()
@@ -366,7 +366,7 @@ class FrameFactory:
         :type bath_importances: list, optional
         :param n_ary: The number of links between nodes in the tree, defaults to 2
         :type n_vary: int, optional
-        :return: A tuple containing the produced :class: Frame and the :class: Node
+        :returns: A tuple containing the produced :class: Frame and the :class: Node
         :rtype: tuple
         """
         if bath_importances is None:
@@ -387,7 +387,7 @@ class FrameFactory:
 
     def train(self) -> tuple[Frame, Node]:
         """Set up a graph structure in the form of a train.
-        :return: A tuple containing the produced :class: Frame and the :class: Node
+        :returns: A tuple containing the produced :class: Frame and the :class: Node
         :rtype: tuple
         """
         k_max = self.bath_dof

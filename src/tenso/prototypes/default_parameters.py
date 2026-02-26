@@ -82,12 +82,14 @@ def quantity(
         value: float, unit_type: Literal['time', 'energy',
                                          'inverse_temperature']) -> float:
     """Convert a value from default external units to internal units.
+
     :param value: Value in default units
     :type value: float
-    :param unit_type: Whether the value is a time, energy, or inverse temperature
-        specified with keywords 'time', 'energy', and 'inverse_temperature' respectively
+
+    :param unit_type: Whether the value is a time, energy, or inverse temperature specified with keywords `time`, `energy`, and `inverse_temperature` respectively
     :type unit_type: Literal
-    :return: The value in internal units
+
+    :returns: The value in internal units
     :rtype: float
     """
     ue = __(default_units["unital_energy"], default_units['energy']).au
@@ -102,12 +104,14 @@ def value(
         quantity: float, unit_type: Literal['time', 'energy',
                                             'inverse_temperature']) -> float:
     """Convert a value in internal units to default external units.
+
     :param quantity: Value in internal units
     :type quantity: float
-    :param unit_type: Whether the value is a time, energy, or inverse temperature
-        specified with keywords 'time', 'energy', and 'inverse_temperature' respectively
+
+    :param unit_type: Whether the value is a time, energy, or inverse temperature specified with keywords 'time', 'energy', and 'inverse_temperature' respectively
     :type unit_type: Literal
-    :return: The value in default external units
+
+    :returns: The value in default external units
     :rtype: float
     """
     ue = __(default_units["unital_energy"], default_units['energy']).au
@@ -119,7 +123,13 @@ def value(
 
 
 def get_default_kwargs(domains: list[str]) -> dict:
-    """Load the default parameters for the prototypes.
+    """Load the registered keys and values in the given domains.
+
+    :param domains: list of modules of interest
+    :type domains" list[str]
+
+    :returns: The dictionary of all key value paris in the domains
+    :rtype: dictionary in alphabetical order
     """
     ans = dict()
     for key, value in default_kwargs.items():
@@ -135,7 +145,13 @@ def get_default_kwargs(domains: list[str]) -> dict:
 
 
 def get_keys(domains: list[str]) -> set:
-    """Load the registered keys in domains.
+    """Load the registered keys in the given domains.
+
+    :param domains: list of modules of interest
+    :type domains" list[str]
+
+    :returns: The set of all keys in the domains
+    :rtype: set
     """
     ans = set()
     for key in default_kwargs.keys():

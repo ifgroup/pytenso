@@ -10,6 +10,7 @@ from tenso.state.pureframe import Frame, Node
 
 def triangular(n_list):
     """Produces a Generator which yields the natural number in a triangular order.
+
     :param n_list: List of integers
     "type n_list: list
     """

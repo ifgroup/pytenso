@@ -23,8 +23,10 @@ def _stack_orth(tensor1: OptArray,
                 axis: int,
                 _dummy=True) -> OptArray:
     """Stack the tensor1 and tensor2 along axis.
+
     :param tensor1: First tensor, assumed to be orthogonalized
     :type tensor1: class:OptArray
+
     :param tensor2: Second tensor, not assumed to be orthogonalized
     :type tensor2: class:OptArray
     """
@@ -45,10 +47,13 @@ def _stack_orth(tensor1: OptArray,
 
 def _truncate(tensor: OptArray, rank: int, axis: int):
     """Truncate the tensor along the given axis.
+
     :param tensor: Tensor to be truncated
     :type tensor: class:OptArray
+
     :param rank: Rank of truncation of the tensor
     :type rank: int
+
     :param axis: Dimension to truncate along
     :type axis: int
     """
@@ -60,10 +65,11 @@ def _truncate(tensor: OptArray, rank: int, axis: int):
 
 
 def _find_truncate_index(s: OptArray, atol: float) -> int:
-    """Find the index at which to truncate the tensor by comparing
-    with an absolute tolerance.
+    """Find the index at which to truncate the tensor by comparing with an absolute tolerance.
+
     :param s: Tensor to be analyzed
-    :type s: class:OptArray
+    :type s: :class: OptArray
+
     :param atol: Tolerance for truncation analysis
     :type atol: float
     """
@@ -74,7 +80,16 @@ def _find_truncate_index(s: OptArray, atol: float) -> int:
 
 
 def _one_site_split(array: OptArray, i: int) -> tuple[OptArray, OptArray]:
-    """I don't know yet.
+    """Take a tensor with a given list of dimensions [a, b, c...] and split that tensor at 'i', returning a tuple of the two child tensors. The singular values are incorporated into the edge_array
+
+    :param array: Tensor to be reshaped
+    :type array: :class: OptArray
+
+    :param i: index of dimension to use to split array, with the first array 
+    containing up to and including that index and the second all above that index
+
+    :returns: a tuple of tensors as OptArrays, the p_tensor and edge_array, where the singular values from the decomposition are incorporated into edge_array
+    :rtype: tuple[class :OptArray:]
     """
     shape = list(array.shape)
     l_shape = shape[:i] + shape[i + 1:]
@@ -89,6 +104,18 @@ def _one_site_split(array: OptArray, i: int) -> tuple[OptArray, OptArray]:
 
 
 def _one_site_merge(array: OptArray, j: int, from_: OptArray) -> OptArray:
+    """Perform a one site merge operation, the inverse of a one site split,
+    by performing a tensor contraction
+
+    :param array: first tensor
+    :type array: :class: OptArray
+
+    :param from_: second tensor
+    :type from_: :class: OptArray
+
+    :returns: The result of performing the tensor contraction
+    :rtype: :class: OptArray
+    """
     return opt_transform(from_, array, 1, j)
 
 
@@ -209,15 +236,20 @@ def _two_site_split(state: Model,
 
 class SparseSPO:
     """Class representing the sum of products form operator.
+
     :param op_list: List of dictionaries where keys are the ends in the tensor network and 
-        values are the associated operators in tensor form
+    values are the associated operators in tensor form
     :type op_list: dictionary
+
     :param initial_time: Start time for the propagation, defaults to 0.0
     :type initial_time: float, optional
+
     :param f_list: Functions representing time dependent operator parts with the
-        return value of the function being a list of dictionaries whose keys are
-        the ends and whose values are the tensor representation of the time dependent
-        operator
+    :type f_list: list
+
+    return value of the function being a list of dictionaries whose keys are
+    the ends and whose values are the tensor representation of the time dependent
+    operator
     :type f_list: callable
     """
 
@@ -227,11 +259,14 @@ class SparseSPO:
                  | Callable[[float], list[dict[End, OptArray]]] = None,
                  initial_time: float = 0.0) -> None:
         """Constructor method for the sparse sum of products operator.
+
         :param op_list: List of dictionaries where keys are the ends in the tensor network and 
             values are the associated operators in tensor form
         :type op_list: dictionary
+
         :param initial_time: Start time for the propagation, defaults to 0.0
         :type initial_time: float, optional
+
         :param f_list: Functions representing time dependent operator parts with the
             return value of the function being a list of dictionaries whose keys are
             the ends and whose values are the tensor representation of the time dependent
@@ -271,8 +306,10 @@ class SparseSPO:
     def __add__(self, other: SparseSPO) -> SparseSPO:
         """Add a new list of time dependent operators to the sum of products
         operator
+
         :param other: Another SparseSPO from which to acquire the list to concatenate
         :type other: :class: SparseSPO
+
         :returns: The modified :class: SparseSPO with the expanded f_list
         :rtype: :class: SparseSPO
         """
@@ -284,6 +321,7 @@ class SparseSPO:
 
     def get_ti_terms(self) -> list[dict[End, OptArray]]:
         """Return time independent operators in the sum of products form.
+
         :returns: List of dictionaries with keys ends and values operators in 
             tensor form
         :rtype: list
@@ -292,6 +330,7 @@ class SparseSPO:
 
     def get_td_terms(self, t: float) -> list[dict[End, OptArray]]:
         """Returns the time dependent operators in the sum of products form.
+
         :returns: List of dictionaries with keys ends and values operators in 
             tensor form
         :rtype: list

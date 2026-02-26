@@ -90,6 +90,21 @@ def opt_sum(array: OptArray, dim: int) -> OptArray:
 
 def opt_tensordot(a: OptArray, b: OptArray,
                   axes: tuple[list[int], list[int]]) -> OptArray:
+    """Perform a tensor contraction over tensors a and b along the dimensions
+    specified by axes
+
+    :param a: first tensor to contract
+    :type a: :class: OptArray
+
+    :param b: second tensor to contract
+    :type b: :class: OptArray
+
+    :param axes: Tuple of lists specifying which dimensions of a and b to perform a contraction over
+    :type axes: tuble[list[int]]
+
+    :returns: The requested tensor after contraction
+    :rtype: :class: OptArray
+    """
     return _opt.tensordot(a, b, dims=axes)
 
 

@@ -543,7 +543,7 @@ class EqualReorganizationEnergy(DiscretizationSolver):
         while (j < n):
             if upper_bound > self.upper_bound:
                 break
-            print(f'[debug] j={j} for [{value(lower_bound, 'energy')}, {value(upper_bound, 'energy')}]', end='\r')
+            #print(f'[debug] j={j} for [{value(lower_bound, 'energy')}, {value(upper_bound, 'energy')}]', end='\r')
             interval_re = quad(f, lower_bound, upper_bound)[0]
             if interval_re > target_cumm_lambda[j]:
                 freq_space[j] = upper_bound 
@@ -576,7 +576,7 @@ class EqualReorganizationEnergy(DiscretizationSolver):
         while (j < n):
             if upper_bound > self.upper_bound:
                 break
-            print(f'[debug] j={j} for [{value(-lower_bound, 'energy')}, {value(-upper_bound, 'energy')}]', end='\r')
+            #print(f'[debug] j={j} for [{value(-lower_bound, 'energy')}, {value(-upper_bound, 'energy')}]', end='\r')
             interval_re = quad(f, -upper_bound, -lower_bound)[0] 
             if interval_re > target_cumm_lambda[j]:
                 freq_space[j] = -upper_bound 
@@ -893,7 +893,6 @@ class Chebyshev(DiscretizationSolver):
         return c_mat_u * self.cutoff_frequency
 
 
-'''
 class LiftedChebyshev(DiscretizationSolver):
 
     def __init__(self,
@@ -1067,109 +1066,3 @@ class LiftedChebyshev(DiscretizationSolver):
         self.derivatives = self.derivatives[:nn, :nn]
         self.zeropoints = self.zeropoints[:nn]
         return
-'''
-
-if __name__ == '__main__':
-    from tenso.bath.sd import OhmicExp, Drude
-    import matplotlib.pyplot as plt
-    from tenso.libs.quantity import Quantity as __
-    fig, ax = plt.subplots(1, 1, figsize=(4, 3), tight_layout=True)
-    print(__(1 / 300, '/K').au * __(1000, '/cm').au)
-    beta = __(1 / 300, '/K').au * __(1000, '/cm').au
-    #spd = OhmicExp(0.2, 0.1)
-    spd = Drude(1, 0.1)
-    t_fs = np.linspace(0, 500, num=1000)
-    t_unit = __(1, 'fs').au * __(1000, '/cm').au
-    t_space = t_fs * t_unit
-    # Exact solution
-    c_space = np.array([spd.autocorrelation(t, beta) for t in t_space])
-    plt.plot(t_fs, c_space.real, 'r-', label='Re. (Exact)', lw=1)
-    plt.plot(t_fs, c_space.imag, 'b-', label='Im. (Exact)', lw=1)
-
-    # ----------------
-    sb = StarBosons()
-    n_chev = 31
-    sb.add_spectral_densities(
-        [spd],
-        beta=beta,
-        cutoff=1.4,
-        n=n_chev,
-        # method='Fourier',
-        method='Chebyshev',
-        absorb_rate=None)
-    d = sb.frequencies
-    print(sb.k_max)
-    dmat = np.zeros((sb.k_max, sb.k_max), dtype=complex)
-    for (i, j), v in d.items():
-        dmat[i, j] = v
-    c_space = np.array([sb.autocorrelation(t) for t in t_space])
-    plt.plot(t_fs,
-             c_space.real,
-             'r-.',
-             label=f'Re. (Chebyshev (n={n_chev}))',
-             lw=1)
-    plt.plot(t_fs,
-             c_space.imag,
-             'b-.',
-             label=f'Im. (Chebyshev (n={n_chev}))',
-             lw=1)
-
-    plt.legend()
-    plt.show()
-
-    plt.close()
-    sb.diagonalize()
-    sb.filter(1.0e-7)
-    diag_freq = np.array(
-        [sb.frequencies.get((i, i), 0.0) for i in range(sb.k_max)])
-    sorted_idx = sorted(range(sb.k_max), key=lambda i: (diag_freq[i].imag))
-    diag_freq = np.array([diag_freq[i] for i in sorted_idx])
-    positive_freq = diag_freq[diag_freq.imag > 1e-7]
-    positive_idx = np.where(diag_freq.imag > 1e-7)[0]
-    negative_freq = diag_freq[diag_freq.imag < -1e-7]
-    decay_idx = np.where(diag_freq.real < -1e-7)[0]
-    decay_freq = diag_freq[diag_freq.real < -1e-7]
-    negative_idx = np.where(diag_freq.imag < -1e-7)[0]
-    coupling = np.array([sb.couplings[i] for i in sorted_idx])
-    ccoupling = np.array([sb.conj_couplings[i] for i in sorted_idx])
-    plt.plot(coupling.real, 'r>', fillstyle='none', label='Couplings')
-    plt.plot(ccoupling.real, 'b<', fillstyle='none', label='Conj Couplings')
-    plt.plot(decay_idx,
-             decay_freq.real,
-             'kx',
-             fillstyle='none',
-             label='Decay frequencies')
-    plt.plot(positive_idx,
-             abs(positive_freq.imag),
-             'ro',
-             fillstyle='none',
-             label='Forward frequencies')
-    plt.plot(negative_idx,
-             -abs(negative_freq.imag),
-             'bo',
-             fillstyle='none',
-             label='Backward frequencies')
-    # print(diag_freq)
-    for k, v in enumerate(diag_freq):
-        print(k, ': ', v)
-    plt.legend()
-    plt.show()
-    # ----------------
-    # sb = StarBosons()
-    # sb.add_spectral_densities(
-    #     [spd],
-    #     beta=beta,
-    #     cutoff=0.6,
-    #     n=15,
-    #     method='Fourier',
-    #     shift_frequency=True,
-    # )
-    # c_space = np.array([sb.autocorrelation(t) for t in t_space])
-    # plt.plot(t_fs, (c_space).real, 'r-.', label='Re. (Fourier (n=30))', lw=1)
-    # plt.plot(t_fs, c_space.imag, 'b-.', label='Im. (Fourier (n=30))', lw=1)
-    # plt.legend()
-    # plt.xlabel('Time [fs]')
-    # plt.ylabel('$C(t)$')
-    # plt.show()
-
-    #print(sb)
