@@ -121,6 +121,26 @@ def _one_site_merge(array: OptArray, j: int, from_: OptArray) -> OptArray:
 
 def _two_site_merge(state: Model, p: Node, i: int, q: Node,
                     j: int) -> OptArray:
+    """Merge two tensors by contraction over the specified axes.
+
+    :param state: The model to which the nodes to merge belong
+    :type state: :class: Model
+
+    :param p: The node representing the first node in the contraction
+    :type p: :class: Node
+
+    :param q: The node representing the second node in the contraction
+    :type q: :class: Node
+
+    :param i: Axis for contraction of p
+    :type i: integer
+
+    :param j: Axis of contraction of q
+    :type j: integer
+
+    :returns: Result of the tensor contraction
+    :rtype: :class: OptArray
+    """
     return opt_tensordot(state[p], state[q], axes=([i], [j]))
 
 

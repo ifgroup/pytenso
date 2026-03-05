@@ -19,24 +19,22 @@ PI = np.pi
 class Correlation(object):
     """ This class represents a correlation function for a single bath which
     may be coupled to the system which is stored in a decomposed form such that
-    `C(t) = \sum_k c_k e^{-\gamma_k}`, with `c_k` and `\gamma_k` being complex. For
-    MCTDH-use baths which are not decomposed in this way, information about the
-    discretized harmonic modes of the bath is stored.
+    `C(t) = \sum_k c_k e^{-\gamma_k}`, with `c_k` and `\gamma_k` being complex. 
 
     :param coefficients: The values of`c_k`
     :type coefficients: list, complex
 
-    :param conj_coefficients: The complex conjucates of coefficients
-    :type conj_coefficients: list, complex
+    :param conj_coefficents: The complex conjucates of coefficients
+    :type conj_coefficents: list, complex
 
-    :param zeropoints: Information on the energy of discretized bath modes
+    :param zeropoints: Initial states of the bexcitons
     :type zeropoints": list, real
 
-    :param derivatives: The values of `\gamma_k` in a dictionary where teh keys are the pair of integers [k, k] and the value is `\gamma_k.` Format as a dictionary is for historical reasons.
+    :param derivatives: The values of `\gamma_k` in a dictionary where the keys are the pair of integers [k, k] and the value is `\gamma_k.` Format as a dictionary is for historical reasons.
     :type derivatives: dictionary 
     
     :param lindblad_rate: Experimental parameter for use in more complicated equations of motion
-    :type linblda_rate: list, optional
+    :type linblad_rate: list, optional
 
     """
 
@@ -112,6 +110,62 @@ class Correlation(object):
             self.derivatives = d
             self.lindblad_rate = lr
         return
+
+
+    def manual_corr_setup(self, c_ks: list[complex], gamma_ks: list[complex], unit_convert: bool = False):
+        """ Method to initialize the correlation function object if the form of the
+        correlation function in exponential breakdown is already known. This is for 
+        an HEOM style bath, not a star boson style bath, and zeropoints will be set to 1.
+        Any complex gamma_k values (within tolerance) will result in gamma_k^* being introduced as an 
+        additional feature with a coefficient of 0 and a conjugate coefficient of c_k*.
+        
+        :param c_ks: list of c coefficients in the correlation function breakdown
+        :type c_ks: list[complex]
+        :param gamma_ks: list of gamma exponential coefficients in the correlation function breakdown
+        :type gamma_ks: list[complex]
+        :param unit_convert: whether to convert input to internal units
+        :type unit_convert: Boolean
+        """
+        self.conj_coefficents = [] # Clear contents
+        self.coefficients = []
+        self.derivatives = {}
+        assert (len(c_ks) == len(gamma_ks)), "Length of correlation coefficient lists must match."
+        internal_gamma_ks = []
+        internal_c_ks = []
+        # Gammas are being provided in default external units
+        if (unit_convert):
+            # Gammas have energy units
+            for gk in gamma_ks:
+                internal_gamma_ks.append(quantity(gk))
+            # c_ks have energy squared units. Convert to internal units of energy
+            con_factor = quantity(1.0, 'energy')
+            con_factor = con_factor*con_factor
+            for c_k in c_ks:
+                internal_c_ks.append(con_factor*c_k)
+        else:
+            internal_gamma_ks = gamma_ks
+            internal_c_ks = c_ks
+        kk = 0
+        for c_k, gamma in zip(internal_c_ks, internal_gamma_ks):
+            if (abs(gamma.imag) > 1e-8 and abs(gamma.imag/gamma.real) > 1e-5): # Complex gamma
+                self.derivatives.update({(kk,kk): gamma})
+                self.coefficients.append(c_k)
+                self.conj_coefficents.append(0.0)
+                kk = kk + 1
+                self.derivatives.update({(kk,kk): gamma.conjugate()})
+                self.coefficients.append(0.0)
+                self.conj_coefficents.append(c_k.conjugate())
+                kk = kk + 1
+            else: # real gamma
+                self.derivatives.update({(kk,kk): gamma.real})
+                self.coefficients.append(c_k)
+                self.conj_coefficents.append(c_k.conjugate())
+                kk = kk + 1
+        num_cs = len(self.coefficients) # Length added so far
+        self.zeropoints = [complex(1.0)]*(num_cs)
+        return
+
+
 
     @property
     def k_max(self):

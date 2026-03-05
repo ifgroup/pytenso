@@ -55,36 +55,99 @@ OptArray = _opt.Tensor
 
 
 def opt_to_numpy(array: OptArray) -> NDArray:
+    """Transform a pytorch tensor to a numpy array
+
+    :param OptArray: Input numpy array
+    :type OptArray: OptArray
+
+    :returns: Equivalent numpy array
+    :rtype: array
+    """
     return array.cpu().numpy()
 
 
 def opt_array(array: ArrayLike) -> OptArray:
+    """Transform an array like to a pytorch tensor
+
+    :param array: Array to transform
+    :type array: ArrayLike
+
+    :returns: Equivalent pytorch tensor
+    :rtype: :class: OptArray
+    """
     ans = _opt.tensor(array, dtype=opt_dtype, device=opt_device)
     return ans
 
 
 def opt_zeros(shape: list[int]) -> OptArray:
+    """Get a pytorch tensor with zeros in the given shape (wraps torch.zeros)
+
+    :param shape: List of dimensions of the tensor
+    :type shape: list[int]
+
+    :returns: Tensor of zeros in pytorch form
+    :rtype: :class: OptArray
+    """
     return _opt.zeros(shape, dtype=opt_dtype, device=opt_device)
 
 
 def opt_cat(tensors: list[OptArray]) -> OptArray:
+    """Stack the listed tensors along the zeroth dimension leading to a tensor with the same number of dimensions as the input tensors, all of which must be the same size except along the dimension to concatenate (wraps torch.cat)
+
+    :param tensors: Input pytorch tensors to concatenate
+    :type tensors: :class: OptArray
+
+    :returns: Concatenated tensors
+    :rtype: :class: OptArray
+    """
     return _opt.cat(tensors)
 
 
 def opt_stack(tensors: list[OptArray] | tuple[OptArray, ...]) -> OptArray:
+    """Stack the listed tensors along a new dimension leading to a tensor with one additional dimensions than the input tensors, all of which must be the same size except along the dimension to concatenate (wraps torch.stack)
+
+    :param tensors: Input pytorch tensors to concatenate
+    :type tensors: list[:class: OptArray] or tuple[:class: OptArray]
+
+    :returns: Stacked tensors, with the new dimension being the first dimension
+    :rtype: :class: OptArray
+    """
     return _opt.stack(tensors, dim=0)
 
 
 def opt_split(tensors: OptArray, size_list: list[int]) -> list[OptArray]:
+    """Split a tensor into pieces along dimension zero (wraps torch.split)
+
+    :param tensors: Input pytorch tensor to break up
+    :type tensors: :class: OptArray
+
+    :returns: A list of the broken up tensors
+    :rtype: list[:class: OptArray]
+    """
     return list(_opt.split(tensors, size_list))
 
 
 def opt_einsum(*args) -> OptArray:
-    """Currently wrapper for torch.einsum without optimizing contraction order."""
+    """Perform an Einstein summation over the tensors provided (wraps torch.einsum, see documentation for torch.einsum)
+
+    :param args: The required string specification for how to perform the eigensum followed by the tensors to operator on
+    :type args: varies
+
+    :returns; Result of the requested tensor contraction
+    :rtype: :class: OptArray
+    """
     return _opt.einsum(*args)
 
 
 def opt_sum(array: OptArray, dim: int) -> OptArray:
+    """Sum over all elements along the given dimension of the tensor (wraps torch.sum)
+
+    :param array: Tensor with elements to sum
+    :type array: :class: OptArray
+    
+    :returns: Tensor after summation along requested dimension
+    :rtye: :class: OptArray
+    """
     return _opt.sum(array, dim=dim)
 
 
@@ -109,8 +172,7 @@ def opt_tensordot(a: OptArray, b: OptArray,
 
 
 def opt_svd(a: OptArray) -> tuple[OptArray, OptArray, OptArray]:
-    """
-    Perform singular value decomposition (SVD) on the input array without full matrices.
+    """ Perform singular value decomposition (SVD) on the input array without full matrices.
 
     Args:
         a (OptArray): The input array.
@@ -143,7 +205,8 @@ def opt_odeint(func: Callable[[float, OptArray], OptArray],
                atol: float,
                rtol: float,
                method: str = 'dopri5') -> OptArray:
-    """Avaliable method:
+    """Selection of method and parameters for the ordinary differential equation solver
+    Avaliable method:
     - Home-made integrators:
         - `iterX` Taylor series up to `X`-th order.
         - `rk4` Fourth-order Runge-Kutta with 3/8 rule.
@@ -157,7 +220,7 @@ def opt_odeint(func: Callable[[float, OptArray], OptArray],
         - `midpoint` Midpoint method.
         - `explicit_adams` Explicit Adams.
         - `implicit_adams` Implicit Adams.
-    - Scikit.odes/SUNDIALS compatable method (using numpy.array): 
+    - Scikit.odes/SUNDIALS compatable method (using numpy.array) slow but may handle stiff equations better: 
         - 'cvode' CVODE
         - 'bdf' Backward Differentiation Formula
         - 'admo' Adams-Moulton
@@ -222,15 +285,48 @@ def opt_odeint(func: Callable[[float, OptArray], OptArray],
 
 
 def opt_pinv(a: OptArray, atol) -> OptArray:
+    """Perofrm Moore-Penrose pseudoinverse of the tensor
+
+    :param a: Tensor to invert
+    :type a: :class: OptArray
+
+    :returns: Tensor pseudoinverse
+    :rtype: :class: OptArray
+    """
     return _opt.linalg.pinv(a, atol=atol)
 
 
 def opt_inv(a: OptArray) -> OptArray:
+    """Invert the given tensor or throws an error (wraps torch.linalg.inv)
+
+    :param a: Tensor to invert
+    :type a: :class: OptArray
+
+    :returns: Inverted tensor
+    :rtype: :class: OptArray
+    """
     return _opt.linalg.inv(a)
 
 
 # @_opt.compile
 def opt_transform(op: OptArray, tensor: OptArray, op_ax: int, tensor_ax: int):
+    """Perform a tensor contraction over the specified axes of input tensors then rearrange the dimensions to place the last dimension at the location of contraction
+
+    :param op: Second tensor in contraction
+    :type op: :class: OptArray
+    
+    :param tensor: First tensor in contraction
+    :type tensor: :class: OptArray
+
+    :param op_ax: Contraction dimension of op
+    :type op_ax: integer
+
+    :param tensor_ax: Contraction dimension of tensor
+    :type tensor_ax: integer
+
+    :returns: The contracted and rearranged tensor
+    :rtype: :class: OptArray
+    """
     dotted = opt_tensordot(tensor, op, axes=([tensor_ax], [op_ax]))
     return dotted.movedim(-1, tensor_ax)
 
@@ -238,6 +334,17 @@ def opt_transform(op: OptArray, tensor: OptArray, op_ax: int, tensor_ax: int):
 # @_opt.compile
 def opt_multitransform(op_dict: dict[int, OptArray],
                        tensor: OptArray) -> OptArray:
+    """Perform a series of tensor contractions and rearrangements by repeated calls to opt_transform referencing a dictionary of dimensions to contract and tensors to contract with
+
+    :param op_dict: Dictionary associating a dimension with a tensor for transformation
+    :type op_dict: dictionary[integer, :class: OptArray]
+
+    :param tensor: Tensor on which to carry out transformations
+    :type tensor: :class: OptArray
+
+    :returns: Result of performing the series of transformations
+    :rtype: :class: OptArray
+    """
 
     ans = tensor
     for ax, mat in op_dict.items():
@@ -247,6 +354,16 @@ def opt_multitransform(op_dict: dict[int, OptArray],
 
 
 def opt_eye(dim1: int, dim2: int | None = None) -> OptArray:
+    """Obtain a two dimensional identity tensor (wraps torch.eye)
+
+    :param dim1: Number of rows
+    :type dim1: integer
+    :param dim2: Number of columns
+    :type dim2: integer
+
+    :returns: Two dimensional identity tensor
+    :rtype: :class: OptArray
+    """
     if dim2 is None:
         dim2 = dim1
     return _opt.eye(dim1, dim2, dtype=opt_dtype, device=opt_device)

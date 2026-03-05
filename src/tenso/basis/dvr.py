@@ -71,7 +71,14 @@ class DiscreteVariationalRepresentation:
         return ans
 
     def fbr_func(self, i: int) -> Callable[[NDArray], NDArray]:
-        """`i`-th FBR basis function."""
+        """Get the `i`-th finite basis representation function
+
+        :param i: Function to retrieve
+        :type i: integer
+
+        :returns: The `i`-th FBR function
+        :rtype: Callable
+        """
         pass
 
     @property
@@ -220,10 +227,9 @@ class SineDVR(DiscreteVariationalRepresentation):
     @property
     def t_mat(self):
         """Return the kinetic energy matrix in the DVR basis in internal energy units.
-        Returns
-        -------
-        `(n, n)` np.ndarray
-            A 2-d matrix.
+
+        :returns: The two-dimensional kinetic energy matrix
+        :rtype: array
         """
         return -0.5 * self.dq2_mat
 

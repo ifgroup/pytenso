@@ -132,17 +132,40 @@ class Frame:
 
     @property
     def points(self) -> set[Point]:
+        """Get a set of all Points in the frame
+
+        :returns: All points in the frame
+        :rtype: set[Point]
+        """
         return set(self._neighbor.keys())
 
     @property
     def nodes(self) -> set[Node]:
+        """Get a set of all Nodes in the frame
+
+        :returns: All points in the frame
+        :rtype: set[Node]
+        """
         return {p for p in self._neighbor.keys() if isinstance(p, Node)}
 
     @property
     def ends(self) -> set[End]:
+        """Get a set of all Ends in the frame
+
+        :returns: All points in the frame
+        :rtype: set[End]
+        """
         return {p for p in self._neighbor.keys() if isinstance(p, End)}
 
     def degree(self, p: Node):
+        """Get the number of neighbors of a Node
+
+        :param p: Node of inquiry
+        :type p: :class: Node
+
+        :returns: Number of neighbors of p
+        :rtype: integer
+        """
         return len(self._neighbor[p])
 
     def dual(self, p: Point, i: None | int) -> tuple[Point, None | int]:
@@ -155,6 +178,14 @@ class Frame:
         return list(self._neighbor[key])
 
     def near_nodes(self, key: Node) -> list[Node]:
+        """Get a list of all the :class: Nodes in the neighbor list of a given :class: Node, key
+
+        :param key: :class: Node to retrieve neighbor list for
+        :type key: :class: Node
+
+        :returns: The neighbor list of key
+        :rtype: list[Node] 
+        """
         return [n for n in self._neighbor[key] if isinstance(n, Node)]
 
     def node_link_visitor(self,
