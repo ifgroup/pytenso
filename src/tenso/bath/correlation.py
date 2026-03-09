@@ -136,7 +136,7 @@ class Correlation(object):
         if (unit_convert):
             # Gammas have energy units
             for gk in gamma_ks:
-                internal_gamma_ks.append(quantity(gk))
+                internal_gamma_ks.append(quantity(gk,'energy'))
             # c_ks have energy squared units. Convert to internal units of energy
             con_factor = quantity(1.0, 'energy')
             con_factor = con_factor*con_factor
@@ -164,6 +164,7 @@ class Correlation(object):
         num_cs = len(self.coefficients) # Length added so far
         self.zeropoints = [complex(1.0)]*(num_cs)
         return
+
 
 
 
