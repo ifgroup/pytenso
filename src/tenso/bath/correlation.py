@@ -12,6 +12,7 @@ import numpy as np
 from tenso.bath.distribution import BoseEinstein
 from tenso.bath.sd import SpectralDensity
 from numpy.typing import NDArray
+from tenso.prototypes.default_parameters import quantity
 
 PI = np.pi
 
@@ -19,7 +20,7 @@ PI = np.pi
 class Correlation(object):
     """ This class represents a correlation function for a single bath which
     may be coupled to the system which is stored in a decomposed form such that
-    `C(t) = \sum_k c_k e^{-\gamma_k}`, with `c_k` and `\gamma_k` being complex. 
+    `C(t) = sum_k c_k e^{-gamma_k}`, with `c_k` and `gamma_k` being complex. 
 
     :param coefficients: The values of`c_k`
     :type coefficients: list, complex
@@ -30,7 +31,7 @@ class Correlation(object):
     :param zeropoints: Initial states of the bexcitons
     :type zeropoints": list, real
 
-    :param derivatives: The values of `\gamma_k` in a dictionary where the keys are the pair of integers [k, k] and the value is `\gamma_k.` Format as a dictionary is for historical reasons.
+    :param derivatives: The values of `gamma_k` in a dictionary where the keys are the pair of integers [k, k] and the value is `gamma_k.` Format as a dictionary is for historical reasons.
     :type derivatives: dictionary 
     
     :param lindblad_rate: Experimental parameter for use in more complicated equations of motion
@@ -135,10 +136,10 @@ class Correlation(object):
         # Gammas are being provided in default external units
         if (unit_convert):
             # Gammas have energy units
-            for gk in gamma_ks:
-                internal_gamma_ks.append(quantity(gk,'energy'))
-            # c_ks have energy squared units. Convert to internal units of energy
             con_factor = quantity(1.0, 'energy')
+            for gk in gamma_ks:
+                internal_gamma_ks.append(gk*con_factor) 
+            # c_ks have energy squared units. Convert to internal units of energy
             con_factor = con_factor*con_factor
             for c_k in c_ks:
                 internal_c_ks.append(con_factor*c_k)
