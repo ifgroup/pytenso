@@ -46,7 +46,7 @@ class Point:
 
 class Node(Point):
     """Class representing a vertex in the graph of the tensor network which has more than
-    one neighbor. This extends :class: Point.
+    one neighbor. This extends :class:`Point`.
     """
     def __repr__(self) -> str:
         """Returns a string giving the Node's unique name.
@@ -56,7 +56,7 @@ class Node(Point):
 
 class End(Point):
     """Class representing a vertex in the graph of the tensor network which has only
-    one neighbor. This extends :class: Point
+    one neighbor. This extends :class:`Point`
     """
     def __repr__(self) -> str:
         """Return a string giving the End's unique name.
@@ -65,7 +65,7 @@ class End(Point):
 
 
 class Frame:
-    """Class which holds the topology of the tensor network graph, the :class: Nodes and :class: Ends
+    """Class which holds the topology of the tensor network graph, the :class:`Node`s and :class:`End`s
     and the edges that link them together.
     """
     def __init__(self):
@@ -100,13 +100,13 @@ class Frame:
         return new_frame
 
     def add_link(self, p: Point, q: Point) -> None:
-        """Add a link between two :class: Points. :class: End can only have one link. :class: Node can have multiple links.
+        """Add a link between two :class:`Point`s. :class:`End` can only have one link. :class:`Node` can have multiple links.
 
-        :param p: First :class: Point to be connected.
-        :type p: :class: Point
+        :param p: First :class:`Point` to be connected.
+        :type p: :class:`Point`
 
-        :param 1: Second :class: Point to be connected.
-        :type q: :class: Point
+        :param 1: Second :class:`Point` to be connected.
+        :type q: :class:`Point`
         """
 
         is_p_node = isinstance(p, Node)
@@ -161,7 +161,7 @@ class Frame:
         """Get the number of neighbors of a Node
 
         :param p: Node of inquiry
-        :type p: :class: Node
+        :type p: :class:`Node`
 
         :returns: Number of neighbors of p
         :rtype: integer
@@ -178,10 +178,10 @@ class Frame:
         return list(self._neighbor[key])
 
     def near_nodes(self, key: Node) -> list[Node]:
-        """Get a list of all the :class: Nodes in the neighbor list of a given :class: Node, key
+        """Get a list of all the :class:`Node`s in the neighbor list of a given :class:`Node`, key
 
-        :param key: :class: Node to retrieve neighbor list for
-        :type key: :class: Node
+        :param key: :class:`Node` to retrieve neighbor list for
+        :type key: :class:`Node`
 
         :returns: The neighbor list of key
         :rtype: list[Node] 

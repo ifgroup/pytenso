@@ -8,7 +8,7 @@ import numpy as np
 
 #from mugnier.basis.dvr import SincDVR, SineDVR
 from tenso.bath.star import StarBosons
-from tenso.mctdh.eom import FrameFactory, Hierachy
+from tenso.mctdh.eom import FrameFactory, Hierarchy
 from tenso.libs.backend import OptArray, opt_array, opt_to_numpy
 from tenso.libs.logging import Logger
 from tenso.libs.quantity import Quantity as __
@@ -96,7 +96,7 @@ def system_single_bath(
     else:
         raise NotImplementedError(f'Not dim type {type(dim)}.')
 
-    hierachy = Hierachy(frame, root, htd.sys_ends, htd.bath_ends, [2],
+    hierarchy = Hierarchy(frame, root, htd.sys_ends, htd.bath_ends, [2],
                         [bath_dims])
 
     # Connect the system part and the bath branch
@@ -109,13 +109,13 @@ def system_single_bath(
         renorm_coeff = state[root].norm()
         state.update({root: state[root] / renorm_coeff})
     else:
-        state = hierachy.initialize_pure_state([init_wfn],
+        state = hierarchy.initialize_pure_state([init_wfn],
                                                rank=rank,
                                                local_hs=[sys_ham * ue])
         renorm_coeff = 1.0
-    tdse_list = hierachy.tdse_list(sys_hamiltonians=[sys_ham * ue],
+    tdse_list = hierarchy.tdse_list(sys_hamiltonians=[sys_ham * ue],
                                    sys_couplings=[])
-    heom_list = hierachy.heom_list([{0: sys_op}], [bath])
+    heom_list = hierarchy.heom_list([{0: sys_op}], [bath])
 
     if td_f is not None and td_op is not None:
         _op = opt_array(td_op)
@@ -123,7 +123,7 @@ def system_single_bath(
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
             _f = td_f(time/ut)*ue
-            _i_end = hierachy.sys_ends[0]
+            _i_end = hierarchy.sys_ends[0]
             if abs(_f) > 1e-14:
                 ans = [
                     {
@@ -197,7 +197,7 @@ def system_single_bath(
     renormalize = parameters['renormalize']
     for _t, _s in prop_it:
         time = value(_t, 'time')
-        rdo = opt_to_numpy(hierachy.get_densities(state)[hierachy.sys_ends[0]])
+        rdo = opt_to_numpy(hierarchy.get_densities(state)[hierarchy.sys_ends[0]])
         # print(rdo, flush=True)
         rdo *= renorm_coeff
         root_array = state[root]
@@ -299,7 +299,7 @@ def system_single_bath_q(
     else:
         raise NotImplementedError(f'Not dim type {type(dim)}.')
 
-    hierachy = Hierachy(frame, root, htd.sys_ends, htd.bath_ends, [2],
+    hierarchy = Hierarchy(frame, root, htd.sys_ends, htd.bath_ends, [2],
                         [bath_dims])
 
     # Connect the system part and the bath branch
@@ -312,15 +312,15 @@ def system_single_bath_q(
         renorm_coeff = state[root].norm()
         state.update({root: state[root] / renorm_coeff})
     else:
-        state = hierachy.initialize_pure_state([init_wfn],
+        state = hierarchy.initialize_pure_state([init_wfn],
                                                rank=rank,
                                                local_hs=[sys_ham * ue])
         renorm_coeff = 1.0
-    tdse_list = hierachy.tdse_list(sys_hamiltonians=[sys_ham * ue],
+    tdse_list = hierarchy.tdse_list(sys_hamiltonians=[sys_ham * ue],
                                    sys_couplings=[])
-    heom_list = hierachy.heom_list([{0: sys_op}], [bath])
-    q_list = hierachy.bath_q_list([bath])
-    q2_list = hierachy.bath_q2_list([bath])
+    heom_list = hierarchy.heom_list([{0: sys_op}], [bath])
+    q_list = hierarchy.bath_q_list([bath])
+    q2_list = hierarchy.bath_q2_list([bath])
 
     if td_f is not None and td_op is not None:
         _op = opt_array(td_op)
@@ -328,7 +328,7 @@ def system_single_bath_q(
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
             _f = td_f(time/ut)*ue
-            _i_end = hierachy.sys_ends[0]
+            _i_end = hierarchy.sys_ends[0]
             if abs(_f) > 1e-14:
                 ans = [
                     {
@@ -411,7 +411,7 @@ def system_single_bath_q(
         _qs_list = [p.state for p in bath_q_state_propagators]
         _s = state_propagator.state
         time = value(t, 'time')
-        rdo = opt_to_numpy(hierachy.get_densities(state)[hierachy.sys_ends[0]])
+        rdo = opt_to_numpy(hierarchy.get_densities(state)[hierarchy.sys_ends[0]])
         # print(rdo, flush=True)
         rdo *= renorm_coeff
         root_array = state[root]
@@ -531,7 +531,7 @@ def system_multibath(
         else:
             raise TypeError(f'Dim format {dim} is not valid.')
 
-    hierachy = Hierachy(frame, root, htd.sys_ends, htd.bath_ends, [sys_dim],
+    hierarchy = Hierarchy(frame, root, htd.sys_ends, htd.bath_ends, [sys_dim],
                         bath_dims)
 
     # Connect the system part and the bath branch
@@ -544,14 +544,14 @@ def system_multibath(
         renorm_coeff = state[root].norm()
         state.update({root: state[root] / renorm_coeff})
     else:
-        state = hierachy.initialize_pure_state([init_wfn],
+        state = hierarchy.initialize_pure_state([init_wfn],
                                                rank=rank,
                                                local_hs=[sys_ham * ue])
         renorm_coeff = 1.0
-    tdse_list = hierachy.tdse_list(sys_hamiltonians=[sys_ham * ue],
+    tdse_list = hierarchy.tdse_list(sys_hamiltonians=[sys_ham * ue],
                                    sys_couplings=[])
 
-    heom_list = hierachy.heom_list([{0: op} for op in sys_ops], baths)
+    heom_list = hierarchy.heom_list([{0: op} for op in sys_ops], baths)
 
     if td_f is not None and td_op is not None:
         _op = opt_array(td_op)
@@ -559,7 +559,7 @@ def system_multibath(
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
             _f = td_f(time/ut)*ue
-            _i_end = hierachy.sys_ends[0]
+            _i_end = hierarchy.sys_ends[0]
             if abs(_f) > 1e-14:
                 ans = [
                     {
@@ -629,7 +629,7 @@ def system_multibath(
     renormalize = parameters['renormalize']
     for _t, _s in prop_it:
         time = value(_t, 'time')
-        rdo = opt_to_numpy(hierachy.get_densities(state)[hierachy.sys_ends[0]])
+        rdo = opt_to_numpy(hierarchy.get_densities(state)[hierarchy.sys_ends[0]])
         # print(rdo, flush=True)
         rdo *= renorm_coeff
         root_array = state[root]

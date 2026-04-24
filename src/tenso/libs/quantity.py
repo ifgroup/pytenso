@@ -112,9 +112,9 @@ class Quantity(object):
     def __add__(self, other: Quantity) -> Quantity:
         """Add two quantities in experimental arithmetic implementation.
         :param other: Quantity to add to self
-        :type other: :class: Quantity
+        :type other: :class:`Quantity`
         :returns: The sum of the two quantities
-        "rtype: :class: Quantity
+        "rtype: :class:`Quantity`
         """
         cls = type(self)
         return cls(self.au + other.au)
@@ -122,9 +122,9 @@ class Quantity(object):
     def __sub__(self, other: Quantity) -> Quantity:
         """Subtract a quantity in experimental arithmetic implementation.
         :param other: Quantity to subtract from self
-        :type other: :class: Quantity
+        :type other: :class:`Quantity`
         :returns: The result of subtracting other from self
-        "rtype: :class: Quantity
+        "rtype: :class:`Quantity`
         """
         cls = type(self)
         return cls(self.au - other.au)
@@ -132,9 +132,9 @@ class Quantity(object):
     def __mul__(self, other: float) -> Quantity:
         """Multiply two quantities in experimental arithmetic implementation.
         :param other: Quantity to multiply with the given quanitty
-        :type other: :class: Quantity
+        :type other: :class:`Quantity`
         :returns: The product of the two quantities
-        "rtype: :class: Quantity
+        "rtype: :class:`Quantity`
         """
         cls = type(self)
         return cls(self.value * other, unit=self.unit)
@@ -142,9 +142,9 @@ class Quantity(object):
     def __truediv__(self, other: float) -> Quantity:
         """Divide by the quantity other in experimental arithmetic implementation.
         :param other: Quantity to divide the self by
-        :type other: :class: Quantity
+        :type other: :class:`Quantity`
         :returns: The quotient of self over other
-        "rtype: :class: Quantity
+        "rtype: :class:`Quantity`
         """
         cls = type(self)
         return cls(self.value / other, unit=self.unit)
@@ -152,7 +152,7 @@ class Quantity(object):
     def __eq__(self, other: Quantity | Literal[0]) -> boolean:
         """Determines if two quantities are equal in experimental arithmetic implementation.
         :param other: Quantity to compare to the given quantity
-        :type other: :class: Quantity
+        :type other: :class:`Quantity`
         :returns: True if the two quantites are equal, otherwise false
         "rtype: boolean
         """
@@ -166,7 +166,7 @@ class Quantity(object):
     def __gt__(self, other: Quantity | Literal[0]) -> boolean:
         """Compare two quantities in experimental arithmetic implementation.
         :param other: Quantity to compare to the given quantity
-        :type other: :class: Quantity
+        :type other: :class:`Quantity`
         :returns: Whether the Quantity it is called on is larger than the argument.
         :rtype: boolean
         """

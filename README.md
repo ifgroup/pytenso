@@ -3,6 +3,10 @@
 This repository contains the code for the paper: 
 - X. Chen and I. Franco. [Tree tensor network hierarchical equations of motion based on time-dependent variational principle for efficient open quantum dynamics in structured thermal environments](https://doi.org/10.1063/5.0278591), *The Journal of Chemical Physics* **163**, 104109 (2025).
 
+A tutorial is available for TENSO:
+-J. C. Rodriguez Betancourt, M. C. Anderson, L. Niu, X. Chen, and I. Franco. [TENSO: Software Package for Numerically Exact Open Quantum Dynamics Based on Efficient Tree Tensor Network Decomposition of the Hierarchical Equations of Motion](https://arxiv.org/abs/2603.17711), (2026).
+Input files accompanying this tutorial are found in the directory tutorial\_scripts.
+
 If you find this repository useful, please consider citing our work.
 
 ```bibtex

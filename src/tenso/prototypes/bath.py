@@ -183,7 +183,7 @@ def gen_bcf(
     :param use_ht_function: Whether to use the high-temperature approximation [2 / (beta omega)] of the Bose-Einstein distribution instead of the hyperbolic tangent function, defaults to False
 
     :returns: The correlation function for the composite spectral density.
-    :rtype: :class: Correlation
+    :rtype: :class:`Correlation`
     """
     # Bath settings:
     corr = Correlation()
@@ -572,7 +572,7 @@ def gen_star_boson(
     :param **kwargs: Ignored arguments.
 
     :returns: StarBosons, the correlation function for the composite spectral density.
-    :rtype: :class: StarBosons
+    :rtype: :class:`StarBosons`
     """
 
     if temperature is not None:

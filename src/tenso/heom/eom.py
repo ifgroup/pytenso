@@ -54,7 +54,7 @@ class _DVRBathOp(_BathOp):
         return
 
 
-class Hierachy:
+class Hierarchy:
     def __init__(self,
                  frame: Frame,
                  root: Node,
@@ -131,7 +131,7 @@ class Hierachy:
         """
         k_max = correlation.k_max
         coefficients = correlation.coefficients
-        conj_coefficents = correlation.conj_coefficents
+        conj_coefficients = correlation.conj_coefficients
         zeropoints = correlation.zeropoints
         derivatives = correlation.derivatives
         re_freqs = []
@@ -185,7 +185,7 @@ class Hierachy:
                     + np.exp(-ik * t) * down
                 }, {
                     j_end: j_op,
-                    k_end: zk * conj_coefficents[k] * np.exp(ik * t) * up
+                    k_end: zk * conj_coefficients[k] * np.exp(ik * t) * up
                     + np.exp(-ik * t) * down
                 }]
             return f_list
@@ -198,7 +198,7 @@ class Hierachy:
                   ) -> list[dict[End, OptArray]]:
         k_max = correlation.k_max
         coefficients = correlation.coefficients
-        conj_coefficents = correlation.conj_coefficents
+        conj_coefficients = correlation.conj_coefficients
         zeropoints = correlation.zeropoints
         derivatives = correlation.derivatives
         k_ends = self.bath_ends
@@ -232,7 +232,7 @@ class Hierachy:
                 k_end: zk * coefficients[_k] * up + down
             }, {
                 j_end: j_op,
-                k_end: zk * conj_coefficents[_k] * up + down
+                k_end: zk * conj_coefficients[_k] * up + down
             }]
 
         for (_k1, _k2), dk in derivatives.items():
@@ -249,7 +249,7 @@ class Hierachy:
     @staticmethod
     def _adm_factor(k: int, c: Correlation, metric: Literal['re', 'abs'] | complex = 're'):
         c_k = c.coefficients[k]
-        cc_k = c.conj_coefficents[k]
+        cc_k = c.conj_coefficients[k]
         if metric == 're':
             f_k = np.sqrt(abs(c_k.real + cc_k.real) / 2.0)
             if (c_k.imag + cc_k.imag) > EPSILON:

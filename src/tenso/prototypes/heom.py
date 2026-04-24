@@ -5,9 +5,9 @@ from typing import Callable, Generator, Literal
 
 from tenso.basis.dvr import SineDVR, SincDVR
 from tenso.bath.correlation import Correlation
-from tenso.heom.eom import FrameFactory, Hierachy
-from tenso.heom.meom import FrameFactory as MBFrameFactory, Hierachy as MBHierachy
-from tenso.heom.multieom import FrameFactory as MSMBFrameFactory, Hierachy as MSMBHierachy
+from tenso.heom.eom import FrameFactory, Hierarchy
+from tenso.heom.meom import FrameFactory as MBFrameFactory, Hierarchy as MBHierarchy
+from tenso.heom.multieom import FrameFactory as MSMBFrameFactory, Hierarchy as MSMBHierarchy
 from tenso.libs.backend import OptArray, opt_array, opt_linalg, opt_to_numpy
 from tenso.libs.logging import Logger
 from tenso.libs.quantity import Quantity as __
@@ -54,7 +54,7 @@ def system_single_bath(
     :param h: The system Hamiltonian.
     :type op: MatList
     :param op: The system operator in the system-bath interaction hamiltonian.
-    :type bath_correlation: :class: Correlation
+    :type bath_correlation: :class:`Correlation`
     :param bath_correlation: The bath correlation function for HEOM.
     :type td_f: Callable[[float], float] | None
     :param td_f: The time-dependent field.
@@ -125,7 +125,7 @@ def system_single_bath(
     init_rdo = np.array(init_rdo)
     sys_dim = init_rdo.shape[0]
     assert init_rdo.shape == (sys_dim, sys_dim)
-    hierachy = Hierachy(frame,
+    hierarchy = Hierarchy(frame,
                         root,
                         htd.sys_ket_end,
                         htd.sys_bra_end,
@@ -141,7 +141,7 @@ def system_single_bath(
         renorm_coeff = state[root].norm()
         state.update({root: state[root] / renorm_coeff})
     else:
-        state = hierachy.initialize_state(init_rdo, rank)
+        state = hierarchy.initialize_state(init_rdo, rank)
         renorm_coeff = 1.0
     # HEOM operator:
     heom_metric = parameters['metric']
@@ -155,16 +155,16 @@ def system_single_bath(
         metric = complex(*heom_metric)
     else:
         raise NotImplementedError(f'No heom_factor type {type(heom_metric)}.')
-    lvn_list = hierachy.lvn_list(sys_ham * ue)
-    heom_list = hierachy.heom_list(sys_op, bath_correlation, metric)
-    lindblad_list = hierachy.lindblad_list(sys_op,
+    lvn_list = hierarchy.lvn_list(sys_ham * ue)
+    heom_list = hierarchy.heom_list(sys_op, bath_correlation, metric)
+    lindblad_list = hierarchy.lindblad_list(sys_op,
                                            bath_correlation.lindblad_rate)
 
     if td_f is not None and td_op is not None:
         _op = opt_array(td_op)
         zeros = opt_array(np.zeros_like(td_op))
-        i_end = hierachy.sys_ket_end
-        j_end = hierachy.sys_bra_end
+        i_end = hierarchy.sys_ket_end
+        j_end = hierarchy.sys_bra_end
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
             _f = td_f(time/ut)*ue
@@ -250,7 +250,7 @@ def system_single_bath(
     renormalize = parameters['renormalize']
     for _t, _s in prop_it:
         time = value(_t, 'time')
-        rdo = opt_to_numpy(hierachy.get_rdo(state))
+        rdo = opt_to_numpy(hierarchy.get_rdo(state))
         rdo *= renorm_coeff
         root_array = state[root]
         ranks = [state.dimension(p, i) for p, i in tracking_dims]
@@ -308,7 +308,7 @@ def system_multibath(
     :type op: MatList
     :param op: The system operator in the system-bath interaction hamiltonian.
 
-    :type bath_correlation: :class: Correlation
+    :type bath_correlation: :class:`Correlation`
     :param bath_correlation: The bath correlation function for HEOM.
 
     :type td_f: Callable[[float], float] | None
@@ -391,7 +391,7 @@ def system_multibath(
     init_rdo = np.array(init_rdo)
     sys_dim = init_rdo.shape[0]
     assert init_rdo.shape == (sys_dim, sys_dim)
-    hierachy = MBHierachy(frame,
+    hierarchy = MBHierarchy(frame,
                           root,
                           htd.sys_ket_end,
                           htd.sys_bra_end,
@@ -407,7 +407,7 @@ def system_multibath(
         renorm_coeff = state[root].norm()
         state.update({root: state[root] / renorm_coeff})
     else:
-        state = hierachy.initialize_state(init_rdo, rank)
+        state = hierarchy.initialize_state(init_rdo, rank)
         renorm_coeff = 1.0
     # HEOM operator:
     heom_metric = parameters['metric']
@@ -421,20 +421,20 @@ def system_multibath(
         metric = complex(*heom_metric)
     else:
         raise NotImplementedError(f'No heom_factor type {type(heom_metric)}.')
-    lvn_list = hierachy.lvn_list(sys_ham * ue)
+    lvn_list = hierarchy.lvn_list(sys_ham * ue)
     heom_list = []
     lindblad_list = []
     for n, bath_correlation in enumerate(bath_correlations):
-        heom_list += hierachy.heom_list(n, sys_ops[n], bath_correlation,
+        heom_list += hierarchy.heom_list(n, sys_ops[n], bath_correlation,
                                         metric)
-        lindblad_list += hierachy.lindblad_list(sys_ops[n],
+        lindblad_list += hierarchy.lindblad_list(sys_ops[n],
                                                 bath_correlation.lindblad_rate)
 
     if td_f is not None and td_op is not None:
         _op = opt_array(td_op)
         zeros = opt_array(np.zeros_like(td_op))
-        i_end = hierachy.sys_ket_end
-        j_end = hierachy.sys_bra_end
+        i_end = hierarchy.sys_ket_end
+        j_end = hierarchy.sys_bra_end
 
         def f_list(time: float) -> list[dict[End, OptArray]]:
             _f = td_f(time/ut)*ue
@@ -515,7 +515,7 @@ def system_multibath(
     renormalize = parameters['renormalize']
     for _t, _s in prop_it:
         time = value(_t, 'time')
-        rdo = opt_to_numpy(hierachy.get_rdo(state))
+        rdo = opt_to_numpy(hierarchy.get_rdo(state))
         rdo *= renorm_coeff
         root_array = state[root]
         ranks = [state.dimension(p, i) for p, i in tracking_dims]

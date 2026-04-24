@@ -38,7 +38,7 @@ class _BathOp:
         return
 
 
-class Hierachy:
+class Hierarchy:
     def __init__(self, frame: Frame, root: Node, sys_ends: list[End],
                  bath_ends: list[list[End]], sys_dims: list[int],
                  bath_dims: list[list[int]]) -> None:

@@ -40,7 +40,7 @@ def triangular(n_list):
 
 
 class Model:
-    """A class representing a, Model, a :class: Frame with valuation for each Node.
+    """A class representing a, Model, a :class:`Frame` with valuation for each Node.
     """
 
     def __init__(self,

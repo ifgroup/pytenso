@@ -10,8 +10,8 @@ def visualize_frame(frame: Frame, fname='frame_graph_output'):
     """Function to draw a simple representation of the graph structure of
     a given frame to a pdf file.
 
-    :param frame: The :class: Frame whose graph is to be drawn
-    :type frame: :class: Frame
+    :param frame: The :class:`Frame` whose graph is to be drawn
+    :type frame: :class:`Frame`
 
     :param fname: The file name where the graph will be drawn, default 'frame_graph_output'
     :type fname: string

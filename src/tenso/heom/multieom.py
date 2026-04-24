@@ -21,7 +21,7 @@ EPSILON = 1.0e-14
  
 
 
-class Hierachy:
+class Hierarchy:
     def __init__(self,
                  frame: Frame,
                  root: Node,
@@ -159,7 +159,7 @@ class Hierachy:
     ) -> list[dict[End, OptArray]]:
         k_max = correlation.k_max
         coefficients = correlation.coefficients
-        conj_coefficents = correlation.conj_coefficents
+        conj_coefficients = correlation.conj_coefficients
         zeropoints = correlation.zeropoints
         derivatives = correlation.derivatives
         k_ends = self.bath_ends[bath_idx]
@@ -196,7 +196,7 @@ class Hierachy:
             fw = dict(i_op)
             fw[k_end] = zk * coefficients[k] * up + down
             bw = dict(j_op)
-            bw[k_end] = zk * conj_coefficents[k] * up + down
+            bw[k_end] = zk * conj_coefficients[k] * up + down
             ans += [fw, bw]
         for (k1, k2), dk in derivatives.items():
             if k1 == k2:
@@ -213,7 +213,7 @@ class Hierachy:
                     c: Correlation,
                     metric: Literal['re', 'abs'] | complex = 're'):
         c_k = c.coefficients[k]
-        cc_k = c.conj_coefficents[k]
+        cc_k = c.conj_coefficients[k]
         if metric == 're':
             f_k = np.sqrt(abs(c_k.real + cc_k.real) / 2.0)
             if (c_k.imag + cc_k.imag) > EPSILON:

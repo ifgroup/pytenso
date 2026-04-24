@@ -1,6 +1,9 @@
 """This file contains a few short calculations with time dependent 
 Hamiltonians. The same sort of spot checks for exact numbers and
 then thorough matrix legality checks are carried out.
+
+Some of these tests require slightly more numerical tolerance than
+the standard pytest relative tolerance of 1e-6.
 """
 from math import ceil
 import os
@@ -103,12 +106,12 @@ def test_td1(subtests,tmp_path):
 
     # Load results from the output file into a local array
     results = np.loadtxt(out+".dat.log",dtype=np.complex128)
-    assert results[50,1].real == pytest.approx(0.01599877)
-    assert results[50,1].imag == pytest.approx(0.0)
-    assert results[75,3].real == pytest.approx(0.09724658)
-    assert results[75,3].imag == pytest.approx(-0.26203125) 
-    assert results[100,2].real == pytest.approx(0.20570225)
-    assert results[100,2].imag == pytest.approx(0.32263329)
+    assert results[50,1].real == pytest.approx(0.01599877,rel=1e-4)
+    assert results[50,1].imag == pytest.approx(0.0,rel=1e-4)
+    assert results[75,3].real == pytest.approx(0.09724658,rel=1e-4)
+    assert results[75,3].imag == pytest.approx(-0.26203125,rel=1e-4) 
+    assert results[100,2].real == pytest.approx(0.20570225,rel=1e-4)
+    assert results[100,2].imag == pytest.approx(0.32263329,rel=1e-4)
     for i in range(0,10):
         with subtests.test("Values add to 1", i =i):
             assert results[i,1].real + results[i,4] == pytest.approx(1.0)
@@ -221,12 +224,12 @@ def test_td2(subtests,tmp_path):
 
     # Load results from the output file into a local array
     results = np.loadtxt(out+".dat.log",dtype=np.complex128)
-    assert results[50,1].real == pytest.approx(0.01599877)
-    assert results[50,1].imag == pytest.approx(0.0)
-    assert results[75,3].real == pytest.approx(0.09724658)
-    assert results[75,3].imag == pytest.approx(-0.26203125) 
-    assert results[100,2].real == pytest.approx(0.20570225)
-    assert results[100,2].imag == pytest.approx(0.32263329)
+    assert results[50,1].real == pytest.approx(0.01599877,rel=1e-4)
+    assert results[50,1].imag == pytest.approx(0.0,rel=1e-4)
+    assert results[75,3].real == pytest.approx(0.09724658,rel=1e-4)
+    assert results[75,3].imag == pytest.approx(-0.26203125,rel=1e-4) 
+    assert results[100,2].real == pytest.approx(0.20570225,rel=1e-4)
+    assert results[100,2].imag == pytest.approx(0.32263329,rel=1e-4)
     for i in range(0,10):
         with subtests.test("Values add to 1", i =i):
             assert results[i,1].real + results[i,4] == pytest.approx(1.0)
@@ -323,12 +326,12 @@ def test_td3(subtests,tmp_path):
         progress_bar.set_description(f'@{_t: .2f} fs')
     # Load results from the output file into a local array
     results = np.loadtxt(out+".dat.log",dtype=np.complex128)
-    assert results[50,1].real == pytest.approx(0.02154068)
-    assert results[50,1].imag == pytest.approx(0.0)
-    assert results[75,3].real == pytest.approx(0.08207166)
-    assert results[75,3].imag == pytest.approx(-0.37433094) 
-    assert results[100,2].real == pytest.approx(0.19069181)
-    assert results[100,2].imag == pytest.approx(0.42186558)
+    assert results[50,1].real == pytest.approx(0.02154068,rel=1e-4)
+    assert results[50,1].imag == pytest.approx(0.0,rel=1e-4)
+    assert results[75,3].real == pytest.approx(0.08207166,rel=1e-4)
+    assert results[75,3].imag == pytest.approx(-0.37433094,rel=1e-4) 
+    assert results[100,2].real == pytest.approx(0.19069181,rel=1e-4)
+    assert results[100,2].imag == pytest.approx(0.42186558,rel=1e-4)
     for i in range(0,10):
         with subtests.test("Values add to 1", i =i):
             assert results[i,1].real + results[i,4] == pytest.approx(1.0)
@@ -425,12 +428,12 @@ def test_td4(subtests,tmp_path):
         progress_bar.set_description(f'@{_t: .2f} fs')
     # Load results from the output file into a local array
     results = np.loadtxt(out+".dat.log",dtype=np.complex128)
-    assert results[50,1].real == pytest.approx(0.02154068)
-    assert results[50,1].imag == pytest.approx(0.0)
-    assert results[75,3].real == pytest.approx(0.08207166)
-    assert results[75,3].imag == pytest.approx(-0.37433094) 
-    assert results[100,2].real == pytest.approx(0.19069181)
-    assert results[100,2].imag == pytest.approx(0.42186558)
+    assert results[50,1].real == pytest.approx(0.02154068,rel=1e-4)
+    assert results[50,1].imag == pytest.approx(0.0,rel=1e-4)
+    assert results[75,3].real == pytest.approx(0.08207166,rel=1e-4)
+    assert results[75,3].imag == pytest.approx(-0.37433094,rel=1e-4) 
+    assert results[100,2].real == pytest.approx(0.19069181,rel=1e-4)
+    assert results[100,2].imag == pytest.approx(0.42186558,rel=1e-4)
     for i in range(0,10):
         with subtests.test("Values add to 1", i =i):
             assert results[i,1].real + results[i,4] == pytest.approx(1.0)

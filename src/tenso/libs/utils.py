@@ -45,13 +45,13 @@ def iter_round_visitor(
     """Generator used as a round-trip tree visitor with the 'DFS' (depth first search) method
 
     :param start: The object to begin search from
-    :type start: :class: Node
+    :type start: :class:`Node`
 
     :param r: Callable relation function taking start and returning the neighbor list of start
     :type r: Callable
 
     :returns: A tuple containing the next node in the tree
-    :rtype: :class: Node
+    :rtype: :class:`Node`
     """
     stack, visited = [start], set()
     while stack:
@@ -71,7 +71,7 @@ def iter_visitor(
     """Generator used as an iterative visitor supporting depth first or breadth first 
 
     :param start: The object to begin search from
-    :type start: :class: Node
+    :type start: :class:`Node`
 
     :param r: Callable relation function taking start and returning the neighbor list of start
     :type r: Callable
@@ -80,7 +80,7 @@ def iter_visitor(
     :type method: string
 
     :returns: A tuple containing the next node in the tree
-    :rtype: :class: Node
+    :rtype: :class:`Node`
     """
     stack, visited = [start], set()
     while stack:
@@ -99,12 +99,12 @@ def depths(start: T, r: Callable[[T], list[T]]) -> dict[T, int]:
     """Iteratively generate the depth of each component in the tree
 
     :param start: The object to begin search from
-    :type start: :class: Node
+    :type start: :class:`Node`
 
     :param r: Callable relation function taking start and returning the neighbor list of start
     :type r: Callable
 
-    :returns: Dictionary where keys are :class: Nodes in the tree and values are their depths
+    :returns: Dictionary where keys are :class:`Node`s in the tree and values are their depths
     :rtype: dictionary
     """
     ans = {start: 0}
@@ -120,13 +120,13 @@ def depths(start: T, r: Callable[[T], list[T]]) -> dict[T, int]:
 
 
 def path(start: T, stop: T, r: Callable[[T], list[T]]) -> None | list[T]:
-    """Determine the path through the tree between the :class: Nodes start and stop
+    """Determine the path through the tree between the :class:`Node`s start and stop
 
     :param start: The object to begin search from
-    :type start: :class: Node
+    :type start: :class:`Node`
 
     :param start: The object to search for
-    :type start: :class: Node
+    :type start: :class:`Node`
 
     :param r: Callable relation function taking start and returning the neighbor list of start
     :type r: Callable
@@ -154,17 +154,17 @@ def huffman_tree(sources: list[T],
                  n_ary: int = 2) -> tuple[OrderedDict[T, list[T]], T]:
     """Generate a Tree for the sources as leaves using Huffman coding method.
 
-    :param sources: The leaves, :class: Ends, for the tree
-    :type sources: list of :class: Ends
+    :param sources: The leaves, :class:`End`s, for the tree
+    :type sources: list of :class:`End`s
 
     :param importances: Importance ranking of the leaves to guide generation
     :type importances: list[int], Optional
 
-    :param n_ary: Order of the tree (how many links an interior :class: Node should have)
+    :param n_ary: Order of the tree (how many links an interior :class:`Node` should have)
     :type n_ary: int
 
-    :returns: The tree as a tuple containing 1. an ordered dictionary representing the graph where each key is a :class: Node and the values are a list of :class: Nodes representing its neighbors 2. the root of the tree
-    :rtype: tuple[OrderedDict, :class: Node]
+    :returns: The tree as a tuple containing 1. an ordered dictionary representing the graph where each key is a :class:`Node` and the values are a list of :class:`Node`s representing its neighbors 2. the root of the tree
+    :rtype: tuple[OrderedDict, :class:`Node`]
     """
     if importances is None:
         importances = [1] * len(sources)

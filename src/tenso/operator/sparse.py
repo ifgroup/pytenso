@@ -68,7 +68,7 @@ def _find_truncate_index(s: OptArray, atol: float) -> int:
     """Find the index at which to truncate the tensor by comparing with an absolute tolerance.
 
     :param s: Tensor to be analyzed
-    :type s: :class: OptArray
+    :type s: :class:`OptArray`
 
     :param atol: Tolerance for truncation analysis
     :type atol: float
@@ -83,7 +83,7 @@ def _one_site_split(array: OptArray, i: int) -> tuple[OptArray, OptArray]:
     """Take a tensor with a given list of dimensions [a, b, c...] and split that tensor at 'i', returning a tuple of the two child tensors. The singular values are incorporated into the edge_array
 
     :param array: Tensor to be reshaped
-    :type array: :class: OptArray
+    :type array: :class:`OptArray`
 
     :param i: index of dimension to use to split array, with the first array 
     containing up to and including that index and the second all above that index
@@ -108,13 +108,13 @@ def _one_site_merge(array: OptArray, j: int, from_: OptArray) -> OptArray:
     by performing a tensor contraction
 
     :param array: first tensor
-    :type array: :class: OptArray
+    :type array: :class:`OptArray`
 
     :param from_: second tensor
-    :type from_: :class: OptArray
+    :type from_: :class:`OptArray`
 
     :returns: The result of performing the tensor contraction
-    :rtype: :class: OptArray
+    :rtype: :class:`OptArray`
     """
     return opt_transform(from_, array, 1, j)
 
@@ -124,13 +124,13 @@ def _two_site_merge(state: Model, p: Node, i: int, q: Node,
     """Merge two tensors by contraction over the specified axes.
 
     :param state: The model to which the nodes to merge belong
-    :type state: :class: Model
+    :type state: :class:`Model`
 
     :param p: The node representing the first node in the contraction
-    :type p: :class: Node
+    :type p: :class:`Node`
 
     :param q: The node representing the second node in the contraction
-    :type q: :class: Node
+    :type q: :class:`Node`
 
     :param i: Axis for contraction of p
     :type i: integer
@@ -139,7 +139,7 @@ def _two_site_merge(state: Model, p: Node, i: int, q: Node,
     :type j: integer
 
     :returns: Result of the tensor contraction
-    :rtype: :class: OptArray
+    :rtype: :class:`OptArray`
     """
     return opt_tensordot(state[p], state[q], axes=([i], [j]))
 
@@ -328,10 +328,10 @@ class SparseSPO:
         operator
 
         :param other: Another SparseSPO from which to acquire the list to concatenate
-        :type other: :class: SparseSPO
+        :type other: :class:`SparseSPO`
 
-        :returns: The modified :class: SparseSPO with the expanded f_list
-        :rtype: :class: SparseSPO
+        :returns: The modified :class:`SparseSPO` with the expanded f_list
+        :rtype: :class:`SparseSPO`
         """
 
         def f_list(t):

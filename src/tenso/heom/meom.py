@@ -66,7 +66,7 @@ class _DVRBathOp(_BathOp):
         return
 
 
-class Hierachy:
+class Hierarchy:
     def __init__(self,
                  frame: Frame,
                  root: Node,
@@ -149,7 +149,7 @@ class Hierachy:
     ) -> list[dict[End, OptArray]]:
         k_max = correlation.k_max
         coefficients = correlation.coefficients
-        conj_coefficents = correlation.conj_coefficents
+        conj_coefficients = correlation.conj_coefficients
         zeropoints = correlation.zeropoints
         derivatives = correlation.derivatives
         k_ends = self.bath_ends[n_bath]
@@ -185,7 +185,7 @@ class Hierachy:
                 k_end: zk * coefficients[_k] * up + down
             }, {
                 j_end: j_op,
-                k_end: zk * conj_coefficents[_k] * up + down
+                k_end: zk * conj_coefficients[_k] * up + down
             }]
 
         for (_k1, _k2), dk in derivatives.items():
@@ -204,7 +204,7 @@ class Hierachy:
                     c: Correlation,
                     metric: Literal['re', 'abs'] | complex = 're'):
         c_k = c.coefficients[k]
-        cc_k = c.conj_coefficents[k]
+        cc_k = c.conj_coefficients[k]
         if metric == 're':
             f_k = np.sqrt(abs(c_k.real + cc_k.real) / 2.0)
             if (c_k.imag + cc_k.imag) > EPSILON:
@@ -336,7 +336,7 @@ class FrameFactory:
     def _new_node(self) -> Node:
         """Make a new node (vertex) to add to the graph structure.
         :returns: A new node
-        :rtype: :class: Node 
+        :rtype: :class:`Node`
         """
         n = Node(self.prefix + str(self._node_counter))
         assert isinstance(n, Node)
@@ -346,7 +346,7 @@ class FrameFactory:
     def naive(self) -> tuple[Frame, Node]:
         """Set up a graph structure with every node linked to the
         root node.
-        :returns: A tuple containing the produced :class: Frame and the :class: Node
+        :returns: A tuple containing the produced :class:`Frame` and the :class:`Node`
         :rtype: tuple
         """
         frame = Frame()
@@ -366,7 +366,7 @@ class FrameFactory:
         :type bath_importances: list, optional
         :param n_ary: The number of links between nodes in the tree, defaults to 2
         :type n_vary: int, optional
-        :returns: A tuple containing the produced :class: Frame and the :class: Node
+        :returns: A tuple containing the produced :class:`Frame` and the :class:`Node`
         :rtype: tuple
         """
         if bath_importances is None:
@@ -387,7 +387,7 @@ class FrameFactory:
 
     def train(self) -> tuple[Frame, Node]:
         """Set up a graph structure in the form of a train.
-        :returns: A tuple containing the produced :class: Frame and the :class: Node
+        :returns: A tuple containing the produced :class:`Frame` and the :class:`Node`
         :rtype: tuple
         """
         k_max = self.bath_dof
@@ -401,3 +401,4 @@ class FrameFactory:
             frame.add_link(train_nodes[i], self.chained_bath_ends[i - 1])
         frame.add_link(train_nodes[-1], self.chained_bath_ends[-1])
         return frame, root
+
