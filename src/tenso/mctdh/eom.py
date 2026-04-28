@@ -244,6 +244,14 @@ class Hierarchy:
             self._init_number_basis(k_end)
         return model
 
+    def initialize_from_chk(self):
+        """Initialize state based on a loaded checkpoint file. Only the terminators are needed.
+        """
+        # Initialize the bath part.
+        for k_end in chain(*self.bath_ends):
+            self._init_number_basis(k_end)
+
+
     def _init_number_basis(self, k_end: End):
         dim = self.dims[k_end]
         ground_vec = np.zeros([dim]).real

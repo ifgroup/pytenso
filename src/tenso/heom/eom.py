@@ -270,6 +270,16 @@ class Hierarchy:
             )
         return f_k
 
+
+    def initialize_from_chk(self):
+        """Initialize state based on a loaded checkpoint file. Only the terminators are needed.
+        """
+        for k_end in self.bath_ends:
+            if k_end in self._bases:
+                self._init_dvr_basis(model, k_end, self._bases[k_end])
+            else:
+                self._init_number_basis(k_end)
+
     def initialize_state(self, rdo: ArrayLike, rank: int) -> Model:
         """
         Assume Ends sys_i and sys_j are attached to the root node axes 0 and 1.

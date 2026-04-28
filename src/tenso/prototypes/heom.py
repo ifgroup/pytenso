@@ -138,8 +138,10 @@ def system_single_bath(
     rank = parameters['rank']
     if parameters['load_checkpoint_from_file']:
         state = Model.load(fname + default_extension['checkpoint'])
+        hierarchy.initialize_from_chk() # Set up terminators etc
         renorm_coeff = state[root].norm()
         state.update({root: state[root] / renorm_coeff})
+        renorm_coeff = opt_to_numpy(renorm_coeff)
     else:
         state = hierarchy.initialize_state(init_rdo, rank)
         renorm_coeff = 1.0
@@ -404,8 +406,10 @@ def system_multibath(
     rank = parameters['rank']
     if parameters['load_checkpoint_from_file']:
         state = Model.load(fname + default_extension['checkpoint'])
+        hierarchy.initialize_from_chk() # Set up terminators etc
         renorm_coeff = state[root].norm()
         state.update({root: state[root] / renorm_coeff})
+        renorm_coeff = opt_to_numpy(renorm_coeff)
     else:
         state = hierarchy.initialize_state(init_rdo, rank)
         renorm_coeff = 1.0
