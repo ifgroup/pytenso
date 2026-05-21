@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/index.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/index.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/installation.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/installation.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/getting-started.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/getting-started.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/background.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/background.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/structure.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/structure.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/examples.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/examples.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/api.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/api.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/input-generator.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/input-generator.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/cite.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/cite.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/contact.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/contact.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ifgroup.github.io/tenso_doc/architecture.html</loc>
+    <loc>https://ifgroup.github.io/pytenso/architecture.html</loc>
     <lastmod>2026-05-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
