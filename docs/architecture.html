@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture — TENSO</title>
+  <meta name="description" content="Four-layer code structure of TENSO for developers who want to understand or extend the framework.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/architecture.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Architecture — TENSO" />
+  <meta property="og:description" content="Four-layer code structure of TENSO for developers who want to understand or extend the framework." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/architecture.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" defer></script>
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc" aria-label="Table of contents">
+        <div class="toc__title">On this page</div>
+        <ul class="toc__list">
+          <li class="toc__item"><a href="#overview" class="toc__link">Overview</a></li>
+          <li class="toc__item"><a href="#layer1" class="toc__link">Layer 1 — Backend</a></li>
+          <li class="toc__item"><a href="#layer2" class="toc__link">Layer 2 — TTN Decomposition</a></li>
+          <li class="toc__item"><a href="#layer2-pipeline" class="toc__link">Propagation Pipeline</a></li>
+          <li class="toc__item"><a href="#layer2-tdvp" class="toc__link">TDVP Principle</a></li>
+          <li class="toc__item"><a href="#layer2-algorithms" class="toc__link">Algorithms</a></li>
+          <li class="toc__item"><a href="#layer3" class="toc__link">Layer 3 — Master Equations</a></li>
+          <li class="toc__item"><a href="#layer4" class="toc__link">Layer 4 — Prototypes</a></li>
+          <li class="toc__item"><a href="#helpers" class="toc__link">Helper Modules</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="article" id="main-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb__sep">/</span>
+        <span class="breadcrumb__current">Architecture</span>
+      </nav>
+
+      <h1>Architecture</h1>
+      <p>This page describes the four-layer code structure of TENSO for developers who want to understand or extend the framework. It corresponds to the <code>TENSO Structure</code> reference documentation.</p>
+
+      <div class="callout callout--tip">
+        <span class="callout__icon"><i class="fa fa-lightbulb"></i></span>
+        <div>Most users only need <strong>Layer 4</strong>. Layers 1–3 are for those extending the framework. Familiarity with object-oriented programming is assumed for Layers 1–3.</div>
+      </div>
+
+      <!-- Overview -->
+      <h2 id="overview">Overview</h2>
+      <p>TENSO is organized into four distinct layers of abstraction, each building on the one below it, plus a set of shared helper modules.</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Layer</th><th>Name</th><th>Responsibility</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Backend Interfaces</strong></td>
+              <td>PyTorch / NumPy / torchdiffeq dependencies, hardware targeting, ODE solvers.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>TTN Decomposition</strong></td>
+              <td>General TTN data structures and TDVP-based propagation engine for SoP generators.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Master Equation Implementations</strong></td>
+              <td>Physics-specific formulations: HEOM (single &amp; multi-bath) and MCTDH / ML-MCTDH.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Templates &amp; Prototypes</strong></td>
+              <td>Ready-to-run interface functions for common physical problems.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Layer 1 -->
+      <h2 id="layer1">Layer 1 — Backend Interfaces</h2>
+      <p><strong>Module: <code>tenso.backend</code></strong></p>
+      <p>The <code>tenso.backend</code> module is the foundation upon which all computation in TENSO rests. It has three responsibilities: managing third-party dependencies, controlling global package settings (numerical precision, default device), and registering the integration methods available for time propagation. All higher layers interact with hardware and solvers exclusively through this module, which means that changing the ODE solver or hardware target requires touching only this one file.</p>
+
+      <h3>Dependencies and design rationale</h3>
+      <p>TENSO depends on three external libraries. The choice of each is deliberate:</p>
+
+      <p><strong><a href="https://pytorch.org" target="_blank" rel="noopener">PyTorch</a> — primary tensor computation engine.</strong> PyTorch was chosen over NumPy-only or JAX-based alternatives for its hardware-agnostic tensor operations — the same code runs on CPU or GPU without modification, which is critical for the large tensor contractions that arise in TTN propagation. PyTorch's dynamic computation graph and automatic differentiation infrastructure also provide a flexible foundation for future extensions, such as gradient-based optimization of bath parameters.</p>
+
+      <p><strong><a href="https://numpy.org" target="_blank" rel="noopener">NumPy</a> — auxiliary numerics and interoperability.</strong> NumPy handles operations outside the main propagation loop — such as constructing spectral density grids, initializing sparse operator dictionaries, and interfacing with external analysis tools. It also serves as the interchange format when passing data to and from plotting libraries or other Python scientific packages.</p>
+
+      <p><strong><a href="https://github.com/rtqichen/torchdiffeq" target="_blank" rel="noopener">torchdiffeq</a> — ODE integration.</strong> Rather than implementing ODE solvers from scratch, TENSO delegates time integration to <code>torchdiffeq</code>, a library of differentiable ODE solvers built on top of PyTorch. This gives access to high-quality adaptive-step solvers with error control, all operating natively on PyTorch tensors.</p>
+
+      <h3>Global package settings</h3>
+      <p>Beyond dependency management, <code>tenso.backend</code> enforces several global settings that affect all computations:</p>
+      <ul>
+        <li><strong>Floating-point precision</strong> — the default dtype (<code>torch.float64</code> for most quantum dynamics problems, where accumulated round-off in long propagations is a practical concern).</li>
+        <li><strong>Default device</strong> — CPU or GPU, set once and inherited by all subsequently constructed TENSO objects.</li>
+        <li><strong>Complex number support</strong> — TENSO works with complex-valued tensors throughout; the backend ensures that PyTorch's complex dtype handling is configured consistently.</li>
+      </ul>
+      <p>Changing any of these settings after objects have been constructed is not supported; configure the backend before instantiating any TENSO objects.</p>
+
+      <h3>Integration methods (ODE solvers)</h3>
+      <p>Time propagation in TENSO reduces to integrating a large, structured ODE of the form $\dot{\Omega} = f(\Omega, t)$. The choice of solver has a significant effect on both accuracy and wall-clock time.</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Solver</th><th>Type</th><th>When to use</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>dopri5</code> <em>(default)</em></td>
+              <td>Explicit, adaptive</td>
+              <td>Dormand–Prince RK45. Step size is controlled automatically by a local error estimate. The right choice for most HEOM and MCTDH calculations where the hierarchy is not stiff.</td>
+            </tr>
+            <tr>
+              <td><code>rk4</code></td>
+              <td>Explicit, fixed-step</td>
+              <td>Classical 4th-order Runge-Kutta with a user-specified step size. Useful when you need reproducible, deterministic trajectories. Provides no error control — step size must be chosen carefully.</td>
+            </tr>
+            <tr>
+              <td><code>adams</code></td>
+              <td>Explicit, adaptive</td>
+              <td>Variable-order Adams–Bashforth–Moulton predictor-corrector. More efficient than <code>dopri5</code> for smooth problems where the solution does not change rapidly, because it reuses previous function evaluations.</td>
+            </tr>
+            <tr>
+              <td>Implicit solvers</td>
+              <td>Implicit, adaptive</td>
+              <td>Necessary when the hierarchy is <em>stiff</em> — that is, when some decay rates in the bath correlation function decomposition are much larger than others. See <code>tenso.backend</code> for the specific implicit methods available.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="callout__icon"><i class="fa fa-lightbulb"></i></span>
+        <div>If you are unsure which solver to use, start with the default <code>dopri5</code>. If propagation is slow and the adaptive solver is taking very small steps, your hierarchy is likely stiff — switch to an implicit method. If results are inaccurate, tighten the error tolerances (<code>rtol</code>, <code>atol</code>) rather than changing the method.</div>
+      </div>
+
+      <!-- Layer 2 -->
+      <h2 id="layer2">Layer 2 — TTN Decomposition</h2>
+      <p>The general master equations addressed by TENSO take the form</p>
+      $$\frac{\mathrm{d}}{\mathrm{d}t}\,|\Omega(t)\rangle = \mathcal{L}(t)\,|\Omega(t)\rangle$$
+      <p>where $|\Omega(t)\rangle$ is the <strong>Extended Density Operator (EDO)</strong> — a high-dimensional tensor that collects the physical reduced density matrix $\rho_\textrm{S}(t)$ together with the full hierarchy of auxiliary density matrices (ADMs). Concretely, the EDO is organized as</p>
+      $$|\Omega(t)\rangle = \sum_{\vec{n}}\, \varrho_{\vec{n}}(t)\,|\vec{n}\rangle,$$
+      <p>where $\vec{n} = (n_1, \ldots, n_K)$ indexes the bexcitonic occupation numbers and $\varrho_{\vec{0}}(t) = \rho_\textrm{S}(t)$ is the system's reduced density matrix. $\mathcal{L}(t)$ is the Liouvillian superoperator generating the dynamics.</p>
+
+      <p>TENSO addresses the $\mathcal{O}(M^2 N^K)$ exponential cost of the full EDO by decomposing it into a <strong>Tree Tensor Network (TTN)</strong> — a contraction of $K$ low-order core tensors $A^{(0)}(t), U^{(1)}(t), \ldots, U^{(K-1)}(t)$:</p>
+      $$[\Omega(t)]_{ijn_1\cdots n_K}
+      = \sum_{a_1 \cdots a_{K-1}}
+        A^{(0)}_{ija_1}(t)\;
+        U^{(1)}_{a_1\beta_1\gamma_1}(t)\;\cdots\;
+        U^{(K-1)}_{a_{K-1}\beta_{K-1}\gamma_{K-1}}(t).$$
+      <p>For bond dimensions $R_s = \mathcal{O}(R)$ and bexciton depth $N_k = \mathcal{O}(N)$, the space complexity of the TTN is $\mathcal{O}(M^2 R + KNR(N + R))$, which grows only <em>polynomially</em> with $K$. The semi-unitary core tensors $U^{(s)}(t)$ satisfy the orthogonality condition</p>
+      $$\sum_{\beta\gamma} [U^{(s)}(t)]^*_{a'_s,\beta\gamma}\,[U^{(s)}(t)]_{a_s,\beta\gamma} = \delta_{a'_s a_s},$$
+      <p>which is enforced throughout the propagation via the gauge condition and is essential for numerical stability. TENSO supports two canonical TTN topologies: the <strong>balanced tensor tree</strong> (minimizes the average path length to $\mathcal{O}(\log K)$) and the <strong>tensor train</strong> / MPS form (linear chain, average path length $\mathcal{O}(K)$).</p>
+
+      <h3>The Sum-of-Product generator</h3>
+      <p>The Liouvillian superoperator takes a natural Sum-of-Product (SoP) form:</p>
+      $$\mathcal{L}(t) = \sum_{m=1}^{5K+2}
+              h^>_m(t) \otimes h^<_m(t)
+              \otimes h^{(1)}_m \otimes \cdots \otimes h^{(K)}_m,$$
+      <p>where each product term consists of a component $h^>_m(t)$ acting on the ket index $|i\rangle$, a component $h^<_m(t)$ acting on the bra index $\langle j|$, and local operators $h^{(k)}_m$ acting on the $k$-th bexciton space $|n_k\rangle$. Each dissipator $\mathcal{D}_k$ contributes five product terms, and the system Liouvillian $-iH_\textrm{S}^\times(t)$ contributes two more, giving $5K+2$ terms in total. This SoP form is not an approximation — it follows exactly from the structure of the bexcitonic equations of motion.</p>
+
+      <h3 id="layer2-pipeline">Propagation pipeline</h3>
+      <p>Layer 2 implements four objects that together form the propagation pipeline:</p>
+
+      <div class="code-block">
+        <pre><code class="language-python">Frame  ──(topology)──►  Model  |Ω(t)⟩  =  Con(A⁽⁰⁾, U⁽¹⁾, …, U⁽ᴷ⁻¹⁾)
+                                    │
+                        SparseSPO   ℒ(t) = Σₘ h>ₘ ⊗ h<ₘ ⊗ h⁽¹⁾ₘ ⊗ … ⊗ h⁽ᴷ⁾ₘ
+                                    │
+                                    ▼
+                      SparsePropagator ──► |Ω(t + Δt)⟩</code></pre>
+      </div>
+
+      <ul>
+        <li>A <code>Frame</code> defines the <em>topology</em> of the TTN (which nodes exist, how they connect, which bonds carry system vs. bexciton indices).</li>
+        <li>A <code>Model</code> fills that topology with concrete tensor data — the root tensor $A^{(0)}(t)$ and the semi-unitary core tensors $\{U^{(s)}(t)\}$. It tracks the <strong>orthogonality center</strong>, which is essential for numerically stable TDVP sweeps.</li>
+        <li>A <code>SparseSPO</code> encodes the Liouvillian superoperator $\mathcal{L}(t)$ in SoP form as a list of dictionaries.</li>
+        <li>A <code>SparsePropagator</code> takes a <code>Model</code> and a <code>SparseSPO</code> and advances $|\Omega(t)\rangle$ in time.</li>
+      </ul>
+
+      <h3 id="layer2-tdvp">The Dirac–Frenkel TDVP</h3>
+      <p>The <strong>Dirac–Frenkel Time-Dependent Variational Principle (TDVP)</strong> determines the optimal equations of motion for the core tensors by requiring that the residual $\mathcal{L}(t)|\Omega(t)\rangle - \frac{d}{dt}|\Omega(t)\rangle$ is orthogonal to all allowed variations of $|\Omega(t)\rangle$ within the TTN ansatz:</p>
+      $$\sum_{ij,n_1\cdots n_K}
+      [\delta\Omega(t)]^*_{ijn_1\cdots n_K}
+      \left[\left(\mathcal{L}(t) - \frac{\mathrm{d}}{\mathrm{d}t}\right)\Omega(t)\right]_{ijn_1\cdots n_K}
+      = 0.$$
+      <p>This projection guarantees that the propagated state remains on the TTN manifold (bond dimensions stay bounded) while capturing the dynamics as accurately as possible for the given TTN ansatz.</p>
+
+      <h3 id="layer2-algorithms">Propagation algorithms</h3>
+      <p>Three propagation algorithms are implemented as methods of <code>SparsePropagator</code>. All three are numerically stable and yield equivalent dynamics; the choice involves tradeoffs in memory, accuracy, and computational cost.</p>
+
+      <p><strong>Direct Integration.</strong> All core tensor ODEs are integrated <em>simultaneously</em> using the ODE solver configured in <code>tenso.backend</code> (default: adaptive RK45). This enables high-order time integration $\mathcal{O}(\Delta t^n)$ and adaptive time stepping. Because the matrix $D^{(s)}(t)$ in the semi-unitary equation of motion is singular at $t = 0$ for initially separable states, a <strong>regularization scheme</strong> is applied: singular values of $D^{(s)}$ below a threshold $\epsilon$ are replaced by $\epsilon$, introducing an error of only $\mathcal{O}(\epsilon^2)$. The singularity resolves after a brief initial transient (typically $&lt;2$ fs).</p>
+
+      <p><strong>PS1 — Fixed-rank Projector-Splitting.</strong> Based on a second-order symmetric Lie–Trotter splitting of $\mathcal{L}(t)$. The algorithm sweeps through the TTN sequentially: at each split-step, the root is moved to the next tensor via SVD, and that tensor is propagated in isolation. The forward and backward sweeps together constitute one time step $\Delta t$, achieving second-order $\mathcal{O}(\Delta t^3)$ Trotter accuracy. Bond dimensions remain <strong>constant</strong> throughout — PS1 is a fixed-rank method.</p>
+
+      <p><strong>PS2 — Adaptive-rank Projector-Splitting.</strong> Extends PS1 with a two-site move that combines adjacent core tensors into a fourth-order tensor, propagates it, and then decomposes it back via a <strong>truncated SVD</strong> with threshold $\epsilon'$. This allows bond dimensions to grow or shrink adaptively during propagation. PS2 is the recommended starting point when the required ranks are not known in advance.</p>
+
+      <div class="callout callout--tip">
+        <span class="callout__icon"><i class="fa fa-lightbulb"></i></span>
+        <div>The three methods can be <strong>combined on-the-fly</strong>. A practical mixed strategy is to begin with PS2 (which avoids the initial singularity and determines appropriate ranks automatically) and switch to direct integration once the adaptive ranks have stabilized.</div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Property</th><th>Direct Integration</th><th>PS1</th><th>PS2</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Rank during propagation</strong></td>
+              <td>Fixed</td>
+              <td>Fixed</td>
+              <td>Adaptive</td>
+            </tr>
+            <tr>
+              <td><strong>Time accuracy</strong></td>
+              <td>$\mathcal{O}(\Delta t^n)$, solver-dependent</td>
+              <td>$\mathcal{O}(\Delta t^3)$ (Trotter)</td>
+              <td>$\mathcal{O}(\Delta t^3)$ (Trotter)</td>
+            </tr>
+            <tr>
+              <td><strong>Regularization needed</strong></td>
+              <td>Yes (near $t=0$)</td>
+              <td>No</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><strong>Parallelizable</strong></td>
+              <td>Yes (all tensors simultaneously)</td>
+              <td>Difficult (sequential SVD)</td>
+              <td>Difficult (sequential SVD)</td>
+            </tr>
+            <tr>
+              <td><strong>Best for</strong></td>
+              <td>Bulk dynamics; high-order time steps</td>
+              <td>Known ranks; robust propagation</td>
+              <td>Unknown ranks; automatic compression</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Layer 3 -->
+      <h2 id="layer3">Layer 3 — Master Equation Implementations</h2>
+      <p>TENSO currently provides built-in implementations for two major quantum dynamics methods. Both are cast as special cases of the general TTN master equation and share an identical downstream interface: a <code>Hierarchy</code> object constructs the required <code>SparsePropagator</code> and <code>Model</code> for the given physical problem.</p>
+
+      <h3>tenso.heom — Hierarchical Equations of Motion</h3>
+      <p>HEOM is an exact, non-perturbative method for simulating the open quantum dynamics of driven quantum systems coupled to bosonic thermal baths. TENSO implements the <strong>bexcitonic generalization</strong> of HEOM, which provides a unified framework for all HEOM variants and admits arbitrary time-dependence in the system Hamiltonian $H_\textrm{S}(t)$.</p>
+
+      <p>The influence of a thermal bath is completely characterized by its Bath Correlation Function (BCF):</p>
+      $$C(t) = \sum_{k=1}^{K} c_k\, e^{\gamma_k t}, \qquad
+      C^*(t) = \sum_{k=1}^{K} \bar{c}_k\, e^{\gamma_k t},$$
+      <p>where $c_k$, $\bar{c}_k$, $\gamma_k \in \mathbb{C}$ are obtained by decomposing the spectral density $J(\omega)$ via Padé or Matsubara expansion. The full bexcitonic equation of motion is</p>
+      $$\frac{\mathrm{d}}{\mathrm{d}t}|\Omega(t)\rangle
+      = \left(-iH_\textrm{S}^\times(t) + \sum_{k=1}^{K} \mathcal{D}_k\right)|\Omega(t)\rangle,$$
+      <p>where $\mathcal{D}_k = \gamma_k\hat{\alpha}^\dagger_k\hat{\alpha}_k
+      + (c_k Q_\textrm{S}^> - \bar{c}_k Q_\textrm{S}^<)\hat{z}_k^{-1}\hat{\alpha}^\dagger_k
+      - Q_\textrm{S}^\times\hat{\alpha}_k\hat{z}_k$ is the dissipator for the $k$-th bath feature.</p>
+
+      <p>Two submodules are provided depending on the number of baths:</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Submodule</th><th>Scope</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>tenso.heom.eom</code></td>
+              <td>TTN-HEOM for a system coupled to a <strong>single bath</strong>. Implements the full bexcitonic hierarchy with $K$ features, each truncated at depth $N_k$, giving an EDO of space complexity $\mathcal{O}(M^2 N^K)$ that is compressed to $\mathcal{O}(M^2 R + KNR(N+R))$ by the TTN.</td>
+            </tr>
+            <tr>
+              <td><code>tenso.heom.meom</code></td>
+              <td>TTN-HEOM for a system coupled to <strong>multiple independent baths</strong> through system operators $\{Q_\textrm{S}^{(d)}\}$ that need not commute. Implements the extended multi-bath hierarchy and its SoP generator.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Key classes available in both <code>eom</code> and <code>meom</code>:</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Class</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Hierarchy</code></td>
+              <td>Central data structure for TTN-HEOM. Given the BCF parameters $\{c_k, \bar{c}_k, \gamma_k\}_{k=1}^K$ and the truncation depths $\{N_k\}$, constructs the full bexcitonic operator structure and initializes the TTN with correct initial conditions for a separable system–bath state. Also provides methods to extract $\rho_\textrm{S}(t)$ from the EDO.</td>
+            </tr>
+            <tr>
+              <td><code>FrameFactory</code></td>
+              <td>Constructs the TTN topology for $|\Omega(t)\rangle$. Supports two canonical topologies: the <strong>balanced tensor tree</strong> (minimizes average path to $\mathcal{O}(\log K)$) and the <strong>tensor train</strong> (MPS form, average path $\mathcal{O}(K)$).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>tenso.mctdh — MCTDH and ML-MCTDH</h3>
+      <p>The Multiconfiguration Time-Dependent Hartree (MCTDH) method and its multilayer extension (ML-MCTDH) are implemented in <code>tenso.mctdh</code>. The three core design principles — a Sum-of-Product generator, a TTN decomposition of the state, and the Dirac–Frenkel TDVP — are identical to those of ML-MCTDH. The key difference is that ML-MCTDH targets <em>unitary</em> dynamics of closed quantum systems (wavefunctions $|\psi(t)\rangle$), whereas TTN-HEOM targets <em>non-unitary</em> dissipative dynamics of open quantum systems (the EDO $|\Omega(t)\rangle$). Both are implemented through the same <code>Model</code> / <code>SparsePropagator</code> interface, with the physical differences encoded entirely in the <code>SparseSPO</code> and the initial conditions.</p>
+
+      <!-- Layer 4 -->
+      <h2 id="layer4">Layer 4 — Templates &amp; Prototypes</h2>
+      <p><strong>Subpackage: <code>tenso.prototypes</code></strong></p>
+      <p>The <code>tenso.prototypes</code> subpackage provides ready-to-use interface templates for the most common physical problems. These functions abstract away all details of tensor network construction, hierarchy generation, and propagator setup.</p>
+
+      <div class="callout callout--tip">
+        <span class="callout__icon"><i class="fa fa-lightbulb"></i></span>
+        <div><code>tenso.prototypes</code> is the recommended starting point for new users. The functions in this layer are the only ones most users will ever need to call directly.</div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Object / Function</th><th>Location</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>system_multibath</code></td>
+              <td><code>prototypes.heom</code></td>
+              <td>Primary simulation entry point for spin-boson HEOM calculations. Sets up the system state, bath model, TTN topology, and propagator in a single call, and returns a <strong>generator</strong> that advances the state one time step per iteration. Results are written to a file specified by <code>fname</code>.</td>
+            </tr>
+            <tr>
+              <td><code>gen_bcf</code></td>
+              <td><code>prototypes.bath</code></td>
+              <td>Generates the BCF decomposition parameters $\{c_k, \bar{c}_k, \gamma_k\}_{k=1}^K$ from a given spectral density $J(\omega)$. Accepts Drude–Lorentz parameters (<code>re_d</code>, <code>width_d</code>) and underdamped Brownian oscillator parameters (<code>freq_b</code>, <code>re_b</code>, <code>width_b</code>), with either Padé or Matsubara expansion via <code>decomposition_method</code> and <code>n_ltc</code> low-temperature correction terms.</td>
+            </tr>
+            <tr>
+              <td><code>default_parameters</code></td>
+              <td><code>prototypes.default_parameters</code></td>
+              <td>Stores default values for coupling strengths, temperature, cutoff frequencies, hierarchy depth, and time propagation settings. All prototype functions draw defaults from here.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Helper modules -->
+      <h2 id="helpers">Helper &amp; Auxiliary Modules</h2>
+      <p>Several auxiliary modules provide supporting capabilities shared across multiple layers.</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Module</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>tenso.libs.utils</code></td>
+              <td>Algorithms for traversing the TTN graph and visiting all nodes in a specified order. Used internally by propagation routines to sweep through the network during TDVP updates.</td>
+            </tr>
+            <tr>
+              <td><code>tenso.basis</code></td>
+              <td>Provides a <strong>Discrete Variable Representation (DVR)</strong> basis as an alternative to the default number (Fock) basis. Useful for continuum degrees of freedom with localized wavefunctions or when a DVR offers superior convergence.</td>
+            </tr>
+            <tr>
+              <td><code>tenso.bath.correlation</code></td>
+              <td>Implements the <code>Correlation</code> object responsible for computing and storing the BCF $C(t) = \sum_{k=1}^K c_k e^{\gamma_k t}$ — the central input quantity for constructing the bexcitonic dissipators $\{\mathcal{D}_k\}$ and the HEOM hierarchy.</td>
+            </tr>
+            <tr>
+              <td><code>tenso.bath.distribution</code></td>
+              <td>Contains the Padé and Matsubara decompositions of the Bose–Einstein factor $f_\textrm{BE}(\beta\omega)$ required to express $C(t)$ as a finite sum of exponentials at finite temperature, including low-temperature correction terms.</td>
+            </tr>
+            <tr>
+              <td><code>tenso.bath.sd</code></td>
+              <td>Defines spectral density functions $J(\omega)$: Drude–Lorentz $J_\textrm{DL}(\omega) = \frac{2\lambda}{\pi}\frac{\omega_c\,\omega}{\omega^2+\omega_c^2}$ and underdamped Brownian oscillator $J_\textrm{BO}^{(b)}(\omega) = \frac{4\lambda}{\pi}\frac{\eta\,\omega_0^2\,\omega}{(\omega^2-\omega_0^2)^2+4\eta^2\omega^2}$, plus support for user-defined forms.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-top: 2.5rem; flex-wrap:wrap;">
+        <a href="background.html" class="btn btn--primary">Background <i class="fa fa-arrow-right"></i></a>
+        <a href="api.html" class="btn btn--secondary">API Reference <i class="fa fa-book"></i></a>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand-name">TENSO</div>
+        <p class="footer__tagline">Exact open quantum dynamics via Tree Tensor Network HEOM</p>
+        <p style="font-size:0.8rem; color: var(--text-muted);">Franco Group · University of Rochester</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Docs</div>
+        <ul class="footer__links">
+          <li><a href="installation.html" class="footer__link">Installation</a></li>
+          <li><a href="getting-started.html" class="footer__link">Getting Started</a></li>
+          <li><a href="background.html" class="footer__link">Background</a></li>
+          <li><a href="structure.html" class="footer__link">Structure</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">More</div>
+        <ul class="footer__links">
+          <li><a href="examples.html" class="footer__link">Examples</a></li>
+          <li><a href="api.html" class="footer__link">API Reference</a></li>
+          <li><a href="cite.html" class="footer__link">Cite</a></li>
+          <li><a href="contact.html" class="footer__link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Links</div>
+        <ul class="footer__links">
+          <li><a href="https://github.com/ifgroup/pytenso" class="footer__link" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></li>
+          <li><a href="https://doi.org/10.1063/5.0278591" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2025)</a></li>
+          <li><a href="https://doi.org/10.1063/5.0198567" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2024)</a></li>
+          <li><a href="https://github.com/ifgroup/pytenso/issues" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-bug"></i> Issues</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copyright">© 2025 Franco Group, University of Rochester. MIT License.</span>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+          <span class="theme-toggle-icon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples — TENSO</title>
+  <meta name="description" content="Example simulations using TENSO: spin-boson, FMO complex, and laser-driven dynamics notebooks.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/examples.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Examples — TENSO" />
+  <meta property="og:description" content="Example simulations using TENSO: spin-boson, FMO complex, and laser-driven dynamics notebooks." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/examples.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" defer></script>
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main class="article" id="main-content" style="max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem;">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Examples</span>
+    </nav>
+
+    <h1>Examples</h1>
+    <p>These example notebooks demonstrate TENSO on a range of physical problems, from simple two-level systems to multi-site biological complexes and laser-driven dynamics. All notebooks are available in the <a href="https://github.com/ifgroup/pytenso" target="_blank" rel="noopener">GitHub repository</a> and can be run in JupyterLab after installing TENSO:</p>
+    <div class="code-block" style="margin-top: 0.5rem;">
+      <pre><code class="language-python">python -m pip install -e .
+jupyter lab</code></pre>
+    </div>
+    <p>Each notebook is self-contained: it defines the bath and system, runs the propagation, and plots the results. They are a good complement to the <a href="getting-started.html">Getting Started</a> tutorial.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem; margin-top: 2.5rem;">
+
+      <!-- Example 1 -->
+      <div class="feature-card reveal" data-delay="1">
+        <div class="feature-card__icon"><i class="fa fa-atom"></i></div>
+        <h3 class="feature-card__title">Spin-Boson Model with Structured Spectral Densities</h3>
+        <p class="feature-card__desc">Demonstrates TENSO on a two-level system coupled to a bath with both Drude–Lorentz and underdamped Brownian oscillator components. Shows convergence with hierarchy depth $N$ and bond rank $R$.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0 1.25rem;">
+          <span class="tag">HEOM</span>
+          <span class="tag">Spin-Boson</span>
+          <span class="tag">Structured Bath</span>
+        </div>
+        <a href="notebooks/tree_vs_train_annotated.html"
+           class="btn btn--primary"
+           style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem;">
+          <i class="fa fa-book-open"></i> View notebook
+        </a>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="feature-card reveal" data-delay="2">
+        <div class="feature-card__icon"><i class="fa fa-leaf"></i></div>
+        <h3 class="feature-card__title">The Fenna–Matthews–Olson (FMO) Complex</h3>
+        <p class="feature-card__desc">Simulates excitation energy transfer in a three-site model of the FMO complex with a structured biological bath. Demonstrates multi-level system support.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0 1.25rem;">
+          <span class="tag">FMO</span>
+          <span class="tag">Energy Transfer</span>
+          <span class="tag">Multi-site</span>
+        </div>
+        <a href="notebooks/FMO_tutorial.html"
+           class="btn btn--primary"
+           style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem;">
+          <i class="fa fa-book-open"></i> View notebook
+        </a>
+      </div>
+
+      <!-- Example 3 -->
+      <div class="feature-card reveal" data-delay="3">
+        <div class="feature-card__icon"><i class="fa fa-bolt"></i></div>
+        <h3 class="feature-card__title">Laser-Driven Dynamics</h3>
+        <p class="feature-card__desc">Open quantum dynamics under a time-dependent driving field. Shows how TENSO handles explicitly time-dependent system Hamiltonians $H_\textrm{S}(t)$.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0 1.25rem;">
+          <span class="tag">Time-dependent</span>
+          <span class="tag">Laser</span>
+          <span class="tag">Driven</span>
+        </div>
+        <a href="notebooks/time_dependent_no_quantity.html"
+           class="btn btn--primary"
+           style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem;">
+          <i class="fa fa-book-open"></i> View notebook
+        </a>
+      </div>
+
+    </div>
+
+    <div style="display:flex; gap:1rem; margin-top: 3rem; flex-wrap:wrap;">
+      <a href="getting-started.html" class="btn btn--primary">Getting Started <i class="fa fa-arrow-right"></i></a>
+      <a href="https://github.com/ifgroup/pytenso" class="btn btn--secondary" target="_blank" rel="noopener"><i class="fab fa-github"></i> All notebooks on GitHub</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand-name">TENSO</div>
+        <p class="footer__tagline">Exact open quantum dynamics via Tree Tensor Network HEOM</p>
+        <p style="font-size:0.8rem; color: var(--text-muted);">Franco Group · University of Rochester</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Docs</div>
+        <ul class="footer__links">
+          <li><a href="installation.html" class="footer__link">Installation</a></li>
+          <li><a href="getting-started.html" class="footer__link">Getting Started</a></li>
+          <li><a href="background.html" class="footer__link">Background</a></li>
+          <li><a href="structure.html" class="footer__link">Structure</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">More</div>
+        <ul class="footer__links">
+          <li><a href="examples.html" class="footer__link">Examples</a></li>
+          <li><a href="api.html" class="footer__link">API Reference</a></li>
+          <li><a href="cite.html" class="footer__link">Cite</a></li>
+          <li><a href="contact.html" class="footer__link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Links</div>
+        <ul class="footer__links">
+          <li><a href="https://github.com/ifgroup/pytenso" class="footer__link" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></li>
+          <li><a href="https://doi.org/10.1063/5.0278591" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2025)</a></li>
+          <li><a href="https://doi.org/10.1063/5.0198567" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2024)</a></li>
+          <li><a href="https://github.com/ifgroup/pytenso/issues" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-bug"></i> Issues</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copyright">© 2025 Franco Group, University of Rochester. MIT License.</span>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+          <span class="theme-toggle-icon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

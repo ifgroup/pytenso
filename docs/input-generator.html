@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Generator — TENSO</title>
+  <meta name="description" content="Interactive TENSO input file generator: configure bath, system, and HEOM parameters and download a ready-to-run Python script.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/input-generator.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Input Generator — TENSO" />
+  <meta property="og:description" content="Interactive TENSO input file generator: configure bath, system, and HEOM parameters and download a ready-to-run Python script." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/input-generator.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+
+  <style>
+    /* ── Form elements styled to match design tokens ── */
+    .ig-section {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .ig-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      background: var(--bg-2);
+      transition: background var(--transition);
+      user-select: none;
+    }
+
+    .ig-section__header:hover { background: var(--bg-3); }
+
+    .ig-section__title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .ig-section__title i { color: var(--accent-primary); font-size: 0.95rem; }
+
+    .ig-section__icon {
+      color: var(--text-muted);
+      transition: transform var(--transition);
+    }
+
+    .ig-section--open .ig-section__icon { transform: rotate(180deg); }
+
+    .ig-section__body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .ig-section--open .ig-section__body { max-height: 4000px; }
+
+    .ig-section__content {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Fields */
+    .ig-field {
+      margin-bottom: 1.25rem;
+    }
+
+    .ig-field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.04em;
+    }
+
+    .ig-field label .ig-label-code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-primary);
+      font-size: 0.82rem;
+    }
+
+    .ig-field label .ig-label-unit {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    .ig-input,
+    .ig-select {
+      width: 100%;
+      padding: 0.55rem 0.85rem;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      box-sizing: border-box;
+    }
+
+    .ig-input:focus,
+    .ig-select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(255,216,43,0.12);
+    }
+
+    .ig-input--short { max-width: 180px; }
+    .ig-input--medium { max-width: 300px; }
+
+    .ig-select option { background: #001E5F; }
+
+    .ig-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Row layout for side-by-side fields */
+    .ig-row {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .ig-row .ig-field { flex: 1; min-width: 140px; }
+
+    /* Dynamic component lists */
+    .ig-component-list { margin-top: 0.5rem; }
+
+    .ig-component-item {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+
+    .ig-component-item__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .ig-component-item__label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .ig-btn-remove {
+      background: rgba(255,80,80,0.1);
+      border: 1px solid rgba(255,80,80,0.25);
+      border-radius: 6px;
+      color: #ff6b6b;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .ig-btn-remove:hover { background: rgba(255,80,80,0.2); }
+
+    .ig-btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,216,43,0.06);
+      border: 1px dashed rgba(255,216,43,0.35);
+      border-radius: var(--radius);
+      color: var(--accent-primary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      transition: background var(--transition), border-color var(--transition);
+      margin-top: 0.25rem;
+    }
+
+    .ig-btn-add:hover {
+      background: rgba(255,216,43,0.12);
+      border-color: rgba(255,216,43,0.6);
+    }
+
+    /* Matrix grids */
+    .ig-matrix-grid {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+
+    .ig-matrix-grid table {
+      border-collapse: separate;
+      border-spacing: 4px;
+    }
+
+    .ig-matrix-cell {
+      width: 80px;
+      padding: 0.4rem 0.5rem;
+      text-align: center;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      transition: border-color var(--transition);
+      box-sizing: border-box;
+    }
+
+    .ig-matrix-cell:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px rgba(255,216,43,0.12);
+    }
+
+    /* Warning panel */
+    #ig-warnings {
+      margin-bottom: 1.5rem;
+    }
+
+    .ig-warning-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.85rem 1.1rem;
+      border-radius: var(--radius);
+      border-left: 3px solid;
+      margin-bottom: 0.5rem;
+      font-size: 0.88rem;
+    }
+
+    .ig-warning-item--info {
+      background: rgba(0,102,253,0.06);
+      border-color: var(--accent-secondary);
+      color: var(--text-secondary);
+    }
+
+    .ig-warning-item--warning {
+      background: rgba(255,170,0,0.07);
+      border-color: #ffaa00;
+      color: var(--text-secondary);
+    }
+
+    .ig-warning-item--danger {
+      background: rgba(255,80,80,0.07);
+      border-color: #ff5050;
+      color: var(--text-secondary);
+    }
+
+    .ig-warning-item i { flex-shrink: 0; margin-top: 0.1rem; }
+    .ig-warning-item--info i { color: var(--accent-secondary); }
+    .ig-warning-item--warning i { color: #ffaa00; }
+    .ig-warning-item--danger i { color: #ff5050; }
+
+    /* Stats bar */
+    .ig-stats {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1rem 1.25rem;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.25rem;
+      font-size: 0.82rem;
+    }
+
+    .ig-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .ig-stat__label {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .ig-stat__value {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--accent-primary);
+      font-size: 0.95rem;
+    }
+
+    .ig-stat__value--warn { color: #ffaa00; }
+    .ig-stat__value--danger { color: #ff5050; }
+
+    /* Preview section */
+    .ig-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .ig-preview-header h2 { margin: 0; font-size: 1.3rem; }
+
+    .ig-preview-actions {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .ig-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid;
+    }
+
+    .ig-action-btn--copy {
+      background: rgba(255,216,43,0.08);
+      border-color: rgba(255,216,43,0.3);
+      color: var(--accent-primary);
+    }
+
+    .ig-action-btn--copy:hover {
+      background: rgba(255,216,43,0.15);
+      border-color: var(--accent-primary);
+    }
+
+    .ig-action-btn--download {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-color: transparent;
+      color: #000b22;
+    }
+
+    .ig-action-btn--download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,216,43,0.35);
+    }
+
+    /* Section divider label */
+    .ig-subsection-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 1.25rem 0 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Light theme overrides */
+    [data-theme="light"] .ig-input,
+    [data-theme="light"] .ig-select,
+    [data-theme="light"] .ig-matrix-cell {
+      background: #fff;
+      color: #0a0a1a;
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    [data-theme="light"] .ig-component-item { background: #f4f7ff; }
+    [data-theme="light"] .ig-section { background: #fff; }
+    [data-theme="light"] .ig-section__header { background: #fff; }
+    [data-theme="light"] .ig-section__header:hover { background: #f0f4ff; }
+    [data-theme="light"] .ig-stats { background: #f0f4ff; }
+    [data-theme="light"] .ig-select option { background: #fff; color: #0a0a1a; }
+  </style>
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc" aria-label="Table of contents">
+        <div class="toc__title">On this page</div>
+        <ul class="toc__list">
+          <li class="toc__item"><a href="#bath" class="toc__link">Bath Parameters</a></li>
+          <li class="toc__item"><a href="#system" class="toc__link">System Parameters</a></li>
+          <li class="toc__item"><a href="#heom" class="toc__link">HEOM &amp; TTN Settings</a></li>
+          <li class="toc__item"><a href="#propagation" class="toc__link">Propagation Settings</a></li>
+          <li class="toc__item"><a href="#preview" class="toc__link">Preview &amp; Download</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="article" id="main-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb__sep">/</span>
+        <span class="breadcrumb__current">Input Generator</span>
+      </nav>
+
+      <h1>Input File Generator</h1>
+      <p>Fill in the parameters below to generate a ready-to-run Python input script for TENSO. The preview updates in real time, and warnings will appear if the chosen parameters may cause excessive memory usage or long runtimes.</p>
+
+      <div class="callout callout--tip" style="margin-bottom:1.75rem;">
+        <span class="callout__icon"><i class="fa fa-lightbulb"></i></span>
+        <div>New to TENSO? Read <a href="getting-started.html">Getting Started</a> first for a conceptual overview of each parameter. See <a href="background.html">Background</a> for the theory behind HEOM and tensor networks.</div>
+      </div>
+
+      <!-- ── Bath ──────────────────────────────────────────────────────── -->
+      <h2 id="bath" style="scroll-margin-top:5rem;">Bath Parameters</h2>
+
+      <div class="ig-section ig-section--open" id="sec-bath">
+        <div class="ig-section__header" data-ig-toggle="sec-bath">
+          <span class="ig-section__title">
+            <i class="fa fa-water"></i> Bath Correlation Function
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  <span class="ig-label-code">temperature</span>
+                  <span class="ig-label-unit"> (K)</span>
+                </label>
+                <input type="number" id="f-temperature" class="ig-input ig-input--short" value="300" min="0" step="1">
+              </div>
+              <div class="ig-field">
+                <label>
+                  <span class="ig-label-code">decomposition_method</span>
+                </label>
+                <select id="f-decomp" class="ig-select ig-input--medium">
+                  <option value="Pade" selected>Pade</option>
+                  <option value="Matsubara">Matsubara</option>
+                </select>
+                <div class="ig-hint">Padé is generally more efficient at low temperatures.</div>
+              </div>
+              <div class="ig-field">
+                <label>
+                  <span class="ig-label-code">n_ltc</span>
+                </label>
+                <input type="number" id="f-nltc" class="ig-input ig-input--short" value="1" min="0" max="20" step="1">
+                <div class="ig-hint">Low-temperature correction terms. Each adds one bath mode to the hierarchy.</div>
+              </div>
+            </div>
+
+            <!-- Drude-Lorentz -->
+            <div class="ig-subsection-label">Drude–Lorentz Components</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">Each component contributes <strong>one bath mode</strong>. Spectral density: $J_\textrm{DL}(\omega) = \frac{2\lambda}{\pi}\frac{\omega_c\,\omega}{\omega^2+\omega_c^2}$</p>
+
+            <div class="ig-component-list" id="dl-list"></div>
+            <button class="ig-btn-add" id="btn-add-dl">
+              <i class="fa fa-plus"></i> Add Drude–Lorentz Component
+            </button>
+
+            <!-- Brownian Oscillator -->
+            <div class="ig-subsection-label" style="margin-top:1.5rem;">Brownian Oscillator Components</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">Each component contributes <strong>two bath modes</strong>. Spectral density: $J_\textrm{BO}(\omega) = \frac{4\lambda}{\pi}\frac{\eta\,\omega_0^2\,\omega}{(\omega^2-\omega_0^2)^2+4\eta^2\omega^2}$</p>
+
+            <div class="ig-component-list" id="bo-list"></div>
+            <button class="ig-btn-add" id="btn-add-bo">
+              <i class="fa fa-plus"></i> Add Brownian Oscillator Component
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── System ─────────────────────────────────────────────────────── -->
+      <h2 id="system" style="scroll-margin-top:5rem;">System Parameters</h2>
+
+      <div class="ig-section ig-section--open" id="sec-system">
+        <div class="ig-section__header" data-ig-toggle="sec-system">
+          <span class="ig-section__title">
+            <i class="fa fa-atom"></i> Quantum System
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-field">
+              <label>System size <span class="ig-label-code">M</span> <span class="ig-label-unit">(Hilbert space dimension, 2–8)</span></label>
+              <input type="number" id="f-M" class="ig-input ig-input--short" value="2" min="2" max="8" step="1">
+              <div class="ig-hint">Each ADM in the HEOM hierarchy is an $M\times M$ matrix.</div>
+            </div>
+
+            <div class="ig-subsection-label">System Hamiltonian <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">sys_ham</span></div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">$H_S$ — real or complex entries, units cm⁻¹</p>
+            <div class="ig-matrix-grid" id="grid-ham"></div>
+
+            <div class="ig-subsection-label">System–Bath Coupling Operator <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">sys_op</span></div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">$Q_S$ — the operator that couples the system to the bath</p>
+            <div class="ig-matrix-grid" id="grid-op"></div>
+
+            <div class="ig-subsection-label">Initial Reduced Density Operator <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">init_rdo</span></div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">$\rho_0$ — must be positive semidefinite with trace = 1</p>
+            <div class="ig-matrix-grid" id="grid-rdo"></div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HEOM & TTN ─────────────────────────────────────────────────── -->
+      <h2 id="heom" style="scroll-margin-top:5rem;">HEOM &amp; TTN Settings</h2>
+
+      <div class="ig-section ig-section--open" id="sec-heom">
+        <div class="ig-section__header" data-ig-toggle="sec-heom">
+          <span class="ig-section__title">
+            <i class="fa fa-project-diagram"></i> Hierarchy &amp; Tensor Network
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  HEOM depth <span class="ig-label-code">dim</span>
+                </label>
+                <input type="number" id="f-dim" class="ig-input ig-input--short" value="10" min="1" max="100" step="1">
+                <div class="ig-hint">Truncation depth $N_k$. Increase until results converge (typical: 10–40).</div>
+              </div>
+              <div class="ig-field">
+                <label>
+                  Max auxiliary rank <span class="ig-label-code">max_auxiliary_rank</span>
+                </label>
+                <input type="number" id="f-maxrank" class="ig-input ig-input--short" value="64" min="1" max="1000" step="1">
+                <div class="ig-hint">Maximum rank of the auxiliary density matrices. Higher → more accuracy, more memory (typical: 32–128).</div>
+              </div>
+            </div>
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  ODE absolute tolerance <span class="ig-label-code">ode_atol</span>
+                </label>
+                <input type="text" id="f-odeatol" class="ig-input ig-input--short" value="1e-9">
+                <div class="ig-hint">Absolute tolerance for the ODE integrator. Tighter → more accurate but slower.</div>
+              </div>
+              <div class="ig-field">
+                <label>
+                  ODE relative tolerance <span class="ig-label-code">ode_rtol</span>
+                </label>
+                <input type="text" id="f-odertol" class="ig-input ig-input--short" value="1e-5">
+                <div class="ig-hint">Relative tolerance for the ODE integrator. Typical: <code>1e-5</code> to <code>1e-7</code>.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Propagation ────────────────────────────────────────────────── -->
+      <h2 id="propagation" style="scroll-margin-top:5rem;">Propagation Settings</h2>
+
+      <div class="ig-section ig-section--open" id="sec-prop">
+        <div class="ig-section__header" data-ig-toggle="sec-prop">
+          <span class="ig-section__title">
+            <i class="fa fa-clock"></i> Time Propagation
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  End time <span class="ig-label-code">end_time</span>
+                  <span class="ig-label-unit"> (fs)</span>
+                </label>
+                <input type="number" id="f-endtime" class="ig-input ig-input--short" value="100" min="0.01" step="1">
+              </div>
+              <div class="ig-field">
+                <label>
+                  Step size <span class="ig-label-code">step_time</span>
+                  <span class="ig-label-unit"> (fs)</span>
+                </label>
+                <input type="number" id="f-steptime" class="ig-input ig-input--short" value="0.05" min="0.001" step="0.005">
+              </div>
+              <div class="ig-field">
+                <label>
+                  Output prefix <span class="ig-label-code">fname</span>
+                </label>
+                <input type="text" id="f-fname" class="ig-input ig-input--medium" value="output" placeholder="output">
+                <div class="ig-hint">Output file will be <code>{fname}.json</code></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Warnings ──────────────────────────────────────────────────── -->
+      <h2 style="scroll-margin-top:5rem;">Estimated Resource Usage</h2>
+
+      <div class="ig-stats" id="ig-stats-bar">
+        <div class="ig-stat">
+          <span class="ig-stat__label">Bath Modes (K)</span>
+          <span class="ig-stat__value" id="stat-K">—</span>
+        </div>
+        <div class="ig-stat">
+          <span class="ig-stat__label">Hierarchy Nodes</span>
+          <span class="ig-stat__value" id="stat-H">—</span>
+        </div>
+        <div class="ig-stat">
+          <span class="ig-stat__label">Est. RAM</span>
+          <span class="ig-stat__value" id="stat-RAM">—</span>
+        </div>
+        <div class="ig-stat">
+          <span class="ig-stat__label">Time Steps</span>
+          <span class="ig-stat__value" id="stat-steps">—</span>
+        </div>
+      </div>
+
+      <div id="ig-warnings"></div>
+
+      <!-- ── Preview ───────────────────────────────────────────────────── -->
+      <div id="preview" style="scroll-margin-top:5rem;">
+        <div class="ig-preview-header">
+          <h2 id="preview-title" style="scroll-margin-top:5rem;">Preview &amp; Download</h2>
+          <div class="ig-preview-actions">
+            <button class="ig-action-btn ig-action-btn--copy" id="btn-copy">
+              <i class="fa fa-copy"></i> Copy
+            </button>
+            <button class="ig-action-btn ig-action-btn--download" id="btn-download">
+              <i class="fa fa-download"></i> Download .py
+            </button>
+          </div>
+        </div>
+
+        <div class="code-block" style="border:1px solid var(--border);border-radius:var(--radius);">
+          <pre id="ig-preview-pre" style="margin:0;padding:1.5rem;overflow-x:auto;background:var(--bg-2) !important;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.7;color:var(--text-secondary);white-space:pre;"></pre>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-top: 2.5rem; flex-wrap:wrap;">
+        <a href="getting-started.html" class="btn btn--secondary"><i class="fa fa-arrow-left"></i> Getting Started</a>
+        <a href="api.html" class="btn btn--primary">API Reference <i class="fa fa-arrow-right"></i></a>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer__bottom" style="max-width:1200px; margin:0 auto;">
+      <span class="footer__copyright">© 2025 Franco Group, University of Rochester.</span>
+      <a href="index.html" style="font-size:0.85rem; color:var(--text-muted);">← Back to Home</a>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+  // ============================================================
+  //  TENSO Input Generator — all logic self-contained
+  // ============================================================
+
+  (function () {
+    'use strict';
+
+    // ── State ──────────────────────────────────────────────────
+    let dlComponents = [];   // [{re, width}]
+    let boComponents = [];   // [{freq, re, width}]
+    let M = 2;
+
+    // Default matrices for spin-boson (M=2)
+    const DEFAULTS = {
+      ham:  (m) => identity(m),
+      op:   (m) => sigmaz(m),
+      rdo:  (m) => excitedState(m),
+    };
+
+    // Matrices stored as flat arrays of strings (row-major)
+    let hamData = matToFlat(DEFAULTS.ham(2));
+    let opData  = matToFlat(DEFAULTS.op(2));
+    let rdoData = matToFlat(DEFAULTS.rdo(2));
+
+    // ── Matrix helpers ─────────────────────────────────────────
+    function identity(n) {
+      const m = [];
+      for (let i = 0; i < n; i++) {
+        m.push([]);
+        for (let j = 0; j < n; j++) m[i].push(i === j ? '1' : '0');
+      }
+      return m;
+    }
+
+    function sigmaz(n) {
+      if (n !== 2) return identity(n);
+      return [['1','0'],['0','-1']];
+    }
+
+    function excitedState(n) {
+      const m = [];
+      for (let i = 0; i < n; i++) {
+        m.push([]);
+        for (let j = 0; j < n; j++) m[i].push(i === 0 && j === 0 ? '1' : '0');
+      }
+      return m;
+    }
+
+    function matToFlat(mat) {
+      return mat.map(row => row.slice());
+    }
+
+    function flatToNested(flat, n) {
+      const mat = [];
+      for (let i = 0; i < n; i++) mat.push(flat[i].slice());
+      return mat;
+    }
+
+    // ── Section toggle ─────────────────────────────────────────
+    document.querySelectorAll('[data-ig-toggle]').forEach(header => {
+      header.addEventListener('click', () => {
+        const sec = document.getElementById(header.dataset.igToggle);
+        sec.classList.toggle('ig-section--open');
+      });
+    });
+
+    // ── Bath component rendering ───────────────────────────────
+    function renderDLList() {
+      const list = document.getElementById('dl-list');
+      list.innerHTML = '';
+      dlComponents.forEach((comp, idx) => {
+        const item = document.createElement('div');
+        item.className = 'ig-component-item';
+        item.innerHTML = `
+          <div class="ig-component-item__header">
+            <span class="ig-component-item__label">DL Component #${idx + 1}</span>
+            <button class="ig-btn-remove" data-dl-remove="${idx}">
+              <i class="fa fa-times"></i> Remove
+            </button>
+          </div>
+          <div class="ig-row">
+            <div class="ig-field">
+              <label><span class="ig-label-code">re_d[${idx}]</span> — λ <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-dl="${idx}" data-key="re" value="${comp.re}" step="1">
+            </div>
+            <div class="ig-field">
+              <label><span class="ig-label-code">width_d[${idx}]</span> — ω<sub>c</sub> <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-dl="${idx}" data-key="width" value="${comp.width}" step="1">
+            </div>
+          </div>`;
+        list.appendChild(item);
+      });
+
+      list.querySelectorAll('[data-dl-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          dlComponents.splice(parseInt(btn.dataset.dlRemove), 1);
+          renderDLList();
+          update();
+        });
+      });
+
+      list.querySelectorAll('[data-dl]').forEach(input => {
+        input.addEventListener('input', () => {
+          dlComponents[parseInt(input.dataset.dl)][input.dataset.key] = input.value;
+          update();
+        });
+      });
+    }
+
+    function renderBOList() {
+      const list = document.getElementById('bo-list');
+      list.innerHTML = '';
+      boComponents.forEach((comp, idx) => {
+        const item = document.createElement('div');
+        item.className = 'ig-component-item';
+        item.innerHTML = `
+          <div class="ig-component-item__header">
+            <span class="ig-component-item__label">BO Component #${idx + 1}</span>
+            <button class="ig-btn-remove" data-bo-remove="${idx}">
+              <i class="fa fa-times"></i> Remove
+            </button>
+          </div>
+          <div class="ig-row">
+            <div class="ig-field">
+              <label><span class="ig-label-code">freq_b[${idx}]</span> — ω<sub>0</sub> <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-bo="${idx}" data-key="freq" value="${comp.freq}" step="1">
+            </div>
+            <div class="ig-field">
+              <label><span class="ig-label-code">re_b[${idx}]</span> — λ <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-bo="${idx}" data-key="re" value="${comp.re}" step="1">
+            </div>
+            <div class="ig-field">
+              <label><span class="ig-label-code">width_b[${idx}]</span> — η <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-bo="${idx}" data-key="width" value="${comp.width}" step="1">
+            </div>
+          </div>`;
+        list.appendChild(item);
+      });
+
+      list.querySelectorAll('[data-bo-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          boComponents.splice(parseInt(btn.dataset.boRemove), 1);
+          renderBOList();
+          update();
+        });
+      });
+
+      list.querySelectorAll('[data-bo]').forEach(input => {
+        input.addEventListener('input', () => {
+          boComponents[parseInt(input.dataset.bo)][input.dataset.key] = input.value;
+          update();
+        });
+      });
+    }
+
+    document.getElementById('btn-add-dl').addEventListener('click', () => {
+      dlComponents.push({ re: '540', width: '70' });
+      renderDLList();
+      update();
+    });
+
+    document.getElementById('btn-add-bo').addEventListener('click', () => {
+      boComponents.push({ freq: '1663', re: '330', width: '4' });
+      renderBOList();
+      update();
+    });
+
+    // ── Matrix grid rendering ──────────────────────────────────
+    function renderGrid(containerId, dataStore, label) {
+      const container = document.getElementById(containerId);
+      const table = document.createElement('table');
+      for (let i = 0; i < M; i++) {
+        const tr = document.createElement('tr');
+        for (let j = 0; j < M; j++) {
+          const td = document.createElement('td');
+          const inp = document.createElement('input');
+          inp.type = 'text';
+          inp.className = 'ig-matrix-cell';
+          inp.value = dataStore[i][j];
+          inp.setAttribute('aria-label', `${label}[${i}][${j}]`);
+          inp.addEventListener('input', () => {
+            dataStore[i][j] = inp.value;
+            update();
+          });
+          td.appendChild(inp);
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+      container.innerHTML = '';
+      container.appendChild(table);
+    }
+
+    function resizeMatrix(old, n) {
+      const mat = [];
+      for (let i = 0; i < n; i++) {
+        mat.push([]);
+        for (let j = 0; j < n; j++) {
+          mat[i].push((old[i] && old[i][j] !== undefined) ? old[i][j] : '0');
+        }
+      }
+      return mat;
+    }
+
+    function renderAllGrids() {
+      renderGrid('grid-ham', hamData, 'sys_ham');
+      renderGrid('grid-op',  opData,  'sys_op');
+      renderGrid('grid-rdo', rdoData, 'init_rdo');
+    }
+
+    document.getElementById('f-M').addEventListener('change', () => {
+      const newM = Math.max(2, Math.min(8, parseInt(document.getElementById('f-M').value) || 2));
+      document.getElementById('f-M').value = newM;
+      hamData = resizeMatrix(hamData, newM);
+      opData  = resizeMatrix(opData,  newM);
+      rdoData = resizeMatrix(rdoData, newM);
+      M = newM;
+      renderAllGrids();
+      update();
+    });
+
+    // ── Read all form values ───────────────────────────────────
+    function readParams() {
+      return {
+        temperature: parseFloat(document.getElementById('f-temperature').value) || 300,
+        decomp:      document.getElementById('f-decomp').value,
+        n_ltc:       parseInt(document.getElementById('f-nltc').value) || 0,
+        dl:          dlComponents.map(c => ({ re: parseFloat(c.re) || 0, width: parseFloat(c.width) || 0 })),
+        bo:          boComponents.map(c => ({ freq: parseFloat(c.freq) || 0, re: parseFloat(c.re) || 0, width: parseFloat(c.width) || 0 })),
+        M:           M,
+        ham:         hamData,
+        op:          opData,
+        rdo:         rdoData,
+        dim:         parseInt(document.getElementById('f-dim').value) || 10,
+        maxRank:     parseInt(document.getElementById('f-maxrank').value) || 64,
+        odeAtol:     document.getElementById('f-odeatol').value.trim() || '1e-9',
+        odeRtol:     document.getElementById('f-odertol').value.trim() || '1e-5',
+        endTime:     parseFloat(document.getElementById('f-endtime').value) || 100,
+        stepTime:    parseFloat(document.getElementById('f-steptime').value) || 0.05,
+        fname:       document.getElementById('f-fname').value.trim() || 'output',
+      };
+    }
+
+    // ── Hierarchy size (multinomial coefficient C(dim+K, K)) ───
+    function binomCoeff(n, k) {
+      if (k > n) return 0;
+      if (k === 0 || k === n) return 1;
+      k = Math.min(k, n - k);
+      let result = 1;
+      for (let i = 0; i < k; i++) {
+        result = result * (n - i) / (i + 1);
+      }
+      return result;
+    }
+
+    function hierarchySize(dim, K) {
+      // Number of nodes with depth <= dim in a K-mode hierarchy = C(dim+K, K)
+      return Math.round(binomCoeff(dim + K, K));
+    }
+
+    // ── Format memory ──────────────────────────────────────────
+    function fmtBytes(bytes) {
+      if (bytes < 1024) return bytes.toFixed(0) + ' B';
+      if (bytes < 1024 ** 2) return (bytes / 1024).toFixed(1) + ' KB';
+      if (bytes < 1024 ** 3) return (bytes / 1024 ** 2).toFixed(1) + ' MB';
+      return (bytes / 1024 ** 3).toFixed(2) + ' GB';
+    }
+
+    function fmtNum(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+      return n.toString();
+    }
+
+    // ── Warnings ───────────────────────────────────────────────
+    function updateWarnings(p, K, H, ramBytes, nSteps) {
+      const container = document.getElementById('ig-warnings');
+      const warnings = [];
+
+      if (K === 0) {
+        warnings.push({ level: 'warning', icon: 'fa-exclamation-triangle',
+          text: 'No bath components defined. Add at least one Drude–Lorentz or Brownian oscillator component.' });
+      }
+
+      if (H > 100000) {
+        warnings.push({ level: 'danger', icon: 'fa-skull-crossbones',
+          text: `Very large hierarchy (${fmtNum(H)} nodes) — likely to exceed RAM. Reduce <code>dim</code> or the number of bath modes.` });
+      } else if (H > 10000) {
+        warnings.push({ level: 'warning', icon: 'fa-exclamation-triangle',
+          text: `Large hierarchy (${fmtNum(H)} nodes) — consider reducing <code>dim</code> or bath components if memory is limited.` });
+      }
+
+      if (ramBytes > 4 * 1024 ** 3) {
+        warnings.push({ level: 'danger', icon: 'fa-memory',
+          text: `Estimated RAM ≈ ${fmtBytes(ramBytes)} — exceeds typical workstation memory. Reduce <code>max_auxiliary_rank</code> or <code>dim</code>.` });
+      } else if (ramBytes > 1 * 1024 ** 3) {
+        warnings.push({ level: 'warning', icon: 'fa-memory',
+          text: `Estimated RAM ≈ ${fmtBytes(ramBytes)} — ensure your machine has sufficient memory.` });
+      }
+
+      if (nSteps > 100000) {
+        warnings.push({ level: 'warning', icon: 'fa-hourglass-half',
+          text: `${fmtNum(nSteps)} time steps — propagation may take a long time. Consider increasing <code>step_time</code> or reducing <code>end_time</code>.` });
+      }
+
+      if (p.stepTime > 0.5) {
+        warnings.push({ level: 'warning', icon: 'fa-ruler',
+          text: `Large step size Δt = ${p.stepTime} fs may reduce numerical accuracy. Typical values are 0.01–0.1 fs.` });
+      }
+
+      if (p.decomp === 'Matsubara' && p.n_ltc > 5) {
+        warnings.push({ level: 'info', icon: 'fa-info-circle',
+          text: `Matsubara decomposition with ${p.n_ltc} LTC terms generates many bath modes. The Padé method achieves similar accuracy with fewer terms.` });
+      }
+
+      if (warnings.length === 0) {
+        container.innerHTML = `
+          <div class="ig-warning-item ig-warning-item--info">
+            <i class="fa fa-check-circle"></i>
+            <span>Parameters look reasonable — no major resource concerns detected.</span>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = warnings.map(w => `
+        <div class="ig-warning-item ig-warning-item--${w.level}">
+          <i class="fa ${w.icon}"></i>
+          <span>${w.text}</span>
+        </div>`).join('');
+    }
+
+    // ── Code generator ─────────────────────────────────────────
+    function fmtList(arr) {
+      return '[' + arr.join(', ') + ']';
+    }
+
+    function fmtMatrix(data, n, varName) {
+      const rows = [];
+      for (let i = 0; i < n; i++) {
+        const row = data[i].map(v => {
+          const s = v.toString().trim() || '0';
+          // If it's a pure number without imaginary part, leave it; otherwise add +0j if needed
+          return s;
+        }).join(', ');
+        rows.push('    [' + row + ']');
+      }
+      const indent = ' '.repeat(varName.length + 3);
+      return rows.join(',\n');
+    }
+
+    function generateCode(p) {
+      const hasDL = p.dl.length > 0;
+      const hasBO = p.bo.length > 0;
+
+      const re_d   = hasDL ? fmtList(p.dl.map(c => c.re))    : '[]';
+      const wd_d   = hasDL ? fmtList(p.dl.map(c => c.width)) : '[]';
+      const fr_b   = hasBO ? fmtList(p.bo.map(c => c.freq))  : '[]';
+      const re_b   = hasBO ? fmtList(p.bo.map(c => c.re))    : '[]';
+      const wd_b   = hasBO ? fmtList(p.bo.map(c => c.width)) : '[]';
+
+      const matStr = (data, name) => {
+        const rows = [];
+        for (let i = 0; i < p.M; i++) {
+          const row = data[i].map(v => (v.toString().trim() || '0')).join(', ');
+          rows.push('    [' + row + ']');
+        }
+        return rows.join(',\n');
+      };
+
+      const lines = [
+        'from math import ceil',
+        'import os',
+        'import json as json',
+        'import numpy as np',
+        'from tqdm import tqdm',
+        '',
+        'from tenso.prototypes.heom import system_single_bath, system_multibath',
+        'from tenso.prototypes.bath import gen_bcf',
+        'import matplotlib.pyplot as plt',
+        '',
+        'from tenso.prototypes.default_parameters import quantity',
+        '',
+        '',
+        '# ── Bath ──────────────────────────────────────────────────────────────────────',
+        'bath = gen_bcf(',
+        `    re_d    = ${re_d},`,
+        `    width_d = ${wd_d},`,
+        `    freq_b  = ${fr_b},`,
+        `    re_b    = ${re_b},`,
+        `    width_b = ${wd_b},`,
+        `    temperature          = ${p.temperature},`,
+        `    decomposition_method = '${p.decomp}',`,
+        `    n_ltc                = ${p.n_ltc},`,
+        ')',
+        '',
+        '',
+        '# ── System ───────────────────────────────────────────────────────────────────',
+        'sys_ham = np.array([',
+        matStr(p.ham, 'sys_ham') + ',',
+        '], dtype=np.complex128)',
+        '',
+        'sys_op = np.array([',
+        matStr(p.op, 'sys_op') + ',',
+        '], dtype=np.complex128)',
+        '',
+        'init_rdo = np.array([',
+        matStr(p.rdo, 'init_rdo') + ',',
+        '], dtype=np.complex128)',
+        '',
+        '',
+        '# ── Run ──────────────────────────────────────────────────────────────────────',
+        `end_time = ${p.endTime}  # fs`,
+        `dt = ${p.stepTime}  # fs`,
+        `out = '${p.fname}.json'`,
+        '',
+        'propagator = system_single_bath(',
+        `        fname=out,`,
+        `        init_rdo=init_rdo,`,
+        `        sys_ham=sys_ham,`,
+        `        sys_op=sys_op,`,
+        `        bath_correlation=bath,`,
+        `        end_time=end_time,`,
+        `        step_time=dt,`,
+        `        dim=${p.dim},`,
+        `        max_auxiliary_rank=${p.maxRank},`,
+        `        ode_atol=${p.odeAtol},`,
+        `        ode_rtol=${p.odeRtol},`,
+        `        #stepwise_method='simple',`,
+        `        #ps_method='ps1',`,
+        `        #rank=${p.maxRank},`,
+        '    )',
+        '',
+        'progress_bar = tqdm(propagator, total=ceil(end_time / dt))',
+        'for _t in (progress_bar):',
+        "    progress_bar.set_description(f'@{_t:.2f} fs')",
+        '',
+      ];
+
+      return lines.join('\n');
+    }
+
+    // ── Main update ────────────────────────────────────────────
+    function update() {
+      const p = readParams();
+
+      // Compute K (total bath modes)
+      const K = p.dl.length + 2 * p.bo.length + p.n_ltc;
+
+      // Hierarchy size
+      const H = hierarchySize(p.dim, K);
+
+      // RAM estimate: H × M² × maxRank × 16 bytes (complex128)
+      const ramBytes = H * p.M * p.M * p.maxRank * 16;
+
+      // Time steps
+      const nSteps = Math.round(p.endTime / p.stepTime);
+
+      // Stats bar
+      const statH = document.getElementById('stat-H');
+      const statRAM = document.getElementById('stat-RAM');
+      const statSteps = document.getElementById('stat-steps');
+
+      document.getElementById('stat-K').textContent = K;
+
+      statH.textContent = fmtNum(H);
+      statH.className = 'ig-stat__value' + (H > 100000 ? ' ig-stat__value--danger' : H > 10000 ? ' ig-stat__value--warn' : '');
+
+      statRAM.textContent = fmtBytes(ramBytes);
+      statRAM.className = 'ig-stat__value' + (ramBytes > 4 * 1024 ** 3 ? ' ig-stat__value--danger' : ramBytes > 1024 ** 3 ? ' ig-stat__value--warn' : '');
+
+      statSteps.textContent = fmtNum(nSteps);
+      statSteps.className = 'ig-stat__value' + (nSteps > 100000 ? ' ig-stat__value--warn' : '');
+
+      // Warnings
+      updateWarnings(p, K, H, ramBytes, nSteps);
+
+      // Code preview
+      document.getElementById('ig-preview-pre').textContent = generateCode(p);
+    }
+
+    // ── Copy button ────────────────────────────────────────────
+    document.getElementById('btn-copy').addEventListener('click', function () {
+      const code = document.getElementById('ig-preview-pre').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = this;
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-check"></i> Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+      });
+    });
+
+    // ── Download button ────────────────────────────────────────
+    document.getElementById('btn-download').addEventListener('click', () => {
+      const code = document.getElementById('ig-preview-pre').textContent;
+      const fname = (document.getElementById('f-fname').value.trim() || 'output');
+      const blob = new Blob([code], { type: 'text/x-python' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fname + '_input.py';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ── Wire up all other inputs ───────────────────────────────
+    ['f-temperature', 'f-decomp', 'f-nltc', 'f-dim', 'f-maxrank',
+     'f-odeatol', 'f-odertol', 'f-endtime', 'f-steptime', 'f-fname'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', update);
+    });
+
+    // ── Init ───────────────────────────────────────────────────
+    // Seed with one default Drude-Lorentz component
+    dlComponents.push({ re: '540', width: '70' });
+    renderDLList();
+    renderBOList();
+    renderAllGrids();
+    update();
+
+  })();
+  </script>
+</body>
+</html>
