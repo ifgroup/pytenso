@@ -139,9 +139,12 @@ def system_single_bath(
     if parameters['load_checkpoint_from_file']:
         state = Model.load(fname + default_extension['checkpoint'])
         hierarchy.initialize_from_chk() # Set up terminators etc
-        renorm_coeff = state[root].norm()
-        state.update({root: state[root] / renorm_coeff})
-        renorm_coeff = opt_to_numpy(renorm_coeff)
+        if parameters['renormalize']:
+            renorm_coeff = state[root].norm()
+            state.update({root: state[root] / renorm_coeff})
+            renorm_coeff = opt_to_numpy(renorm_coeff)
+        else:
+            renorm_coeff = 1.0
     else:
         state = hierarchy.initialize_state(init_rdo, rank)
         renorm_coeff = 1.0
@@ -275,7 +278,7 @@ def system_single_bath(
 
     if parameters['save_checkpoint_to_file']:
         if parameters['renormalize']:
-            state.update({root: root_array * renorm_coeff})
+            state.update({root: state[root] * renorm_coeff})
         state.save(fname + default_extension['checkpoint'])
     return
 
@@ -407,9 +410,12 @@ def system_multibath(
     if parameters['load_checkpoint_from_file']:
         state = Model.load(fname + default_extension['checkpoint'])
         hierarchy.initialize_from_chk() # Set up terminators etc
-        renorm_coeff = state[root].norm()
-        state.update({root: state[root] / renorm_coeff})
-        renorm_coeff = opt_to_numpy(renorm_coeff)
+        if parameters['renormalize']:
+            renorm_coeff = state[root].norm()
+            state.update({root: state[root] / renorm_coeff})
+            renorm_coeff = opt_to_numpy(renorm_coeff)
+        else:
+            renorm_coeff = 1.0
     else:
         state = hierarchy.initialize_state(init_rdo, rank)
         renorm_coeff = 1.0
@@ -542,7 +548,7 @@ def system_multibath(
 
     if parameters['save_checkpoint_to_file']:
         if parameters['renormalize']:
-            state.update({root: root_array * renorm_coeff})
+            state.update({root: state[root] * renorm_coeff})
         state.save(fname + default_extension['checkpoint'])
     return
 
