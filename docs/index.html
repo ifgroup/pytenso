@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TENSO — Tree Tensor Network Open Quantum Dynamics</title>
+  <meta name="description" content="TENSO: Exact open quantum dynamics via Tree Tensor Network HEOM with polynomial scaling.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/index.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="TENSO — Tree Tensor Network Open Quantum Dynamics" />
+  <meta property="og:description" content="TENSO: Exact open quantum dynamics via Tree Tensor Network HEOM with polynomial scaling." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/index.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" defer></script>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+</head>
+<body>
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="progress-bar"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <div class="search-bar">
+        <i class="fa fa-search search-icon" aria-hidden="true"></i>
+        <input type="search" class="search-input" placeholder="Search…" aria-label="Search documentation">
+        <div class="search-results" role="listbox"></div>
+      </div>
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub repository" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__content">
+      <div class="hero__badge">
+        <i class="fa fa-atom" aria-hidden="true"></i>
+        TTN-HEOM · Open Quantum Dynamics
+      </div>
+      <h1 class="hero__title">TENSO</h1>
+      <p class="hero__subtitle">Tensor Equations for Non-Markovian Structured Open systems</p>
+      <p class="hero__typewriter">
+        <span id="typewriter-text">Exact open quantum dynamics</span><span class="cursor" aria-hidden="true"></span>
+      </p>
+      <div class="hero__ctas">
+        <a href="getting-started.html" class="btn btn--primary">
+          <i class="fa fa-rocket" aria-hidden="true"></i> Get Started
+        </a>
+        <a href="https://github.com/ifgroup/pytenso" class="btn btn--secondary" target="_blank" rel="noopener">
+          <i class="fab fa-github" aria-hidden="true"></i> GitHub
+        </a>
+      </div>
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <span class="hero__stat-value">Exact</span>
+          <span class="hero__stat-label">Quantum Dynamics</span>
+        </div>
+        <div class="hero__stat">
+          <span class="hero__stat-value">𝒪(polynomial)</span>
+          <span class="hero__stat-label">Memory Scaling</span>
+        </div>
+        <div class="hero__stat">
+          <span class="hero__stat-value">Arbitrary</span>
+          <span class="hero__stat-label">Tree TN Structures</span>
+        </div>
+      </div>
+    </div>
+    <!-- Yellowjacket mascot (Rocky) -->
+    <svg class="hero__mascot" viewBox="0 0 130 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
+      <!-- Left wing -->
+      <ellipse cx="28" cy="62" rx="28" ry="12" fill="rgba(255,255,255,0.55)" transform="rotate(-30 28 62)"/>
+      <!-- Right wing -->
+      <ellipse cx="102" cy="62" rx="28" ry="12" fill="rgba(255,255,255,0.55)" transform="rotate(30 102 62)"/>
+      <!-- Abdomen stripes (bottom) -->
+      <ellipse cx="65" cy="118" rx="22" ry="30" fill="#FFD82B"/>
+      <rect x="43" y="100" width="44" height="8" rx="4" fill="#001E5F"/>
+      <rect x="43" y="116" width="44" height="8" rx="4" fill="#001E5F"/>
+      <rect x="43" y="132" width="44" height="8" rx="4" fill="#001E5F"/>
+      <!-- Thorax -->
+      <ellipse cx="65" cy="80" rx="20" ry="18" fill="#001E5F"/>
+      <!-- Head -->
+      <circle cx="65" cy="52" r="18" fill="#FFD82B"/>
+      <!-- Eyes -->
+      <circle cx="58" cy="48" r="4" fill="#001E5F"/>
+      <circle cx="72" cy="48" r="4" fill="#001E5F"/>
+      <circle cx="59" cy="47" r="1.5" fill="white"/>
+      <circle cx="73" cy="47" r="1.5" fill="white"/>
+      <!-- Smile -->
+      <path d="M57 57 Q65 63 73 57" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- Left antenna -->
+      <path d="M58 35 Q50 20 44 14" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="43" cy="13" r="3" fill="#001E5F"/>
+      <!-- Right antenna -->
+      <path d="M72 35 Q80 20 86 14" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="87" cy="13" r="3" fill="#001E5F"/>
+      <!-- Stinger -->
+      <polygon points="65,148 60,158 70,158" fill="#001E5F"/>
+      <!-- Legs (3 per side) -->
+      <path d="M45 78 Q32 76 26 80" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M45 86 Q32 86 24 92" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M45 94 Q34 96 28 104" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M85 78 Q98 76 104 80" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M85 86 Q98 86 106 92" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M85 94 Q96 96 102 104" stroke="#001E5F" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </section>
+
+  <!-- Features -->
+  <section style="background: var(--bg-2);">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__eyebrow">Why TENSO</span>
+        <h2 class="section__title">The exact method that scales</h2>
+        <p class="section__desc">TENSO combines the mathematical exactness of HEOM with Tree Tensor Networks for polynomial memory complexity.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal" data-delay="1">
+          <div class="feature-card__icon"><i class="fa fa-check-double"></i></div>
+          <h3 class="feature-card__title">Numerically Exact</h3>
+          <p class="feature-card__desc">Full HEOM simulations. Exact open quantum dynamics with small computational cost and high performance.</p>
+        </div>
+        <div class="feature-card reveal" data-delay="2">
+          <div class="feature-card__icon"><i class="fa fa-chart-line"></i></div>
+          <h3 class="feature-card__title">Polynomial Scaling</h3>
+          <p class="feature-card__desc">Tree Tensor Network decomposition replaces exponential memory cost ($\mathcal{O}(N^K)$ for $K$ bath features) with polynomial scaling, making large structured baths tractable.</p>
+        </div>
+        <div class="feature-card reveal" data-delay="3">
+          <div class="feature-card__icon"><i class="fa fa-sitemap"></i></div>
+          <h3 class="feature-card__title">Flexible Topologies</h3>
+          <p class="feature-card__desc">Balanced binary tree (tree2) and tensor train topologies. Choose the best structure for your bath, and also implement yours.</p>
+        </div>
+        <div class="feature-card reveal" data-delay="4">
+          <div class="feature-card__icon"><i class="fa fa-sliders"></i></div>
+          <h3 class="feature-card__title">Three Propagation Strategies</h3>
+          <p class="feature-card__desc">Direct integration (vmf), fixed-rank PS1, and adaptive-rank PS2. Mix them on-the-fly for optimal performance.</p>
+        </div>
+        <div class="feature-card reveal" data-delay="5">
+          <div class="feature-card__icon"><i class="fa fa-bath"></i></div>
+          <h3 class="feature-card__title">Structured Baths</h3>
+          <p class="feature-card__desc">Structured spectral densities. Multi-bath support for complex environments.</p>
+        </div>
+        <div class="feature-card reveal" data-delay="6">
+          <div class="feature-card__icon"><i class="fa fa-microchip"></i></div>
+          <h3 class="feature-card__title">GPU Ready</h3>
+          <p class="feature-card__desc">Built on PyTorch for hardware-agnostic tensor operations. The same code runs on CPU and GPU without modification.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Code Preview -->
+  <section>
+    <div class="container">
+      <div class="section__header">
+        <span class="section__eyebrow">Quick Start</span>
+        <h2 class="section__title">A simulation in four steps</h2>
+        <p class="section__desc">Define the bath, build the system, set parameters, and propagate.</p>
+      </div>
+
+      <div class="tabs reveal" role="tablist" aria-label="Quick start code steps">
+        <div class="tabs__nav">
+          <button class="tab-btn" role="tab" aria-selected="true" aria-controls="tab-bath" id="btn-bath">
+            <i class="fa fa-water" aria-hidden="true"></i> 1. Bath
+          </button>
+          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-system" id="btn-system" tabindex="-1">
+            <i class="fa fa-atom" aria-hidden="true"></i> 2. System
+          </button>
+          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-propagate" id="btn-propagate" tabindex="-1">
+            <i class="fa fa-play" aria-hidden="true"></i> 3. Propagate
+          </button>
+          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-analyze" id="btn-analyze" tabindex="-1">
+            <i class="fa fa-chart-area" aria-hidden="true"></i> 4. Analyze
+          </button>
+        </div>
+
+        <div class="tab-panel" role="tabpanel" id="tab-bath" aria-labelledby="btn-bath" aria-hidden="false">
+          <div class="code-block">
+            <pre><code class="language-python">from tenso.prototypes.bath import gen_bcf
+
+bath = gen_bcf(
+    re_d    = [540],    # λ for DL component (cm⁻¹)
+    width_d = [70],     # ωc for DL component (cm⁻¹)
+    freq_b  = [1663],   # ω0 for BO component (cm⁻¹)
+    re_b    = [330],    # λ  for BO component (cm⁻¹)
+    width_b = [4],      # η  for BO component (cm⁻¹)
+    temperature          = 300,    # K
+    decomposition_method = 'Pade',
+    n_ltc                = 1,      # low-temperature corrections
+)</code></pre>
+          </div>
+        </div>
+
+        <div class="tab-panel" role="tabpanel" id="tab-system" aria-labelledby="btn-system" aria-hidden="true">
+          <div class="code-block">
+            <pre><code class="language-python">import numpy as np
+
+eps   = 1500.0   # cm⁻¹  energy gap ε
+delta =  300.0   # cm⁻¹  tunneling Δ
+
+sys_ham = np.array([[ eps/2,  delta],
+                    [ delta, -eps/2]], dtype=np.complex128)
+
+sys_op  = np.array([[0.0, 1.0],
+                    [1.0, 0.0]], dtype=np.complex128)
+
+# Initial state: |↑⟩ (excited state)
+wfn      = np.array([1.0, 0.0], dtype=np.complex128)
+init_rdo = np.outer(wfn, wfn.conj())</code></pre>
+          </div>
+        </div>
+
+        <div class="tab-panel" role="tabpanel" id="tab-propagate" aria-labelledby="btn-propagate" aria-hidden="true">
+          <div class="code-block">
+            <pre><code class="language-python">from math import ceil
+from tqdm import tqdm
+from tenso.prototypes.heom import system_multibath
+
+end_time  = 100.0   # fs
+dt = 0.05    # fs
+
+propagator = system_multibath(
+    fname             = 'out',
+    init_rdo          = init_rdo,
+    sys_ham           = sys_ham,
+    sys_ops           = [sys_op],
+    bath_correlations = [bath],
+    dim               = 20,
+    end_time          = end_time,
+    step_time         = dt,
+)
+
+progress_bar = tqdm(propagator, total=ceil(end_time / dt))
+for _t in progress_bar:
+    progress_bar.set_description(f'@{_t:.2f} fs')</code></pre>
+          </div>
+        </div>
+
+        <div class="tab-panel" role="tabpanel" id="tab-analyze" aria-labelledby="btn-analyze" aria-hidden="true">
+          <div class="code-block">
+            <pre><code class="language-python">import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.loadtxt('out.dat.log', dtype=np.complex128)
+
+t       = data[:, 0].real    # time (fs)
+pop_exc = data[:, 1].real    # excited state population
+pop_gnd = data[:, 4].real    # ground state population
+coh_eg  = data[:, 2]         # coherence ρ_eg (complex)
+
+fig, axes = plt.subplots(1, 2, figsize=(8, 3))
+axes[0].plot(t, pop_exc, label=r'$[\rho_S]_{00}$')
+axes[0].plot(t, pop_gnd, '--', label=r'$[\rho_S]_{11}$')
+axes[0].set(xlabel='Time (fs)', ylabel='Population')
+axes[0].legend()
+axes[1].plot(t, np.abs(coh_eg), color='tab:purple')
+axes[1].set(xlabel='Time (fs)', ylabel=r'$|\rho_{eg}|$')
+plt.tight_layout()
+plt.show()</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="getting-started.html" class="btn btn--primary">
+          Full Tutorial <i class="fa fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Citation Teaser -->
+  <section style="background: var(--bg-2);">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__eyebrow">Publications</span>
+        <h2 class="section__title">Peer-reviewed research</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="feature-card reveal" data-delay="1">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <span class="tag">2025</span>
+            <a href="https://doi.org/10.1063/5.0278591" class="doi-badge" target="_blank" rel="noopener">
+              <i class="fa fa-external-link-alt"></i> DOI
+            </a>
+          </div>
+          <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">TTN-HEOM</h3>
+          <p style="font-size: 0.85rem;">Chen, X. &amp; Franco, I. <em>J. Chem. Phys.</em> <strong>163</strong>, 104109 (2025)</p>
+        </div>
+        <div class="feature-card reveal" data-delay="2">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <span class="tag tag--purple">2024</span>
+            <a href="https://doi.org/10.1063/5.0198567" class="doi-badge" target="_blank" rel="noopener">
+              <i class="fa fa-external-link-alt"></i> DOI
+            </a>
+          </div>
+          <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Bexcitonics</h3>
+          <p style="font-size: 0.85rem;">Chen, X. &amp; Franco, I. <em>J. Chem. Phys.</em> <strong>160</strong>, 204116 (2024)</p>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <a href="cite.html" class="btn btn--secondary">
+          <i class="fa fa-quote-right" aria-hidden="true"></i> Citation formats
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand-name">TENSO</div>
+        <p class="footer__tagline">Exact open quantum dynamics via Tree Tensor Network HEOM</p>
+        <p style="font-size:0.8rem; color: var(--text-muted);">Franco Group · University of Rochester</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Docs</div>
+        <ul class="footer__links">
+          <li><a href="installation.html" class="footer__link">Installation</a></li>
+          <li><a href="getting-started.html" class="footer__link">Getting Started</a></li>
+          <li><a href="background.html" class="footer__link">Background</a></li>
+          <li><a href="structure.html" class="footer__link">Structure</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">More</div>
+        <ul class="footer__links">
+          <li><a href="examples.html" class="footer__link">Examples</a></li>
+          <li><a href="api.html" class="footer__link">API Reference</a></li>
+          <li><a href="cite.html" class="footer__link">Cite</a></li>
+          <li><a href="contact.html" class="footer__link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Links</div>
+        <ul class="footer__links">
+          <li><a href="https://github.com/ifgroup/pytenso" class="footer__link" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></li>
+          <li><a href="https://doi.org/10.1063/5.0278591" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2025)</a></li>
+          <li><a href="https://doi.org/10.1063/5.0198567" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2024)</a></li>
+          <li><a href="https://github.com/ifgroup/pytenso/issues" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-bug"></i> Issues</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copyright">© 2026 Franco Group, University of Rochester. MIT License.</span>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+          <span class="theme-toggle-icon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/search.js"></script>
+</body>
+</html>

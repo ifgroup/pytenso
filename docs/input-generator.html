@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Generator — TENSO</title>
+  <meta name="description" content="Interactive TENSO input file generator: configure bath, system, and HEOM parameters and download a ready-to-run Python script.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/input-generator.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Input Generator — TENSO" />
+  <meta property="og:description" content="Interactive TENSO input file generator: configure bath, system, and HEOM parameters and download a ready-to-run Python script." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/input-generator.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+
+  <style>
+    /* ── Form elements styled to match design tokens ── */
+    .ig-section {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .ig-section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      background: var(--bg-2);
+      transition: background var(--transition);
+      user-select: none;
+    }
+
+    .ig-section__header:hover { background: var(--bg-3); }
+
+    .ig-section__title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .ig-section__title i { color: var(--accent-primary); font-size: 0.95rem; }
+
+    .ig-section__icon {
+      color: var(--text-muted);
+      transition: transform var(--transition);
+    }
+
+    .ig-section--open .ig-section__icon { transform: rotate(180deg); }
+
+    .ig-section__body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .ig-section--open .ig-section__body { max-height: 4000px; }
+
+    .ig-section__content {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Fields */
+    .ig-field {
+      margin-bottom: 1.25rem;
+    }
+
+    .ig-field label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.04em;
+    }
+
+    .ig-field label .ig-label-code {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-primary);
+      font-size: 0.82rem;
+    }
+
+    .ig-field label .ig-label-unit {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    .ig-input,
+    .ig-select {
+      width: 100%;
+      padding: 0.55rem 0.85rem;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      box-sizing: border-box;
+    }
+
+    .ig-input:focus,
+    .ig-select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(255,216,43,0.12);
+    }
+
+    .ig-input--short { max-width: 180px; }
+    .ig-input--medium { max-width: 300px; }
+
+    .ig-select option { background: #001E5F; }
+
+    .ig-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Row layout for side-by-side fields */
+    .ig-row {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .ig-row .ig-field { flex: 1; min-width: 140px; }
+
+    /* Dynamic component lists */
+    .ig-component-list { margin-top: 0.5rem; }
+
+    .ig-component-item {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+
+    .ig-component-item__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .ig-component-item__label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .ig-btn-remove {
+      background: rgba(255,80,80,0.1);
+      border: 1px solid rgba(255,80,80,0.25);
+      border-radius: 6px;
+      color: #ff6b6b;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .ig-btn-remove:hover { background: rgba(255,80,80,0.2); }
+
+    .ig-btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,216,43,0.06);
+      border: 1px dashed rgba(255,216,43,0.35);
+      border-radius: var(--radius);
+      color: var(--accent-primary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      transition: background var(--transition), border-color var(--transition);
+      margin-top: 0.25rem;
+    }
+
+    .ig-btn-add:hover {
+      background: rgba(255,216,43,0.12);
+      border-color: rgba(255,216,43,0.6);
+    }
+
+    /* Matrix grids */
+    .ig-matrix-grid {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+
+    .ig-matrix-grid table {
+      border-collapse: separate;
+      border-spacing: 4px;
+    }
+
+    .ig-matrix-cell {
+      width: 80px;
+      padding: 0.4rem 0.5rem;
+      text-align: center;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      transition: border-color var(--transition);
+      box-sizing: border-box;
+    }
+
+    .ig-matrix-cell:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 2px rgba(255,216,43,0.12);
+    }
+
+    /* Warning panel */
+    #ig-warnings {
+      margin-bottom: 1.5rem;
+    }
+
+    .ig-warning-item {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.85rem 1.1rem;
+      border-radius: var(--radius);
+      border-left: 3px solid;
+      margin-bottom: 0.5rem;
+      font-size: 0.88rem;
+    }
+
+    .ig-warning-item--info {
+      background: rgba(0,102,253,0.06);
+      border-color: var(--accent-secondary);
+      color: var(--text-secondary);
+    }
+
+    .ig-warning-item--warning {
+      background: rgba(255,170,0,0.07);
+      border-color: #ffaa00;
+      color: var(--text-secondary);
+    }
+
+    .ig-warning-item--danger {
+      background: rgba(255,80,80,0.07);
+      border-color: #ff5050;
+      color: var(--text-secondary);
+    }
+
+    .ig-warning-item i { flex-shrink: 0; margin-top: 0.1rem; }
+    .ig-warning-item--info i { color: var(--accent-secondary); }
+    .ig-warning-item--warning i { color: #ffaa00; }
+    .ig-warning-item--danger i { color: #ff5050; }
+
+    /* Stats bar */
+    .ig-stats {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 1rem 1.25rem;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.25rem;
+      font-size: 0.82rem;
+    }
+
+    .ig-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .ig-stat__label {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .ig-stat__value {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--accent-primary);
+      font-size: 0.95rem;
+    }
+
+    .ig-stat__value--warn { color: #ffaa00; }
+    .ig-stat__value--danger { color: #ff5050; }
+
+    /* Preview section */
+    .ig-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .ig-preview-header h2 { margin: 0; font-size: 1.3rem; }
+
+    .ig-preview-actions {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .ig-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid;
+    }
+
+    .ig-action-btn--copy {
+      background: rgba(255,216,43,0.08);
+      border-color: rgba(255,216,43,0.3);
+      color: var(--accent-primary);
+    }
+
+    .ig-action-btn--copy:hover {
+      background: rgba(255,216,43,0.15);
+      border-color: var(--accent-primary);
+    }
+
+    .ig-action-btn--download {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-color: transparent;
+      color: #000b22;
+    }
+
+    .ig-action-btn--download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,216,43,0.35);
+    }
+
+    /* Section divider label */
+    .ig-subsection-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 1.25rem 0 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Optional badge */
+    .ig-badge-optional {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.1rem 0.5rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Enable switch for the drive */
+    .ig-switch {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      user-select: none;
+    }
+
+    .ig-switch input {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      position: relative;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
+      flex-shrink: 0;
+    }
+
+    .ig-switch input::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: transform var(--transition), background var(--transition);
+    }
+
+    .ig-switch input:checked {
+      background: rgba(255,216,43,0.18);
+      border-color: var(--accent-primary);
+    }
+
+    .ig-switch input:checked::after {
+      transform: translateX(18px);
+      background: var(--accent-primary);
+    }
+
+    /* Drive controls disabled state */
+    #drive-controls {
+      transition: opacity var(--transition);
+    }
+
+    #drive-controls.ig-drive-disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(0.4);
+    }
+
+    /* Drive preview canvas */
+    .ig-drive-plot-wrap {
+      position: relative;
+      margin-top: 0.5rem;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem;
+    }
+
+    #drive-canvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+    }
+
+    #drive-noplot {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      height: 220px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .ig-textarea {
+      width: 100%;
+      min-height: 90px;
+      padding: 0.6rem 0.85rem;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+
+    .ig-textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(255,216,43,0.12);
+    }
+
+    /* Method selector (segmented cards) */
+    .ig-method-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .ig-method-card {
+      display: block;
+      cursor: pointer;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .ig-method-card:hover { border-color: rgba(255,216,43,0.5); }
+
+    .ig-method-card input { position: absolute; opacity: 0; pointer-events: none; }
+
+    .ig-method-card__title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .ig-method-card__title i { color: var(--text-muted); transition: color var(--transition); }
+
+    .ig-method-card__desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      line-height: 1.5;
+    }
+
+    .ig-method-card.is-active {
+      border-color: var(--accent-primary);
+      background: rgba(255,216,43,0.06);
+    }
+
+    .ig-method-card.is-active .ig-method-card__title i { color: var(--accent-primary); }
+
+    @media (max-width: 560px) { .ig-method-grid { grid-template-columns: 1fr; } }
+
+    /* Inline vector input */
+    .ig-vector-grid table { border-collapse: separate; border-spacing: 4px; }
+
+    /* Light theme overrides */
+    [data-theme="light"] .ig-method-card { background: #fff; }
+    [data-theme="light"] .ig-method-card.is-active { background: rgba(255,216,43,0.12); }
+    [data-theme="light"] .ig-textarea,
+    [data-theme="light"] .ig-drive-plot-wrap,
+    [data-theme="light"] .ig-switch input { background: #fff; }
+    [data-theme="light"] .ig-switch input:checked { background: rgba(255,216,43,0.25); }
+    [data-theme="light"] .ig-input,
+    [data-theme="light"] .ig-select,
+    [data-theme="light"] .ig-matrix-cell {
+      background: #fff;
+      color: #0a0a1a;
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    [data-theme="light"] .ig-component-item { background: #f4f7ff; }
+    [data-theme="light"] .ig-section { background: #fff; }
+    [data-theme="light"] .ig-section__header { background: #fff; }
+    [data-theme="light"] .ig-section__header:hover { background: #f0f4ff; }
+    [data-theme="light"] .ig-stats { background: #f0f4ff; }
+    [data-theme="light"] .ig-select option { background: #fff; color: #0a0a1a; }
+  </style>
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <nav class="toc" aria-label="Table of contents">
+        <div class="toc__title">On this page</div>
+        <ul class="toc__list">
+          <li class="toc__item"><a href="#method" class="toc__link">Simulation Method</a></li>
+          <li class="toc__item"><a href="#bath" class="toc__link">Bath Parameters</a></li>
+          <li class="toc__item"><a href="#system" class="toc__link">System Parameters</a></li>
+          <li class="toc__item"><a href="#drive" class="toc__link">Time-Dependent Drive</a></li>
+          <li class="toc__item"><a href="#heom" class="toc__link">Solver &amp; Tensor Network</a></li>
+          <li class="toc__item"><a href="#propagation" class="toc__link">Propagation Settings</a></li>
+          <li class="toc__item"><a href="#advanced" class="toc__link">Advanced Settings</a></li>
+          <li class="toc__item"><a href="#preview" class="toc__link">Preview &amp; Download</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="article" id="main-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb__sep">/</span>
+        <span class="breadcrumb__current">Input Generator</span>
+      </nav>
+
+      <h1>Input File Generator</h1>
+      <p>Fill in the parameters below to generate a ready-to-run Python input script for TENSO. The preview updates in real time, and warnings will appear if the chosen parameters may cause excessive memory usage or long runtimes.</p>
+
+      <div class="callout callout--tip" style="margin-bottom:1.75rem;">
+        <span class="callout__icon"><i class="fa fa-lightbulb"></i></span>
+        <div>New to TENSO? Read <a href="getting-started.html">Getting Started</a> first for a conceptual overview of each parameter. See <a href="background.html">Background</a> for the theory behind HEOM and tensor networks.</div>
+      </div>
+
+      <!-- ── Method ────────────────────────────────────────────────────── -->
+      <h2 id="method" style="scroll-margin-top:5rem;">Simulation Method</h2>
+
+      <div class="ig-section ig-section--open" id="sec-method">
+        <div class="ig-section__header" data-ig-toggle="sec-method">
+          <span class="ig-section__title">
+            <i class="fa fa-flask"></i> Propagation Method
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1rem;">Choose how the open-system dynamics are propagated. The form below adapts to the method you select.</p>
+            <div class="ig-method-grid">
+              <label class="ig-method-card" data-method-card="heom">
+                <input type="radio" name="ig-method" value="heom" checked>
+                <span class="ig-method-card__title"><i class="fa fa-layer-group"></i> HEOM</span>
+                <span class="ig-method-card__desc">Hierarchical Equations of Motion. Propagates the reduced <strong>density operator</strong> with a correlation-function bath (<code>gen_bcf</code>). Numerically exact open-system dynamics.</span>
+              </label>
+              <label class="ig-method-card" data-method-card="mctdh">
+                <input type="radio" name="ig-method" value="mctdh">
+                <span class="ig-method-card__title"><i class="fa fa-sitemap"></i> MCTDH</span>
+                <span class="ig-method-card__desc">Multi-Configuration Time-Dependent Hartree. Propagates a pure <strong>wavefunction</strong> on a discretized star-boson bath (<code>gen_star_boson</code>).</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Bath ──────────────────────────────────────────────────────── -->
+      <h2 id="bath" style="scroll-margin-top:5rem;">Bath Parameters</h2>
+
+      <div class="ig-section ig-section--open" id="sec-bath">
+        <div class="ig-section__header" data-ig-toggle="sec-bath">
+          <span class="ig-section__title">
+            <i class="fa fa-water"></i> Bath Correlation Function
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  <span class="ig-label-code">temperature</span>
+                  <span class="ig-label-unit"> (K)</span>
+                </label>
+                <input type="number" id="f-temperature" class="ig-input ig-input--short" value="300" min="0" step="1">
+              </div>
+              <!-- HEOM-only bath options -->
+              <div class="ig-field ig-heom-only">
+                <label>
+                  <span class="ig-label-code">decomposition_method</span>
+                </label>
+                <select id="f-decomp" class="ig-select ig-input--medium">
+                  <option value="Pade" selected>Pade</option>
+                  <option value="Matsubara">Matsubara</option>
+                </select>
+                <div class="ig-hint">Padé is generally more efficient at low temperatures.</div>
+              </div>
+              <div class="ig-field ig-heom-only">
+                <label>
+                  <span class="ig-label-code">n_ltc</span>
+                </label>
+                <input type="number" id="f-nltc" class="ig-input ig-input--short" value="1" min="0" max="20" step="1">
+                <div class="ig-hint">Low-temperature correction terms. Each adds one bath mode to the hierarchy.</div>
+              </div>
+              <!-- MCTDH-only bath options -->
+              <div class="ig-field ig-mctdh-only" style="display:none;">
+                <label>
+                  <span class="ig-label-code">cutoff</span>
+                  <span class="ig-label-unit"> (cm⁻¹)</span>
+                </label>
+                <input type="number" id="f-cutoff" class="ig-input ig-input--short" value="1000" min="1" step="10">
+                <div class="ig-hint">Maximum frequency of the bath discretization.</div>
+              </div>
+              <div class="ig-field ig-mctdh-only" style="display:none;">
+                <label>
+                  <span class="ig-label-code">n_discretization</span>
+                </label>
+                <input type="number" id="f-ndisc" class="ig-input ig-input--short" value="20" min="1" max="500" step="1">
+                <div class="ig-hint">Number of discrete boson modes in the star geometry.</div>
+              </div>
+              <div class="ig-field ig-mctdh-only" style="display:none;">
+                <label>
+                  <span class="ig-label-code">discretization_method</span>
+                </label>
+                <select id="f-discmethod" class="ig-select ig-input--medium">
+                  <option value="Fourier" selected>Fourier</option>
+                  <option value="LogFourier">LogFourier</option>
+                  <option value="EqualReorganizationEnergy">EqualReorganizationEnergy</option>
+                  <option value="Chebyshev">Chebyshev</option>
+                  <option value="TEDOPA">TEDOPA</option>
+                </select>
+                <div class="ig-hint">How the spectral density is sampled into discrete modes.</div>
+              </div>
+            </div>
+
+            <!-- Drude-Lorentz -->
+            <div class="ig-subsection-label">Drude–Lorentz Components</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">Each component contributes <strong>one bath mode</strong>. Spectral density: $J_\textrm{DL}(\omega) = \frac{2\lambda}{\pi}\frac{\omega_c\,\omega}{\omega^2+\omega_c^2}$</p>
+
+            <div class="ig-component-list" id="dl-list"></div>
+            <button class="ig-btn-add" id="btn-add-dl">
+              <i class="fa fa-plus"></i> Add Drude–Lorentz Component
+            </button>
+
+            <!-- Brownian Oscillator -->
+            <div class="ig-subsection-label" style="margin-top:1.5rem;">Brownian Oscillator Components</div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">Each component contributes <strong>two bath modes</strong>. Spectral density: $J_\textrm{BO}(\omega) = \frac{4\lambda}{\pi}\frac{\eta\,\omega_0^2\,\omega}{(\omega^2-\omega_0^2)^2+4\eta^2\omega^2}$</p>
+
+            <div class="ig-component-list" id="bo-list"></div>
+            <button class="ig-btn-add" id="btn-add-bo">
+              <i class="fa fa-plus"></i> Add Brownian Oscillator Component
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── System ─────────────────────────────────────────────────────── -->
+      <h2 id="system" style="scroll-margin-top:5rem;">System Parameters</h2>
+
+      <div class="ig-section ig-section--open" id="sec-system">
+        <div class="ig-section__header" data-ig-toggle="sec-system">
+          <span class="ig-section__title">
+            <i class="fa fa-atom"></i> Quantum System
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-field">
+              <label>System size <span class="ig-label-code">M</span> <span class="ig-label-unit">(Hilbert space dimension, 2–8)</span></label>
+              <input type="number" id="f-M" class="ig-input ig-input--short" value="2" min="2" max="8" step="1">
+              <div class="ig-hint">Each ADM in the HEOM hierarchy is an $M\times M$ matrix.</div>
+            </div>
+
+            <div class="ig-subsection-label">System Hamiltonian <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">sys_ham</span></div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">$H_S$ — real or complex entries, units cm⁻¹</p>
+            <div class="ig-matrix-grid" id="grid-ham"></div>
+
+            <div class="ig-subsection-label">System–Bath Couplings <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">sys_op(s)</span></div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">Each coupling is an $M\times M$ operator $Q_n$ that couples the system to its own (independent) copy of the bath above. Add more than one for multi-bath / non-commuting fluctuations (e.g. one local projector per site).</p>
+            <div class="ig-component-list" id="couplings-list"></div>
+            <button class="ig-btn-add" id="btn-add-coupling">
+              <i class="fa fa-plus"></i> Add Coupling Operator
+            </button>
+
+            <div class="ig-subsection-label" style="margin-top:1.5rem;">Initial State</div>
+            <div class="ig-field">
+              <label>Input as</label>
+              <select id="f-initmode" class="ig-select ig-input--medium">
+                <option value="vector" selected>Pure state |ψ⟩ (vector)</option>
+                <option value="matrix">Density matrix ρ₀</option>
+              </select>
+              <div class="ig-hint" id="initmode-hint">For HEOM the script builds ρ₀ = |ψ⟩⟨ψ| automatically; for MCTDH the wavefunction is used directly.</div>
+            </div>
+
+            <div id="vec-wrap">
+              <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">$|\psi\rangle$ — $M$ complex amplitudes (need not be normalized; conventions follow the basis order).</p>
+              <div class="ig-vector-grid" id="vec-list"></div>
+            </div>
+
+            <div id="rdo-wrap" style="display:none;">
+              <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">$\rho_0$ — must be positive semidefinite with trace = 1 (for mixed initial states).</p>
+              <div class="ig-matrix-grid" id="grid-rdo"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Time-Dependent Drive ───────────────────────────────────────── -->
+      <h2 id="drive" style="scroll-margin-top:5rem;">Time-Dependent Drive</h2>
+
+      <div class="ig-section ig-section--open" id="sec-drive">
+        <div class="ig-section__header" data-ig-toggle="sec-drive">
+          <span class="ig-section__title">
+            <i class="fa fa-bolt"></i> Time-Dependent Drive
+            <span class="ig-badge-optional">optional</span>
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <label class="ig-switch">
+              <input type="checkbox" id="f-drive-enable">
+              <span>Add a time-dependent drive</span>
+            </label>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0.75rem 0 0;">
+              The drive adds a time-dependent term to the system Hamiltonian:
+              $H(t) = H_S + f(t)\,V$, entering the dynamics as $-\tfrac{i}{\hbar}\,f(t)\,[V,\,\cdot\,]$.
+              You define the scalar field $f(t)$ (returned in cm⁻¹, with $t$ in fs) and the operator $V$ it couples to.
+            </p>
+
+            <div id="drive-controls" class="ig-drive-disabled" style="margin-top:1.25rem;">
+
+              <div class="ig-field">
+                <label>Drive shape <span class="ig-label-code">f(t)</span></label>
+                <select id="f-drive-shape" class="ig-select ig-input--medium">
+                  <option value="gaussian" selected>Gaussian laser pulse</option>
+                  <option value="cw">Continuous wave (monochromatic)</option>
+                  <option value="constant">Constant (DC) field</option>
+                  <option value="custom">Custom expression</option>
+                </select>
+              </div>
+
+              <!-- Gaussian pulse params -->
+              <div class="ig-drive-params" data-shape="gaussian">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">$f(t) = A\,\exp\!\left[-\tfrac{1}{2}\left(\tfrac{t-t_0}{\sigma}\right)^2\right]\cos(\omega t + \varphi)$, with $\sigma = \mathrm{FWHM}/(2\sqrt{2\ln 2})$ and $\omega$ obtained from the carrier frequency.</p>
+                <div class="ig-row">
+                  <div class="ig-field">
+                    <label>Peak amplitude <span class="ig-label-code">A</span> <span class="ig-label-unit">(cm⁻¹)</span></label>
+                    <input type="number" id="f-d-amp" class="ig-input" value="500" step="10">
+                  </div>
+                  <div class="ig-field">
+                    <label>Carrier frequency <span class="ig-label-code">ω</span> <span class="ig-label-unit">(cm⁻¹)</span></label>
+                    <input type="number" id="f-d-carrier" class="ig-input" value="1500" min="0" step="10">
+                    <div class="ig-hint">Set equal to the system energy gap for a resonant pulse.</div>
+                  </div>
+                </div>
+                <div class="ig-row">
+                  <div class="ig-field">
+                    <label>Pulse width <span class="ig-label-code">FWHM</span> <span class="ig-label-unit">(fs)</span></label>
+                    <input type="number" id="f-d-fwhm" class="ig-input" value="5" min="0.01" step="0.5">
+                  </div>
+                  <div class="ig-field">
+                    <label>Pulse center <span class="ig-label-code">t₀</span> <span class="ig-label-unit">(fs)</span></label>
+                    <input type="number" id="f-d-t0" class="ig-input" value="6" min="0" step="0.5">
+                  </div>
+                  <div class="ig-field">
+                    <label>Carrier phase <span class="ig-label-code">φ</span> <span class="ig-label-unit">(rad)</span></label>
+                    <input type="number" id="f-d-phase" class="ig-input" value="0" step="0.1">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Continuous wave params -->
+              <div class="ig-drive-params" data-shape="cw" style="display:none;">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">$f(t) = A\,\cos(\omega t + \varphi)$ — a constant-amplitude monochromatic field.</p>
+                <div class="ig-row">
+                  <div class="ig-field">
+                    <label>Amplitude <span class="ig-label-code">A</span> <span class="ig-label-unit">(cm⁻¹)</span></label>
+                    <input type="number" id="f-cw-amp" class="ig-input" value="100" step="10">
+                  </div>
+                  <div class="ig-field">
+                    <label>Frequency <span class="ig-label-code">ω</span> <span class="ig-label-unit">(cm⁻¹)</span></label>
+                    <input type="number" id="f-cw-carrier" class="ig-input" value="1500" min="0" step="10">
+                  </div>
+                  <div class="ig-field">
+                    <label>Phase <span class="ig-label-code">φ</span> <span class="ig-label-unit">(rad)</span></label>
+                    <input type="number" id="f-cw-phase" class="ig-input" value="0" step="0.1">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Constant params -->
+              <div class="ig-drive-params" data-shape="constant" style="display:none;">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.75rem;">$f(t) = A$ — a static term added to the Hamiltonian for all $t$.</p>
+                <div class="ig-field">
+                  <label>Field strength <span class="ig-label-code">A</span> <span class="ig-label-unit">(cm⁻¹)</span></label>
+                  <input type="number" id="f-dc-amp" class="ig-input ig-input--short" value="100" step="10">
+                </div>
+              </div>
+
+              <!-- Custom params -->
+              <div class="ig-drive-params" data-shape="custom" style="display:none;">
+                <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">A Python expression in <code>t</code> (fs) returning the field in cm⁻¹. <code>np</code> (NumPy) is available.</p>
+                <textarea id="f-custom-expr" class="ig-textarea" spellcheck="false">-500 * np.exp(-0.5 * ((t - 6.0) / 2.123) ** 2) * np.cos(0.2826 * t)</textarea>
+                <div class="ig-hint">The expression is inserted verbatim into <code>def drive(t): return ...</code>. Live preview is unavailable for custom expressions.</div>
+              </div>
+
+              <!-- Drive operator -->
+              <div class="ig-subsection-label">Drive operator <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">td_op</span></div>
+              <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 0.5rem;">$V$ — the $M\times M$ operator the field couples to (default $\sigma_x$ for a two-level system).</p>
+              <div class="ig-matrix-grid" id="grid-tdop"></div>
+
+              <!-- Live preview -->
+              <div class="ig-subsection-label">Drive preview <span style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">f(t)</span> over the propagation window</div>
+              <div class="ig-drive-plot-wrap">
+                <canvas id="drive-canvas"></canvas>
+                <div id="drive-noplot">Live preview is unavailable for custom expressions — check the generated code below.</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Solver & Tensor Network ────────────────────────────────────── -->
+      <h2 id="heom" style="scroll-margin-top:5rem;">Solver &amp; Tensor Network</h2>
+
+      <div class="ig-section ig-section--open" id="sec-heom">
+        <div class="ig-section__header" data-ig-toggle="sec-heom">
+          <span class="ig-section__title">
+            <i class="fa fa-project-diagram"></i> Solver &amp; Tensor Network
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  <span id="dim-label">HEOM depth</span> <span class="ig-label-code">dim</span>
+                </label>
+                <input type="number" id="f-dim" class="ig-input ig-input--short" value="10" min="1" max="100" step="1">
+                <div class="ig-hint" id="dim-hint">Truncation depth $N_k$. Increase until results converge (typical: 10–40).</div>
+              </div>
+              <div class="ig-field">
+                <label>
+                  Max auxiliary rank <span class="ig-label-code">max_auxiliary_rank</span>
+                </label>
+                <input type="number" id="f-maxrank" class="ig-input ig-input--short" value="64" min="1" max="1000" step="1">
+                <div class="ig-hint">Maximum rank of the auxiliary density matrices. Higher → more accuracy, more memory (typical: 32–128).</div>
+              </div>
+            </div>
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  ODE absolute tolerance <span class="ig-label-code">ode_atol</span>
+                </label>
+                <input type="text" id="f-odeatol" class="ig-input ig-input--short" value="1e-9">
+                <div class="ig-hint">Absolute tolerance for the ODE integrator. Tighter → more accurate but slower.</div>
+              </div>
+              <div class="ig-field">
+                <label>
+                  ODE relative tolerance <span class="ig-label-code">ode_rtol</span>
+                </label>
+                <input type="text" id="f-odertol" class="ig-input ig-input--short" value="1e-5">
+                <div class="ig-hint">Relative tolerance for the ODE integrator. Typical: <code>1e-5</code> to <code>1e-7</code>.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Propagation ────────────────────────────────────────────────── -->
+      <h2 id="propagation" style="scroll-margin-top:5rem;">Propagation Settings</h2>
+
+      <div class="ig-section ig-section--open" id="sec-prop">
+        <div class="ig-section__header" data-ig-toggle="sec-prop">
+          <span class="ig-section__title">
+            <i class="fa fa-clock"></i> Time Propagation
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>
+                  End time <span class="ig-label-code">end_time</span>
+                  <span class="ig-label-unit"> (fs)</span>
+                </label>
+                <input type="number" id="f-endtime" class="ig-input ig-input--short" value="100" min="0.01" step="1">
+              </div>
+              <div class="ig-field">
+                <label>
+                  Step size <span class="ig-label-code">step_time</span>
+                  <span class="ig-label-unit"> (fs)</span>
+                </label>
+                <input type="number" id="f-steptime" class="ig-input ig-input--short" value="0.05" min="0.001" step="0.005">
+              </div>
+              <div class="ig-field">
+                <label>
+                  Output prefix <span class="ig-label-code">fname</span>
+                </label>
+                <input type="text" id="f-fname" class="ig-input ig-input--medium" value="output" placeholder="output">
+                <div class="ig-hint">Outputs: <code>{fname}.dat.log</code> (density matrix) and <code>{fname}.debug.log</code>.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Advanced ──────────────────────────────────────────────────── -->
+      <h2 id="advanced" style="scroll-margin-top:5rem;">Advanced Settings</h2>
+
+      <div class="ig-section" id="sec-advanced">
+        <div class="ig-section__header" data-ig-toggle="sec-advanced">
+          <span class="ig-section__title">
+            <i class="fa fa-sliders-h"></i> Advanced Settings
+            <span class="ig-badge-optional">optional</span>
+          </span>
+          <i class="fa fa-chevron-down ig-section__icon"></i>
+        </div>
+        <div class="ig-section__body">
+          <div class="ig-section__content">
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:0 0 1rem;">Expert controls. Each is emitted into the generated script <strong>only when you change it from its default</strong>, so the output stays clean. Options that don't apply to the chosen method are hidden.</p>
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>Frame topology <span class="ig-label-code">frame_method</span></label>
+                <select id="f-frame" class="ig-select ig-input--medium">
+                  <option value="tree2" selected>tree2 (binary tree)</option>
+                  <option value="tree3">tree3 (ternary tree)</option>
+                  <option value="train">train (matrix-product / chain)</option>
+                  <option value="naive">naive (star)</option>
+                </select>
+                <div class="ig-hint">Tensor-network shape. <code>train</code> is lean on memory; trees balance depth.</div>
+              </div>
+              <div class="ig-field">
+                <label>Initial rank <span class="ig-label-code">rank</span></label>
+                <input type="number" id="f-rank" class="ig-input ig-input--short" value="3" min="1" max="1000" step="1">
+                <div class="ig-hint">Starting bond rank of the tensor-network state.</div>
+              </div>
+            </div>
+
+            <div class="ig-row">
+              <div class="ig-field">
+                <label>Stepwise method <span class="ig-label-code">stepwise_method</span></label>
+                <select id="f-stepwise" class="ig-select ig-input--medium">
+                  <option value="mix" selected>mix (adaptive warm-up)</option>
+                  <option value="simple">simple (fixed rank)</option>
+                </select>
+              </div>
+              <div class="ig-field">
+                <label>Projector-splitting <span class="ig-label-code">ps_method</span></label>
+                <select id="f-psmethod" class="ig-select ig-input--medium">
+                  <option value="vmf" selected>vmf (variational mean field)</option>
+                  <option value="ps1">ps1</option>
+                  <option value="ps2">ps2</option>
+                </select>
+              </div>
+              <div class="ig-field">
+                <label>Start time <span class="ig-label-code">start_time</span> <span class="ig-label-unit">(fs)</span></label>
+                <input type="number" id="f-starttime" class="ig-input ig-input--short" value="0" step="1">
+              </div>
+            </div>
+
+            <!-- HEOM-only numerical options -->
+            <div class="ig-row ig-heom-only">
+              <div class="ig-field">
+                <label>HEOM metric <span class="ig-label-code">metric</span></label>
+                <select id="f-metric" class="ig-select ig-input--medium">
+                  <option value="re" selected>re (real part)</option>
+                  <option value="abs">abs (absolute value)</option>
+                </select>
+              </div>
+              <div class="ig-field">
+                <label>DVR length <span class="ig-label-code">dvr_length</span></label>
+                <input type="number" id="f-dvrlength" class="ig-input ig-input--short" value="32" min="1" step="1">
+                <div class="ig-hint">Only used when DVR basis is enabled below.</div>
+              </div>
+              <div class="ig-field">
+                <label>DVR type <span class="ig-label-code">dvr_type</span></label>
+                <select id="f-dvrtype" class="ig-select ig-input--medium">
+                  <option value="sine" selected>sine</option>
+                  <option value="sinc">sinc</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="ig-subsection-label">Toggles</div>
+            <div style="display:flex;flex-direction:column;gap:0.85rem;">
+              <label class="ig-switch ig-heom-only"><input type="checkbox" id="f-usedvr"><span>Use DVR basis <span class="ig-label-code">use_dvr</span></span></label>
+              <label class="ig-switch"><input type="checkbox" id="f-renorm"><span>Renormalize each step <span class="ig-label-code">renormalize</span></span></label>
+              <label class="ig-switch"><input type="checkbox" id="f-savechk"><span>Save checkpoint to file <span class="ig-label-code">save_checkpoint_to_file</span></span></label>
+              <label class="ig-switch"><input type="checkbox" id="f-loadchk"><span>Load checkpoint from file <span class="ig-label-code">load_checkpoint_from_file</span></span></label>
+              <label class="ig-switch"><input type="checkbox" id="f-vizframe"><span>Save frame graph PDF <span class="ig-label-code">visualize_frame</span></span></label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Warnings ──────────────────────────────────────────────────── -->
+      <h2 style="scroll-margin-top:5rem;">Estimated Resource Usage</h2>
+
+      <div class="ig-stats" id="ig-stats-bar">
+        <div class="ig-stat">
+          <span class="ig-stat__label" id="stat-K-label">Bath Modes (K)</span>
+          <span class="ig-stat__value" id="stat-K">—</span>
+        </div>
+        <div class="ig-stat">
+          <span class="ig-stat__label" id="stat-H-label">Hierarchy Nodes</span>
+          <span class="ig-stat__value" id="stat-H">—</span>
+        </div>
+        <div class="ig-stat">
+          <span class="ig-stat__label" id="stat-RAM-label">Est. RAM</span>
+          <span class="ig-stat__value" id="stat-RAM">—</span>
+        </div>
+        <div class="ig-stat">
+          <span class="ig-stat__label">Time Steps</span>
+          <span class="ig-stat__value" id="stat-steps">—</span>
+        </div>
+      </div>
+
+      <div id="ig-warnings"></div>
+
+      <!-- ── Preview ───────────────────────────────────────────────────── -->
+      <div id="preview" style="scroll-margin-top:5rem;">
+        <div class="ig-preview-header">
+          <h2 id="preview-title" style="scroll-margin-top:5rem;">Preview &amp; Download</h2>
+          <div class="ig-preview-actions">
+            <button class="ig-action-btn ig-action-btn--copy" id="btn-copy">
+              <i class="fa fa-copy"></i> Copy
+            </button>
+            <button class="ig-action-btn ig-action-btn--download" id="btn-download">
+              <i class="fa fa-download"></i> Download .py
+            </button>
+          </div>
+        </div>
+
+        <div class="code-block" style="border:1px solid var(--border);border-radius:var(--radius);">
+          <pre id="ig-preview-pre" style="margin:0;padding:1.5rem;overflow-x:auto;background:var(--bg-2) !important;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.7;color:var(--text-secondary);white-space:pre;"></pre>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-top: 2.5rem; flex-wrap:wrap;">
+        <a href="getting-started.html" class="btn btn--secondary"><i class="fa fa-arrow-left"></i> Getting Started</a>
+        <a href="api.html" class="btn btn--primary">API Reference <i class="fa fa-arrow-right"></i></a>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer__bottom" style="max-width:1200px; margin:0 auto;">
+      <span class="footer__copyright">© 2025 Franco Group, University of Rochester.</span>
+      <a href="index.html" style="font-size:0.85rem; color:var(--text-muted);">← Back to Home</a>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+  // ============================================================
+  //  TENSO Input Generator — all logic self-contained
+  // ============================================================
+
+  (function () {
+    'use strict';
+
+    // ── State ──────────────────────────────────────────────────
+    let method = 'heom';     // 'heom' | 'mctdh'
+    let dlComponents = [];   // [{re, width}]
+    let boComponents = [];   // [{freq, re, width}]
+    let M = 2;
+
+    // Matrices stored as flat arrays of strings (row-major)
+    let hamData = matToFlat(identity(2));
+
+    // System–bath couplings: a list of M×M operators (default one: sigma_z)
+    let couplings = [ matToFlat(sigmaz(2)) ];
+
+    // Initial pure-state vector |ψ⟩ (default |0⟩ → reproduces |0><0|)
+    let wfnData = ['1', '0'];
+
+    // Initial density matrix (for the optional HEOM "density matrix" mode)
+    let rdoData = matToFlat(excitedState(2));
+
+    // Time-dependent drive operator V (default sigma_x for M=2)
+    let tdOpData = matToFlat(sigmax(2));
+
+    // 1 cm^-1 expressed in rad/fs: omega = 2*pi*c*nu, with c in cm/s.
+    const CM_TO_RAD_FS = 2 * Math.PI * 2.99792458e10 * 1e-15;
+
+    // ── Matrix helpers ─────────────────────────────────────────
+    function identity(n) {
+      const m = [];
+      for (let i = 0; i < n; i++) {
+        m.push([]);
+        for (let j = 0; j < n; j++) m[i].push(i === j ? '1' : '0');
+      }
+      return m;
+    }
+
+    function sigmaz(n) {
+      if (n !== 2) return identity(n);
+      return [['1','0'],['0','-1']];
+    }
+
+    function sigmax(n) {
+      if (n !== 2) {
+        // Zero operator for non-qubit systems; user fills it in.
+        const m = [];
+        for (let i = 0; i < n; i++) { m.push([]); for (let j = 0; j < n; j++) m[i].push('0'); }
+        return m;
+      }
+      return [['0','1'],['1','0']];
+    }
+
+    // parseFloat that keeps explicit 0 (unlike `parseFloat(x) || def`).
+    function numv(id, def) {
+      const x = parseFloat(document.getElementById(id).value);
+      return Number.isNaN(x) ? def : x;
+    }
+
+    function excitedState(n) {
+      const m = [];
+      for (let i = 0; i < n; i++) {
+        m.push([]);
+        for (let j = 0; j < n; j++) m[i].push(i === 0 && j === 0 ? '1' : '0');
+      }
+      return m;
+    }
+
+    function matToFlat(mat) {
+      return mat.map(row => row.slice());
+    }
+
+    function flatToNested(flat, n) {
+      const mat = [];
+      for (let i = 0; i < n; i++) mat.push(flat[i].slice());
+      return mat;
+    }
+
+    // ── Section toggle ─────────────────────────────────────────
+    document.querySelectorAll('[data-ig-toggle]').forEach(header => {
+      header.addEventListener('click', () => {
+        const sec = document.getElementById(header.dataset.igToggle);
+        sec.classList.toggle('ig-section--open');
+      });
+    });
+
+    // ── Bath component rendering ───────────────────────────────
+    function renderDLList() {
+      const list = document.getElementById('dl-list');
+      list.innerHTML = '';
+      dlComponents.forEach((comp, idx) => {
+        const item = document.createElement('div');
+        item.className = 'ig-component-item';
+        item.innerHTML = `
+          <div class="ig-component-item__header">
+            <span class="ig-component-item__label">DL Component #${idx + 1}</span>
+            <button class="ig-btn-remove" data-dl-remove="${idx}">
+              <i class="fa fa-times"></i> Remove
+            </button>
+          </div>
+          <div class="ig-row">
+            <div class="ig-field">
+              <label><span class="ig-label-code">re_d[${idx}]</span> — λ <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-dl="${idx}" data-key="re" value="${comp.re}" step="1">
+            </div>
+            <div class="ig-field">
+              <label><span class="ig-label-code">width_d[${idx}]</span> — ω<sub>c</sub> <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-dl="${idx}" data-key="width" value="${comp.width}" step="1">
+            </div>
+          </div>`;
+        list.appendChild(item);
+      });
+
+      list.querySelectorAll('[data-dl-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          dlComponents.splice(parseInt(btn.dataset.dlRemove), 1);
+          renderDLList();
+          update();
+        });
+      });
+
+      list.querySelectorAll('[data-dl]').forEach(input => {
+        input.addEventListener('input', () => {
+          dlComponents[parseInt(input.dataset.dl)][input.dataset.key] = input.value;
+          update();
+        });
+      });
+    }
+
+    function renderBOList() {
+      const list = document.getElementById('bo-list');
+      list.innerHTML = '';
+      boComponents.forEach((comp, idx) => {
+        const item = document.createElement('div');
+        item.className = 'ig-component-item';
+        item.innerHTML = `
+          <div class="ig-component-item__header">
+            <span class="ig-component-item__label">BO Component #${idx + 1}</span>
+            <button class="ig-btn-remove" data-bo-remove="${idx}">
+              <i class="fa fa-times"></i> Remove
+            </button>
+          </div>
+          <div class="ig-row">
+            <div class="ig-field">
+              <label><span class="ig-label-code">freq_b[${idx}]</span> — ω<sub>0</sub> <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-bo="${idx}" data-key="freq" value="${comp.freq}" step="1">
+            </div>
+            <div class="ig-field">
+              <label><span class="ig-label-code">re_b[${idx}]</span> — λ <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-bo="${idx}" data-key="re" value="${comp.re}" step="1">
+            </div>
+            <div class="ig-field">
+              <label><span class="ig-label-code">width_b[${idx}]</span> — η <span class="ig-label-unit">(cm⁻¹)</span></label>
+              <input type="number" class="ig-input" data-bo="${idx}" data-key="width" value="${comp.width}" step="1">
+            </div>
+          </div>`;
+        list.appendChild(item);
+      });
+
+      list.querySelectorAll('[data-bo-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          boComponents.splice(parseInt(btn.dataset.boRemove), 1);
+          renderBOList();
+          update();
+        });
+      });
+
+      list.querySelectorAll('[data-bo]').forEach(input => {
+        input.addEventListener('input', () => {
+          boComponents[parseInt(input.dataset.bo)][input.dataset.key] = input.value;
+          update();
+        });
+      });
+    }
+
+    document.getElementById('btn-add-dl').addEventListener('click', () => {
+      dlComponents.push({ re: '540', width: '70' });
+      renderDLList();
+      update();
+    });
+
+    document.getElementById('btn-add-bo').addEventListener('click', () => {
+      boComponents.push({ freq: '1663', re: '330', width: '4' });
+      renderBOList();
+      update();
+    });
+
+    // ── Matrix grid rendering ──────────────────────────────────
+    function renderGrid(containerId, dataStore, label) {
+      const container = document.getElementById(containerId);
+      const table = document.createElement('table');
+      for (let i = 0; i < M; i++) {
+        const tr = document.createElement('tr');
+        for (let j = 0; j < M; j++) {
+          const td = document.createElement('td');
+          const inp = document.createElement('input');
+          inp.type = 'text';
+          inp.className = 'ig-matrix-cell';
+          inp.value = dataStore[i][j];
+          inp.setAttribute('aria-label', `${label}[${i}][${j}]`);
+          inp.addEventListener('input', () => {
+            dataStore[i][j] = inp.value;
+            update();
+          });
+          td.appendChild(inp);
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+      container.innerHTML = '';
+      container.appendChild(table);
+    }
+
+    function resizeMatrix(old, n) {
+      const mat = [];
+      for (let i = 0; i < n; i++) {
+        mat.push([]);
+        for (let j = 0; j < n; j++) {
+          mat[i].push((old[i] && old[i][j] !== undefined) ? old[i][j] : '0');
+        }
+      }
+      return mat;
+    }
+
+    function resizeVector(old, n) {
+      const v = [];
+      for (let i = 0; i < n; i++) v.push(old[i] !== undefined ? old[i] : '0');
+      return v;
+    }
+
+    // System–bath couplings: a list of editable M×M operator grids.
+    function renderCouplings() {
+      const list = document.getElementById('couplings-list');
+      list.innerHTML = '';
+      couplings.forEach((mat, idx) => {
+        const item = document.createElement('div');
+        item.className = 'ig-component-item';
+        item.innerHTML = `
+          <div class="ig-component-item__header">
+            <span class="ig-component-item__label">Coupling #${idx + 1} — sys_op[${idx}]</span>
+            ${couplings.length > 1 ? `<button class="ig-btn-remove" data-cp-remove="${idx}"><i class="fa fa-times"></i> Remove</button>` : ''}
+          </div>
+          <div class="ig-matrix-grid" id="grid-op-${idx}"></div>`;
+        list.appendChild(item);
+        renderGrid('grid-op-' + idx, couplings[idx], 'sys_op' + idx);
+      });
+      list.querySelectorAll('[data-cp-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          couplings.splice(parseInt(btn.dataset.cpRemove), 1);
+          renderCouplings();
+          update();
+        });
+      });
+    }
+
+    // Initial pure-state vector: a single editable row of M amplitudes.
+    function renderVector() {
+      const list = document.getElementById('vec-list');
+      const table = document.createElement('table');
+      const tr = document.createElement('tr');
+      for (let i = 0; i < M; i++) {
+        const td = document.createElement('td');
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.className = 'ig-matrix-cell';
+        inp.value = wfnData[i];
+        inp.setAttribute('aria-label', `psi[${i}]`);
+        inp.addEventListener('input', () => { wfnData[i] = inp.value; update(); });
+        td.appendChild(inp);
+        tr.appendChild(td);
+      }
+      table.appendChild(tr);
+      list.innerHTML = '';
+      list.appendChild(table);
+    }
+
+    function renderAllGrids() {
+      renderGrid('grid-ham',  hamData,  'sys_ham');
+      renderGrid('grid-rdo',  rdoData,  'init_rdo');
+      renderGrid('grid-tdop', tdOpData, 'td_op');
+      renderCouplings();
+      renderVector();
+    }
+
+    document.getElementById('btn-add-coupling').addEventListener('click', () => {
+      // A second coupling defaults to sigma_x (a non-commuting partner for M=2).
+      couplings.push(matToFlat(sigmax(M)));
+      renderCouplings();
+      update();
+    });
+
+    document.getElementById('f-M').addEventListener('change', () => {
+      const newM = Math.max(2, Math.min(8, parseInt(document.getElementById('f-M').value) || 2));
+      document.getElementById('f-M').value = newM;
+      hamData  = resizeMatrix(hamData,  newM);
+      rdoData  = resizeMatrix(rdoData,  newM);
+      tdOpData = resizeMatrix(tdOpData, newM);
+      couplings = couplings.map(c => resizeMatrix(c, newM));
+      wfnData  = resizeVector(wfnData,  newM);
+      M = newM;
+      renderAllGrids();
+      update();
+    });
+
+    // ── Read all form values ───────────────────────────────────
+    function readParams() {
+      // MCTDH always uses a wavefunction; the density-matrix mode is HEOM-only.
+      const initMode = (method === 'mctdh') ? 'vector' : document.getElementById('f-initmode').value;
+      return {
+        method:      method,
+        temperature: parseFloat(document.getElementById('f-temperature').value) || 300,
+        decomp:      document.getElementById('f-decomp').value,
+        n_ltc:       parseInt(document.getElementById('f-nltc').value) || 0,
+        cutoff:      numv('f-cutoff', 1000),
+        nDisc:       parseInt(document.getElementById('f-ndisc').value) || 20,
+        discMethod:  document.getElementById('f-discmethod').value,
+        dl:          dlComponents.map(c => ({ re: parseFloat(c.re) || 0, width: parseFloat(c.width) || 0 })),
+        bo:          boComponents.map(c => ({ freq: parseFloat(c.freq) || 0, re: parseFloat(c.re) || 0, width: parseFloat(c.width) || 0 })),
+        M:           M,
+        ham:         hamData,
+        couplings:   couplings,
+        initMode:    initMode,
+        wfn:         wfnData,
+        rdo:         rdoData,
+        dim:         parseInt(document.getElementById('f-dim').value) || 10,
+        maxRank:     parseInt(document.getElementById('f-maxrank').value) || 64,
+        odeAtol:     document.getElementById('f-odeatol').value.trim() || '1e-9',
+        odeRtol:     document.getElementById('f-odertol').value.trim() || '1e-5',
+        endTime:     parseFloat(document.getElementById('f-endtime').value) || 100,
+        stepTime:    parseFloat(document.getElementById('f-steptime').value) || 0.05,
+        fname:       document.getElementById('f-fname').value.trim() || 'output',
+        drive:       readDrive(),
+        adv:         readAdvanced(),
+      };
+    }
+
+    // Advanced settings, with backend defaults so generateCode can emit only changes.
+    const ADV_DEFAULTS = {
+      frame_method: 'tree2', rank: 3, stepwise_method: 'mix', ps_method: 'vmf',
+      start_time: 0, metric: 're', dvr_length: 32, dvr_type: 'sine',
+      use_dvr: false, renormalize: false, save_checkpoint_to_file: false,
+      load_checkpoint_from_file: false, visualize_frame: false,
+    };
+
+    function readAdvanced() {
+      const cb = id => document.getElementById(id).checked;
+      return {
+        frame_method:             document.getElementById('f-frame').value,
+        rank:                     parseInt(document.getElementById('f-rank').value) || 3,
+        stepwise_method:          document.getElementById('f-stepwise').value,
+        ps_method:                document.getElementById('f-psmethod').value,
+        start_time:               numv('f-starttime', 0),
+        metric:                   document.getElementById('f-metric').value,
+        dvr_length:               parseInt(document.getElementById('f-dvrlength').value) || 32,
+        dvr_type:                 document.getElementById('f-dvrtype').value,
+        use_dvr:                  cb('f-usedvr'),
+        renormalize:              cb('f-renorm'),
+        save_checkpoint_to_file:  cb('f-savechk'),
+        load_checkpoint_from_file: cb('f-loadchk'),
+        visualize_frame:          cb('f-vizframe'),
+      };
+    }
+
+    function readDrive() {
+      return {
+        enabled: document.getElementById('f-drive-enable').checked,
+        shape:   document.getElementById('f-drive-shape').value,
+        op:      tdOpData,
+        gaussian: {
+          amp:     numv('f-d-amp', 500),
+          carrier: numv('f-d-carrier', 1500),
+          fwhm:    numv('f-d-fwhm', 5),
+          t0:      numv('f-d-t0', 6),
+          phase:   numv('f-d-phase', 0),
+        },
+        cw: {
+          amp:     numv('f-cw-amp', 100),
+          carrier: numv('f-cw-carrier', 1500),
+          phase:   numv('f-cw-phase', 0),
+        },
+        dc: {
+          amp:     numv('f-dc-amp', 100),
+        },
+        custom: document.getElementById('f-custom-expr').value,
+      };
+    }
+
+    // Evaluate the (non-custom) field f(t) for the live preview. Returns null
+    // for shapes that cannot be sampled in the browser (custom expressions).
+    function driveValue(d, t) {
+      if (d.shape === 'gaussian') {
+        const g = d.gaussian;
+        const sigma = Math.max(g.fwhm / (2 * Math.sqrt(2 * Math.LN2)), 1e-9);
+        const env = Math.exp(-0.5 * Math.pow((t - g.t0) / sigma, 2));
+        return g.amp * env * Math.cos(g.carrier * CM_TO_RAD_FS * t + g.phase);
+      }
+      if (d.shape === 'cw') {
+        const c = d.cw;
+        return c.amp * Math.cos(c.carrier * CM_TO_RAD_FS * t + c.phase);
+      }
+      if (d.shape === 'constant') {
+        return d.dc.amp;
+      }
+      return null; // custom
+    }
+
+    // Carrier period in fs for the active shape (for the Nyquist warning), or null.
+    function drivePeriodFs(d) {
+      let carrier = 0;
+      if (d.shape === 'gaussian') carrier = d.gaussian.carrier;
+      else if (d.shape === 'cw')  carrier = d.cw.carrier;
+      else return null;
+      const omega = carrier * CM_TO_RAD_FS; // rad/fs
+      return omega > 1e-12 ? (2 * Math.PI / omega) : null;
+    }
+
+    // ── Hierarchy size (multinomial coefficient C(dim+K, K)) ───
+    function binomCoeff(n, k) {
+      if (k > n) return 0;
+      if (k === 0 || k === n) return 1;
+      k = Math.min(k, n - k);
+      let result = 1;
+      for (let i = 0; i < k; i++) {
+        result = result * (n - i) / (i + 1);
+      }
+      return result;
+    }
+
+    function hierarchySize(dim, K) {
+      // Number of nodes with depth <= dim in a K-mode hierarchy = C(dim+K, K)
+      return Math.round(binomCoeff(dim + K, K));
+    }
+
+    // ── Format memory ──────────────────────────────────────────
+    function fmtBytes(bytes) {
+      if (bytes < 1024) return bytes.toFixed(0) + ' B';
+      if (bytes < 1024 ** 2) return (bytes / 1024).toFixed(1) + ' KB';
+      if (bytes < 1024 ** 3) return (bytes / 1024 ** 2).toFixed(1) + ' MB';
+      return (bytes / 1024 ** 3).toFixed(2) + ' GB';
+    }
+
+    function fmtNum(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+      return n.toString();
+    }
+
+    // ── Warnings ───────────────────────────────────────────────
+    function updateWarnings(p, K, H, ramBytes, nSteps) {
+      const container = document.getElementById('ig-warnings');
+      const warnings = [];
+
+      if (p.dl.length === 0 && p.bo.length === 0) {
+        warnings.push({ level: 'warning', icon: 'fa-exclamation-triangle',
+          text: 'No bath components defined. Add at least one Drude–Lorentz or Brownian oscillator component.' });
+      }
+
+      if (p.method === 'heom') {
+        if (H > 100000) {
+          warnings.push({ level: 'danger', icon: 'fa-skull-crossbones',
+            text: `Very large hierarchy (${fmtNum(H)} nodes) — likely to exceed RAM. Reduce <code>dim</code> or the number of bath modes.` });
+        } else if (H > 10000) {
+          warnings.push({ level: 'warning', icon: 'fa-exclamation-triangle',
+            text: `Large hierarchy (${fmtNum(H)} nodes) — consider reducing <code>dim</code> or bath components if memory is limited.` });
+        }
+
+        if (ramBytes > 4 * 1024 ** 3) {
+          warnings.push({ level: 'danger', icon: 'fa-memory',
+            text: `Estimated RAM ≈ ${fmtBytes(ramBytes)} — exceeds typical workstation memory. Reduce <code>max_auxiliary_rank</code> or <code>dim</code>.` });
+        } else if (ramBytes > 1 * 1024 ** 3) {
+          warnings.push({ level: 'warning', icon: 'fa-memory',
+            text: `Estimated RAM ≈ ${fmtBytes(ramBytes)} — ensure your machine has sufficient memory.` });
+        }
+      } else {
+        // MCTDH: large primitive grids with too low a rank can under-resolve.
+        if (p.nDisc * p.dim > 4000) {
+          warnings.push({ level: 'info', icon: 'fa-info-circle',
+            text: `Large MCTDH bath (${p.nDisc} modes × ${p.dim} basis) — make sure the tensor-network <code>rank</code> in Advanced Settings is large enough for convergence.` });
+        }
+      }
+
+      if (nSteps > 100000) {
+        warnings.push({ level: 'warning', icon: 'fa-hourglass-half',
+          text: `${fmtNum(nSteps)} time steps — propagation may take a long time. Consider increasing <code>step_time</code> or reducing <code>end_time</code>.` });
+      }
+
+      if (p.stepTime > 0.5) {
+        warnings.push({ level: 'warning', icon: 'fa-ruler',
+          text: `Large step size Δt = ${p.stepTime} fs may reduce numerical accuracy. Typical values are 0.01–0.1 fs.` });
+      }
+
+      if (p.method === 'heom' && p.decomp === 'Matsubara' && p.n_ltc > 5) {
+        warnings.push({ level: 'info', icon: 'fa-info-circle',
+          text: `Matsubara decomposition with ${p.n_ltc} LTC terms generates many bath modes. The Padé method achieves similar accuracy with fewer terms.` });
+      }
+
+      if (p.drive.enabled) {
+        // Carrier resolved poorly by the time step (Nyquist-style check).
+        const period = drivePeriodFs(p.drive);
+        if (period !== null && p.stepTime > period / 10) {
+          warnings.push({ level: 'warning', icon: 'fa-wave-square',
+            text: `The drive's carrier period is ≈ ${period.toFixed(3)} fs, but the step size is ${p.stepTime} fs. Use <code>step_time</code> ≲ ${(period / 10).toFixed(3)} fs (about a tenth of a period) to resolve the oscillation.` });
+        }
+        // Pulse center outside the propagation window.
+        if (p.drive.shape === 'gaussian' && p.drive.gaussian.t0 > p.endTime) {
+          warnings.push({ level: 'warning', icon: 'fa-hourglass-half',
+            text: `The pulse center t₀ = ${p.drive.gaussian.t0} fs is after the end time (${p.endTime} fs), so the pulse will never fire. Increase <code>end_time</code> or lower t₀.` });
+        }
+        // Drive operator is all zeros → no effect.
+        const opAllZero = p.drive.op.every(row => row.every(v => {
+          const s = v.toString().trim();
+          return s === '' || parseFloat(s) === 0;
+        }));
+        if (opAllZero) {
+          warnings.push({ level: 'info', icon: 'fa-info-circle',
+            text: 'The drive operator <code>td_op</code> is currently all zeros — the drive will have no effect. Set its entries (e.g. σ_x = [[0,1],[1,0]]).' });
+        }
+      }
+
+      if (warnings.length === 0) {
+        container.innerHTML = `
+          <div class="ig-warning-item ig-warning-item--info">
+            <i class="fa fa-check-circle"></i>
+            <span>Parameters look reasonable — no major resource concerns detected.</span>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = warnings.map(w => `
+        <div class="ig-warning-item ig-warning-item--${w.level}">
+          <i class="fa ${w.icon}"></i>
+          <span>${w.text}</span>
+        </div>`).join('');
+    }
+
+    // ── Code generator ─────────────────────────────────────────
+    function fmtList(arr) {
+      return '[' + arr.join(', ') + ']';
+    }
+
+    function fmtMatrix(data, n, varName) {
+      const rows = [];
+      for (let i = 0; i < n; i++) {
+        const row = data[i].map(v => {
+          const s = v.toString().trim() || '0';
+          // If it's a pure number without imaginary part, leave it; otherwise add +0j if needed
+          return s;
+        }).join(', ');
+        rows.push('    [' + row + ']');
+      }
+      const indent = ' '.repeat(varName.length + 3);
+      return rows.join(',\n');
+    }
+
+    // Build the lines defining `drive` and `td_op` (or null when disabled).
+    function driveCodeBlock(p) {
+      const d = p.drive;
+      if (!d.enabled) return null;
+
+      const opRows = [];
+      for (let i = 0; i < p.M; i++) {
+        const row = d.op[i].map(v => (v.toString().trim() || '0')).join(', ');
+        opRows.push('    [' + row + ']');
+      }
+
+      let lines = [
+        '# ── Time-dependent drive ──────────────────────────────────────────────────────',
+        '# Adds f(t) * td_op to the system Hamiltonian:  H(t) = sys_ham + f(t) * td_op.',
+        '# drive(t) returns the field in cm^-1; the time argument t is in fs.',
+      ];
+
+      const needOmega = (d.shape === 'gaussian' || d.shape === 'cw');
+      if (needOmega) {
+        lines.push('CM_TO_RAD_FS = 2.0 * np.pi * 2.99792458e10 * 1e-15   # 1 cm^-1 -> rad/fs');
+      }
+      lines.push('');
+
+      if (d.shape === 'gaussian') {
+        const g = d.gaussian;
+        lines.push(
+          `amp_cm  = ${g.amp}      # peak amplitude (cm^-1)`,
+          `carrier = ${g.carrier}     # carrier frequency (cm^-1)`,
+          `fwhm    = ${g.fwhm}        # pulse FWHM (fs)`,
+          `t0      = ${g.t0}        # pulse center (fs)`,
+          `phase   = ${g.phase}        # carrier phase (rad)`,
+          'sigma   = fwhm / (2.0 * np.sqrt(2.0 * np.log(2.0)))',
+          'omega   = carrier * CM_TO_RAD_FS',
+          '',
+          'def drive(t):',
+          '    envelope = np.exp(-0.5 * ((t - t0) / sigma) ** 2)',
+          '    return amp_cm * envelope * np.cos(omega * t + phase)',
+        );
+      } else if (d.shape === 'cw') {
+        const c = d.cw;
+        lines.push(
+          `amp_cm  = ${c.amp}      # amplitude (cm^-1)`,
+          `carrier = ${c.carrier}     # frequency (cm^-1)`,
+          `phase   = ${c.phase}        # phase (rad)`,
+          'omega   = carrier * CM_TO_RAD_FS',
+          '',
+          'def drive(t):',
+          '    return amp_cm * np.cos(omega * t + phase)',
+        );
+      } else if (d.shape === 'constant') {
+        lines.push(
+          `amp_cm = ${d.dc.amp}       # constant field (cm^-1)`,
+          '',
+          'def drive(t):',
+          '    return amp_cm',
+        );
+      } else { // custom
+        const expr = (d.custom && d.custom.trim()) ? d.custom.trim() : '0.0';
+        lines.push(
+          'def drive(t):',
+          '    # t in fs; return energy in cm^-1 (np is available)',
+          `    return ${expr}`,
+        );
+      }
+
+      lines.push(
+        '',
+        'td_op = np.array([',
+        opRows.join(',\n') + ',',
+        '], dtype=np.complex128)',
+      );
+      return lines;
+    }
+
+    function generateCode(p) {
+      const isHeom = p.method === 'heom';
+      const N = p.couplings.length;
+
+      const matStr = (data) => {
+        const rows = [];
+        for (let i = 0; i < p.M; i++) {
+          const row = data[i].map(v => (v.toString().trim() || '0')).join(', ');
+          rows.push('    [' + row + ']');
+        }
+        return rows.join(',\n');
+      };
+      const fmtVec = (vec) => '[' + vec.map(v => (v.toString().trim() || '0')).join(', ') + ']';
+
+      const hasDL = p.dl.length > 0;
+      const hasBO = p.bo.length > 0;
+      const re_d = hasDL ? fmtList(p.dl.map(c => c.re))    : '[]';
+      const wd_d = hasDL ? fmtList(p.dl.map(c => c.width)) : '[]';
+      const fr_b = hasBO ? fmtList(p.bo.map(c => c.freq))  : '[]';
+      const re_b = hasBO ? fmtList(p.bo.map(c => c.re))    : '[]';
+      const wd_b = hasBO ? fmtList(p.bo.map(c => c.width)) : '[]';
+
+      // ── Imports ──
+      const protoMod = isHeom ? 'heom' : 'mctdh';
+      const bathGen  = isHeom ? 'gen_bcf' : 'gen_star_boson';
+      let lines = [
+        'from math import ceil',
+        'import numpy as np',
+        'from tqdm import tqdm',
+        '',
+        `from tenso.prototypes.${protoMod} import system_multibath`,
+        `from tenso.prototypes.bath import ${bathGen}`,
+        '',
+        '',
+        '# ── Bath ──────────────────────────────────────────────────────────────────────',
+      ];
+
+      if (isHeom) {
+        lines.push(
+          'bath = gen_bcf(',
+          `    re_d    = ${re_d},`,
+          `    width_d = ${wd_d},`,
+          `    freq_b  = ${fr_b},`,
+          `    re_b    = ${re_b},`,
+          `    width_b = ${wd_b},`,
+          `    temperature           = ${p.temperature},`,
+          `    decomposition_method  = '${p.decomp}',`,
+          `    n_ltc                 = ${p.n_ltc},`,
+          ')',
+        );
+      } else {
+        lines.push(
+          'bath = gen_star_boson(',
+          `    re_d    = ${re_d},`,
+          `    width_d = ${wd_d},`,
+          `    freq_b  = ${fr_b},`,
+          `    re_b    = ${re_b},`,
+          `    width_b = ${wd_b},`,
+          `    temperature           = ${p.temperature},`,
+          `    cutoff                = ${p.cutoff},`,
+          `    n_discretization      = ${p.nDisc},`,
+          `    discretization_method = '${p.discMethod}',`,
+          ')',
+        );
+      }
+      lines.push('', '', '# ── System ───────────────────────────────────────────────────────────────────');
+
+      // System Hamiltonian
+      lines.push('sys_ham = np.array([', matStr(p.ham) + ',', '], dtype=np.complex128)', '');
+
+      // Coupling operator(s) — always a list (system_multibath takes sys_ops).
+      const names = [];
+      p.couplings.forEach((mat, idx) => {
+        lines.push(`sys_op${idx} = np.array([`, matStr(mat) + ',', '], dtype=np.complex128)', '');
+        names.push('sys_op' + idx);
+      });
+      lines.push(`sys_ops = [${names.join(', ')}]`, '');
+
+      // Initial state
+      if (p.initMode === 'vector') {
+        lines.push(`wfn = np.array(${fmtVec(p.wfn)}, dtype=np.complex128)`);
+        if (isHeom) lines.push('init_rdo = np.outer(wfn, wfn.conj())');
+      } else {
+        lines.push('init_rdo = np.array([', matStr(p.rdo) + ',', '], dtype=np.complex128)');
+      }
+      lines.push('', '');
+
+      // ── Optional time-dependent drive ──
+      const driveLines = driveCodeBlock(p);
+      if (driveLines) lines = lines.concat(driveLines, ['', '']);
+
+      // ── Advanced kwargs (emit only when changed from the backend default) ──
+      const a = p.adv, D = ADV_DEFAULTS, advKw = [];
+      const pushStr  = k => { if (a[k] !== D[k]) advKw.push(`        ${k}='${a[k]}',`); };
+      const pushNum  = k => { if (a[k] !== D[k]) advKw.push(`        ${k}=${a[k]},`); };
+      const pushBool = k => { if (a[k] !== D[k]) advKw.push(`        ${k}=${a[k] ? 'True' : 'False'},`); };
+      pushStr('frame_method');
+      pushNum('rank');
+      pushStr('stepwise_method');
+      pushStr('ps_method');
+      pushNum('start_time');
+      if (isHeom) {                       // metric & DVR are HEOM-only kwargs
+        pushStr('metric');
+        pushBool('use_dvr');
+        if (a.use_dvr) { pushStr('dvr_type'); pushNum('dvr_length'); }
+      }
+      pushBool('renormalize');
+      pushBool('save_checkpoint_to_file');
+      pushBool('load_checkpoint_from_file');
+      pushBool('visualize_frame');
+
+      // ── Run / propagator call (always system_multibath) ──
+      const bathList = N === 1 ? '[bath]' : `[bath] * ${N}`;
+      const callLines = ['propagator = system_multibath(', '        fname=out,'];
+      callLines.push(isHeom ? '        init_rdo=init_rdo,' : '        init_wfn=wfn,');
+      callLines.push('        sys_ham=sys_ham,');
+      callLines.push('        sys_ops=sys_ops,');
+      callLines.push(isHeom ? `        bath_correlations=${bathList},` : `        baths=${bathList},`);
+      if (p.drive.enabled) callLines.push('        td_f=drive,', '        td_op=td_op,');
+      callLines.push(
+        '        end_time=end_time,',
+        '        step_time=dt,',
+        `        dim=${p.dim},`,
+        `        max_auxiliary_rank=${p.maxRank},`,
+        `        ode_atol=${p.odeAtol},`,
+        `        ode_rtol=${p.odeRtol},`,
+      );
+      callLines.push(...advKw);
+      callLines.push('    )');
+
+      lines = lines.concat([
+        '# ── Run ──────────────────────────────────────────────────────────────────────',
+        `end_time = ${p.endTime}  # fs`,
+        `dt = ${p.stepTime}  # fs`,
+        `out = '${p.fname}'  # outputs: {out}.dat.log (data) and {out}.debug.log`,
+        '',
+      ], callLines, [
+        '',
+        'progress_bar = tqdm(propagator, total=ceil(end_time / dt))',
+        'for _t in (progress_bar):',
+        "    progress_bar.set_description(f'@{_t:.2f} fs')",
+        '',
+      ]);
+
+      return lines.join('\n');
+    }
+
+    // ── Drive UI sync (enable state + shape-specific fields) ───
+    function syncDriveUI(p) {
+      const controls = document.getElementById('drive-controls');
+      controls.classList.toggle('ig-drive-disabled', !p.drive.enabled);
+      document.querySelectorAll('.ig-drive-params').forEach(el => {
+        el.style.display = (el.dataset.shape === p.drive.shape) ? '' : 'none';
+      });
+    }
+
+    // ── Live preview plot of f(t) ──────────────────────────────
+    function cssVar(name, fallback) {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    }
+
+    function drawDrive(p) {
+      const canvas = document.getElementById('drive-canvas');
+      const noplot = document.getElementById('drive-noplot');
+      const d = p.drive;
+
+      // Custom expressions cannot be sampled here.
+      if (d.shape === 'custom') {
+        canvas.style.display = 'none';
+        noplot.style.display = 'flex';
+        return;
+      }
+      canvas.style.display = 'block';
+      noplot.style.display = 'none';
+
+      const dpr = window.devicePixelRatio || 1;
+      const cssW = canvas.clientWidth || 600;
+      const cssH = 220;
+      canvas.width = Math.round(cssW * dpr);
+      canvas.height = Math.round(cssH * dpr);
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, cssW, cssH);
+
+      const pad = { l: 56, r: 14, t: 14, b: 28 };
+      const plotW = cssW - pad.l - pad.r;
+      const plotH = cssH - pad.t - pad.b;
+
+      const tMax = Math.max(p.endTime, 1e-6);
+      const N = 480;
+      const xs = [], ys = [];
+      let ymin = Infinity, ymax = -Infinity;
+      for (let i = 0; i <= N; i++) {
+        const t = (i / N) * tMax;
+        const f = driveValue(d, t);
+        xs.push(t);
+        ys.push(f);
+        if (f < ymin) ymin = f;
+        if (f > ymax) ymax = f;
+      }
+      if (!isFinite(ymin) || !isFinite(ymax) || ymin === ymax) {
+        const c = isFinite(ymin) ? ymin : 0;
+        ymin = c - 1; ymax = c + 1;
+      }
+      // Symmetric padding so the f=0 axis sits sensibly.
+      const span = ymax - ymin;
+      ymin -= span * 0.08;
+      ymax += span * 0.08;
+
+      const colAxis  = cssVar('--text-muted', '#8a93a6');
+      const colGrid  = cssVar('--border', 'rgba(255,255,255,0.1)');
+      const colLine  = cssVar('--accent-primary', '#ffd82b');
+      const colZero  = cssVar('--accent-secondary', '#0066fd');
+
+      const X = t => pad.l + (t / tMax) * plotW;
+      const Y = f => pad.t + (1 - (f - ymin) / (ymax - ymin)) * plotH;
+
+      // Axes box
+      ctx.strokeStyle = colGrid;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(pad.l, pad.t, plotW, plotH);
+
+      // f = 0 line
+      if (ymin < 0 && ymax > 0) {
+        ctx.strokeStyle = colZero;
+        ctx.globalAlpha = 0.45;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, Y(0));
+        ctx.lineTo(pad.l + plotW, Y(0));
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      // Labels
+      ctx.fillStyle = colAxis;
+      ctx.font = '11px JetBrains Mono, monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ymax.toFixed(0), pad.l - 6, Y(ymax));
+      ctx.fillText(ymin.toFixed(0), pad.l - 6, Y(ymin));
+      ctx.save();
+      ctx.translate(14, pad.t + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = 'center';
+      ctx.fillText('f(t)  [cm⁻¹]', 0, 0);
+      ctx.restore();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('0', pad.l, pad.t + plotH + 6);
+      ctx.fillText(tMax.toFixed(0) + ' fs', pad.l + plotW, pad.t + plotH + 6);
+
+      // Curve
+      ctx.strokeStyle = colLine;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      for (let i = 0; i <= N; i++) {
+        const px = X(xs[i]);
+        const py = Y(ys[i]);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    // ── Method / initial-state UI sync ─────────────────────────
+    function syncMethodUI(p) {
+      const heom = p.method === 'heom';
+      document.querySelectorAll('.ig-heom-only').forEach(el => { el.style.display = heom ? '' : 'none'; });
+      document.querySelectorAll('.ig-mctdh-only').forEach(el => { el.style.display = heom ? 'none' : ''; });
+      document.querySelectorAll('[data-method-card]').forEach(card => {
+        card.classList.toggle('is-active', card.dataset.methodCard === p.method);
+      });
+      const dimLabel = document.getElementById('dim-label');
+      const dimHint = document.getElementById('dim-hint');
+      if (heom) {
+        dimLabel.textContent = 'HEOM depth';
+        dimHint.textContent = 'Hierarchy truncation depth Nₖ. Increase until results converge (typical: 10–40).';
+      } else {
+        dimLabel.textContent = 'Basis per mode';
+        dimHint.textContent = 'Primitive basis size for each bath mode (typical: 5–8).';
+      }
+      // MCTDH propagates a pure wavefunction → force the vector input.
+      const initSel = document.getElementById('f-initmode');
+      const matrixOpt = initSel.querySelector('option[value="matrix"]');
+      if (!heom) {
+        initSel.value = 'vector';
+        initSel.disabled = true;
+        if (matrixOpt) matrixOpt.disabled = true;
+      } else {
+        initSel.disabled = false;
+        if (matrixOpt) matrixOpt.disabled = false;
+      }
+    }
+
+    function syncInitUI(p) {
+      document.getElementById('vec-wrap').style.display = (p.initMode === 'vector') ? '' : 'none';
+      document.getElementById('rdo-wrap').style.display = (p.initMode === 'matrix') ? '' : 'none';
+      const hint = document.getElementById('initmode-hint');
+      if (p.method === 'mctdh') {
+        hint.textContent = 'MCTDH propagates a pure wavefunction, so the state is entered as |ψ⟩.';
+      } else if (p.initMode === 'vector') {
+        hint.textContent = 'The script builds ρ₀ = np.outer(ψ, ψ.conj()) from this vector.';
+      } else {
+        hint.textContent = 'Enter the full density matrix ρ₀ (positive semidefinite, trace 1).';
+      }
+    }
+
+    // ── Main update ────────────────────────────────────────────
+    function update() {
+      const p = readParams();
+
+      syncMethodUI(p);
+      syncInitUI(p);
+
+      const nSteps = Math.round(p.endTime / p.stepTime);
+      const statK = document.getElementById('stat-K');
+      const statH = document.getElementById('stat-H');
+      const statRAM = document.getElementById('stat-RAM');
+      const statSteps = document.getElementById('stat-steps');
+      const labK = document.getElementById('stat-K-label');
+      const labH = document.getElementById('stat-H-label');
+      const labRAM = document.getElementById('stat-RAM-label');
+
+      let K, H = 0, ramBytes = 0;
+      if (p.method === 'heom') {
+        K = p.dl.length + 2 * p.bo.length + p.n_ltc;
+        H = hierarchySize(p.dim, K);
+        ramBytes = H * p.M * p.M * p.maxRank * 16;
+
+        labK.textContent = 'Bath Modes (K)';
+        labH.textContent = 'Hierarchy Nodes';
+        labRAM.textContent = 'Est. RAM';
+        statK.textContent = K;
+        statH.textContent = fmtNum(H);
+        statH.className = 'ig-stat__value' + (H > 100000 ? ' ig-stat__value--danger' : H > 10000 ? ' ig-stat__value--warn' : '');
+        statRAM.textContent = fmtBytes(ramBytes);
+        statRAM.className = 'ig-stat__value' + (ramBytes > 4 * 1024 ** 3 ? ' ig-stat__value--danger' : ramBytes > 1024 ** 3 ? ' ig-stat__value--warn' : '');
+      } else {
+        // MCTDH cost is governed by the tensor-network rank, not a binomial hierarchy.
+        K = p.nDisc;
+        labK.textContent = 'Bath Modes (≈ n_disc)';
+        labH.textContent = 'Basis / mode';
+        labRAM.textContent = 'Initial rank';
+        statK.textContent = K;
+        statH.textContent = p.dim;
+        statH.className = 'ig-stat__value';
+        statRAM.textContent = p.adv.rank;
+        statRAM.className = 'ig-stat__value';
+      }
+
+      statSteps.textContent = fmtNum(nSteps);
+      statSteps.className = 'ig-stat__value' + (nSteps > 100000 ? ' ig-stat__value--warn' : '');
+
+      // Warnings
+      updateWarnings(p, K, H, ramBytes, nSteps);
+
+      // Time-dependent drive UI + live preview
+      syncDriveUI(p);
+      drawDrive(p);
+
+      // Code preview
+      document.getElementById('ig-preview-pre').textContent = generateCode(p);
+    }
+
+    // ── Copy button ────────────────────────────────────────────
+    document.getElementById('btn-copy').addEventListener('click', function () {
+      const code = document.getElementById('ig-preview-pre').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = this;
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-check"></i> Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+      });
+    });
+
+    // ── Download button ────────────────────────────────────────
+    document.getElementById('btn-download').addEventListener('click', () => {
+      const code = document.getElementById('ig-preview-pre').textContent;
+      const fname = (document.getElementById('f-fname').value.trim() || 'output');
+      const blob = new Blob([code], { type: 'text/x-python' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fname + '_input.py';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ── Method selector ────────────────────────────────────────
+    document.querySelectorAll('input[name="ig-method"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radio.checked) { method = radio.value; update(); }
+      });
+    });
+
+    // ── Wire up all other inputs ───────────────────────────────
+    ['f-temperature', 'f-decomp', 'f-nltc', 'f-dim', 'f-maxrank',
+     'f-odeatol', 'f-odertol', 'f-endtime', 'f-steptime', 'f-fname',
+     // Method-specific bath fields
+     'f-cutoff', 'f-ndisc', 'f-discmethod',
+     // Initial-state mode
+     'f-initmode',
+     // Advanced settings
+     'f-frame', 'f-rank', 'f-stepwise', 'f-psmethod', 'f-starttime',
+     'f-metric', 'f-dvrlength', 'f-dvrtype', 'f-usedvr', 'f-renorm',
+     'f-savechk', 'f-loadchk', 'f-vizframe',
+     // Time-dependent drive fields
+     'f-drive-enable', 'f-drive-shape',
+     'f-d-amp', 'f-d-carrier', 'f-d-fwhm', 'f-d-t0', 'f-d-phase',
+     'f-cw-amp', 'f-cw-carrier', 'f-cw-phase',
+     'f-dc-amp', 'f-custom-expr'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', update);
+        el.addEventListener('change', update);
+      }
+    });
+
+    // Redraw the live plot when the layout or theme changes.
+    window.addEventListener('resize', () => drawDrive(readParams()));
+    const themeToggle = document.querySelector('[data-theme-toggle]');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => setTimeout(() => drawDrive(readParams()), 60));
+    }
+
+    // ── Init ───────────────────────────────────────────────────
+    // Seed with one default Drude-Lorentz component
+    dlComponents.push({ re: '540', width: '70' });
+    renderDLList();
+    renderBOList();
+    renderAllGrids();
+    update();
+
+  })();
+  </script>
+</body>
+</html>

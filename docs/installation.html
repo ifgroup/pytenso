@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation — TENSO</title>
+  <meta name="description" content="Install TENSO on Linux, macOS, or Windows using conda and pip.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/installation.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Installation — TENSO" />
+  <meta property="og:description" content="Install TENSO on Linux, macOS, or Windows using conda and pip." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/installation.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" defer></script>
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="page-layout">
+    <!-- Sidebar TOC -->
+    <aside class="sidebar">
+      <nav class="toc" aria-label="Table of contents">
+        <div class="toc__title">On this page</div>
+        <ul class="toc__list">
+          <li class="toc__item"><a href="#linux" class="toc__link">Linux</a></li>
+          <li class="toc__item toc__item--sub"><a href="#linux-conda" class="toc__link">1. Anaconda</a></li>
+          <li class="toc__item toc__item--sub"><a href="#linux-env" class="toc__link">2. Environment</a></li>
+          <li class="toc__item toc__item--sub"><a href="#linux-install" class="toc__link">3. Install TENSO</a></li>
+          <li class="toc__item"><a href="#macos" class="toc__link">macOS</a></li>
+          <li class="toc__item"><a href="#windows" class="toc__link">Windows</a></li>
+          <li class="toc__item"><a href="#verify" class="toc__link">Verify</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="article" id="main-content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="breadcrumb__sep" aria-hidden="true">/</span>
+        <span class="breadcrumb__current">Installation</span>
+      </nav>
+
+      <h1>Installation</h1>
+      <p>TENSO is a Python package. Installation uses <a href="https://www.anaconda.com" target="_blank" rel="noopener">Anaconda</a> for environment management and <code>pip</code> for the package itself. A dedicated conda virtual environment is strongly recommended to isolate TENSO's dependencies.</p>
+      <p>TENSO is supported on <strong>Linux</strong>, <strong>macOS</strong>, and <strong>Windows</strong>. Select your operating system:</p>
+
+      <!-- OS Tab Switcher -->
+      <div class="os-tabs" data-panels="os-content" role="tablist" aria-label="Operating system">
+        <button class="os-tab-btn" data-os="linux" role="tab" aria-selected="true">
+          <i class="fab fa-linux"></i> Linux
+        </button>
+        <button class="os-tab-btn" data-os="macos" role="tab" aria-selected="false">
+          <i class="fab fa-apple"></i> macOS
+        </button>
+        <button class="os-tab-btn" data-os="windows" role="tab" aria-selected="false">
+          <i class="fab fa-windows"></i> Windows
+        </button>
+      </div>
+
+      <div id="os-content">
+        <!-- Linux -->
+        <div class="os-panel" data-os="linux" id="linux">
+          <h2 id="linux-conda">1. Install Anaconda</h2>
+          <p>Download Anaconda from <a href="https://www.anaconda.com/download" target="_blank" rel="noopener">anaconda.com/download</a>. Then open a terminal in your Downloads folder and run:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">bash ./Anaconda3-*.sh</code></pre>
+          </div>
+          <p>Follow the prompts and restart your terminal when the installation completes.</p>
+
+          <h2 id="linux-env">2. Create and activate a conda environment</h2>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">conda create --name tenso python=3 matplotlib
+conda activate tenso</code></pre>
+          </div>
+
+          <h2 id="linux-install">3. Install TENSO</h2>
+          <p>Install <code>git</code> if not already present. You can install it via your distribution's package manager or through conda:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash"># via conda (works on any distro, no sudo required)
+conda install git
+
+# or via apt on Debian/Ubuntu
+# sudo apt install git</code></pre>
+          </div>
+          <p>Clone the repository and install in editable mode:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">git clone https://github.com/ifgroup/pytenso.git
+mv pytenso ~/
+cd ~/pytenso
+python -m pip install -e .</code></pre>
+          </div>
+        </div>
+
+        <!-- macOS -->
+        <div class="os-panel" data-os="macos" id="macos">
+          <h2>1. Install Anaconda</h2>
+          <p>Download the macOS installer from <a href="https://www.anaconda.com/download" target="_blank" rel="noopener">anaconda.com/download</a>. Open the <code>.pkg</code> file and follow the graphical installer.</p>
+          <p>If you prefer the command-line installer, open Terminal and run:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">bash ~/Downloads/Anaconda3-*.sh</code></pre>
+          </div>
+
+          <h2>2. Create and activate a conda environment</h2>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">conda create --name tenso python=3 matplotlib
+conda activate tenso</code></pre>
+          </div>
+
+          <h2>3. Install TENSO</h2>
+          <p><code>git</code> is bundled with Xcode Command Line Tools. Install if not present:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">xcode-select --install</code></pre>
+          </div>
+          <p>Then clone the repository and install:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">git clone https://github.com/ifgroup/pytenso.git
+mv pytenso ~/
+cd ~/pytenso
+python -m pip install -e .</code></pre>
+          </div>
+        </div>
+
+        <!-- Windows -->
+        <div class="os-panel" data-os="windows" id="windows">
+          <h2>1. Install Anaconda</h2>
+          <p>Download the Windows installer from <a href="https://www.anaconda.com/download" target="_blank" rel="noopener">anaconda.com/download</a>. Run the <code>.exe</code> file and follow the graphical installer. When asked, check <strong>"Add Anaconda to my PATH environment variable"</strong> or use the <strong>Anaconda Prompt</strong> for all subsequent steps.</p>
+
+          <h2>2. Create and activate a conda environment</h2>
+          <p>Open <strong>Anaconda Prompt</strong> and run:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">conda create --name tenso python=3 matplotlib
+conda activate tenso</code></pre>
+          </div>
+
+          <h2>3. Install Git for Windows</h2>
+          <p>Download and install Git from <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com/download/win</a>. During installation, select <strong>"Git from the command line and also from 3rd-party software"</strong>.</p>
+
+          <h2>4. Install TENSO</h2>
+          <p>In <strong>Anaconda Prompt</strong>, clone the repository and install:</p>
+          <div class="code-block reveal">
+            <pre><code class="language-bash">git clone https://github.com/ifgroup/pytenso.git
+cd pytenso
+python -m pip install -e .</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verify -->
+      <h2 id="verify">Verifying the installation</h2>
+      <p>After installing, confirm that TENSO is importable:</p>
+      <div class="code-block reveal">
+        <pre><code class="language-bash">python -c "import tenso; print('TENSO installed successfully')"</code></pre>
+      </div>
+
+      <p>For interactive use, consider also installing JupyterLab:</p>
+      <div class="code-block reveal">
+        <pre><code class="language-bash">pip install jupyterlab</code></pre>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="callout__icon"><i class="fa fa-lightbulb"></i></span>
+        <div>ENJOY your Numerically Exact Open Quantum Dynamics Simulations!</div>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-top: 2.5rem; flex-wrap:wrap;">
+        <a href="getting-started.html" class="btn btn--primary">
+          Getting Started <i class="fa fa-arrow-right"></i>
+        </a>
+        <a href="background.html" class="btn btn--secondary">
+          Background <i class="fa fa-book"></i>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer__bottom" style="max-width:1200px; margin:0 auto;">
+      <span class="footer__copyright">© 2025 Franco Group, University of Rochester.</span>
+      <a href="index.html" style="font-size:0.85rem; color:var(--text-muted);">← Back to Home</a>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

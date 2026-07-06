@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — TENSO</title>
+  <meta name="description" content="Contact the TENSO development team at the Franco Group, University of Rochester.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/contact.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Contact — TENSO" />
+  <meta property="og:description" content="Contact the TENSO development team at the Franco Group, University of Rochester." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/contact.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" defer></script>
+  <style>
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .person-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem 1.2rem;
+      background: var(--bg-2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .person-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+    }
+    .person-card--pi {
+      border-color: var(--accent);
+      border-width: 2px;
+    }
+    .person-card__name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0 0 0.3rem;
+      color: var(--text);
+    }
+    .person-card__role {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .person-card__dept {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    .person-card__email a {
+      font-size: 0.82rem;
+      color: var(--accent);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .person-card__email a:hover { text-decoration: underline; }
+    .person-card__icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 0.9rem;
+    }
+    .person-card--pi .person-card__icon {
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main class="article" style="max-width:860px; margin:0 auto; padding:2rem 1rem;">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">Contact</span>
+    </nav>
+
+    <h1>Contact</h1>
+    <p>TENSO is developed and maintained by the <a href="https://www.chemistry.rochester.edu/faculty/franco-ignacio.html" target="_blank" rel="noopener">Franco Group</a> at the University of Rochester.</p>
+
+    <!-- Team -->
+    <h2 id="team">Team</h2>
+    <div class="team-grid">
+
+      <!-- PI — visually distinguished, listed first -->
+      <div class="person-card person-card--pi reveal">
+        <div class="person-card__icon"><i class="fa fa-flask"></i></div>
+        <h3 class="person-card__name">Ignacio Franco</h3>
+        <div class="person-card__role">Principal Investigator</div>
+        <div class="person-card__dept">Departments of Chemistry and Physics &amp; Astronomy<br>University of Rochester</div>
+      </div>
+
+      <!-- Lead developer -->
+      <div class="person-card reveal" data-delay="1">
+        <div class="person-card__icon"><i class="fa fa-code"></i></div>
+        <h3 class="person-card__name">Xinxian Chen</h3>
+        <div class="person-card__role">Lead Developer</div>
+        <div class="person-card__dept">Department of Chemistry<br>University of Rochester</div>
+      </div>
+
+      <!-- Postdoc -->
+      <div class="person-card reveal" data-delay="2">
+        <div class="person-card__icon"><i class="fa fa-atom"></i></div>
+        <h3 class="person-card__name">Michelle Anderson</h3>
+        <div class="person-card__role">Postdoctoral Researcher</div>
+        <div class="person-card__dept">Department of Chemistry<br>University of Rochester</div>
+      </div>
+
+      <!-- PhD student -->
+      <div class="person-card reveal" data-delay="3">
+        <div class="person-card__icon"><i class="fa fa-graduation-cap"></i></div>
+        <h3 class="person-card__name">Juan Camilo Rodriguez</h3>
+        <div class="person-card__role">PhD Student</div>
+        <div class="person-card__dept">Department of Chemistry<br>University of Rochester</div>
+      </div>
+
+    </div>
+
+    <!-- General Contact -->
+    <h2 id="contact-email" style="margin-top:2rem;">Contact</h2>
+    <div class="callout callout--tip">
+      <span class="callout__icon"><i class="fa fa-envelope"></i></span>
+      <div>
+        <p style="margin:0;">For general inquiries, reach us at <a href="mailto:tensouofr@gmail.com">tensouofr@gmail.com</a>.</p>
+      </div>
+    </div>
+
+    <!-- Reporting Issues -->
+    <h2 id="issues" style="margin-top:2rem;">Reporting Issues</h2>
+    <div class="callout callout--tip">
+      <span class="callout__icon"><i class="fa fa-bug"></i></span>
+      <div>
+        <p style="margin:0 0 0.5rem;">Bug reports, feature requests, and questions are welcome via the GitHub issue tracker.</p>
+        <a href="https://github.com/ifgroup/pytenso/issues" class="btn btn--primary" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:0.4rem; font-size:0.9rem;">
+          <i class="fab fa-github"></i> Open an Issue
+        </a>
+      </div>
+    </div>
+
+    <!-- Contributing -->
+    <h2 id="contributing" style="margin-top:2rem;">Contributing</h2>
+    <p>Contributions to TENSO are welcome. Please <strong>open an issue first</strong> to discuss your proposed change before submitting a pull request — this helps avoid duplicate work and ensures the contribution fits the project roadmap.</p>
+    <p>All contributions should include appropriate tests and documentation updates. The source code is available at <a href="https://github.com/ifgroup/pytenso" target="_blank" rel="noopener">https://github.com/ifgroup/pytenso</a>.</p>
+
+    <div style="display:flex; gap:1rem; margin-top: 2rem; flex-wrap:wrap;">
+      <a href="https://github.com/ifgroup/pytenso" class="btn btn--primary" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i> View on GitHub
+      </a>
+      <a href="https://github.com/ifgroup/pytenso/issues" class="btn btn--secondary" target="_blank" rel="noopener">
+        <i class="fa fa-bug"></i> Issue Tracker
+      </a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand-name">TENSO</div>
+        <p class="footer__tagline">Exact open quantum dynamics via Tree Tensor Network HEOM</p>
+        <p style="font-size:0.8rem; color: var(--text-muted);">Franco Group · University of Rochester</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Docs</div>
+        <ul class="footer__links">
+          <li><a href="installation.html" class="footer__link">Installation</a></li>
+          <li><a href="getting-started.html" class="footer__link">Getting Started</a></li>
+          <li><a href="background.html" class="footer__link">Background</a></li>
+          <li><a href="structure.html" class="footer__link">Structure</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">More</div>
+        <ul class="footer__links">
+          <li><a href="examples.html" class="footer__link">Examples</a></li>
+          <li><a href="api.html" class="footer__link">API Reference</a></li>
+          <li><a href="cite.html" class="footer__link">Cite</a></li>
+          <li><a href="contact.html" class="footer__link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Links</div>
+        <ul class="footer__links">
+          <li><a href="https://github.com/ifgroup/pytenso" class="footer__link" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></li>
+          <li><a href="https://doi.org/10.1063/5.0278591" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2025)</a></li>
+          <li><a href="https://doi.org/10.1063/5.0198567" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2024)</a></li>
+          <li><a href="https://github.com/ifgroup/pytenso/issues" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-bug"></i> Issues</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copyright">© 2025 Franco Group, University of Rochester. MIT License.</span>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+          <span class="theme-toggle-icon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

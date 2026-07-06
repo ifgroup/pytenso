@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ifgroup.github.io/tenso_doc/sitemap.xml

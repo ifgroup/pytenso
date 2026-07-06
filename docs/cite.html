@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Cite — TENSO</title>
+  <meta name="description" content="Citation information for TENSO: BibTeX, APA, and ACS formats for the TTN-HEOM and Bexcitonics papers.">
+  <link rel="canonical" href="https://ifgroup.github.io/tenso_doc/cite.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="How to Cite — TENSO" />
+  <meta property="og:description" content="Citation information for TENSO: BibTeX, APA, and ACS formats for the TTN-HEOM and Bexcitonics papers." />
+  <meta property="og:url" content="https://ifgroup.github.io/tenso_doc/cite.html" />
+  <meta property="og:site_name" content="TENSO Documentation" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/prism-tenso.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>MathJax = { tex: { inlineMath: [['$','$']] }, svg: { fontCache: 'global' } };</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" defer></script>
+  <style>
+    .cite-tabs { display: flex; gap: 0.4rem; margin-bottom: 0; flex-wrap: wrap; }
+    .cite-tab-btn {
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      background: var(--bg-2);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+    .cite-tab-btn.active {
+      background: var(--bg-3, var(--bg));
+      color: var(--accent);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .cite-tab-btn:hover:not(.active) {
+      background: var(--bg-3, var(--bg));
+      color: var(--text);
+    }
+    .cite-tab-panel { display: none; }
+    .cite-tab-panel.active { display: block; }
+    .cite-switcher {
+      border: 1px solid var(--border);
+      border-radius: 0 6px 6px 6px;
+      padding: 1rem;
+      background: var(--bg-2);
+      margin-bottom: 1.5rem;
+    }
+    .cite-switcher blockquote {
+      margin: 0;
+      padding: 0.75rem 1rem;
+      border-left: 3px solid var(--accent);
+      background: var(--bg-3, var(--bg));
+      border-radius: 0 4px 4px 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+    .copy-btn {
+      float: right;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.78rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+    }
+    .copy-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .doi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .doi-badge:hover { opacity: 0.85; }
+    .paper-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar"></div>
+
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav__logo">TENSO</a>
+    <ul class="nav__links" role="list">
+      <li><a href="index.html" class="nav__link">Home</a></li>
+      <li><a href="installation.html" class="nav__link">Install</a></li>
+      <li><a href="getting-started.html" class="nav__link">Getting Started</a></li>
+      <li><a href="background.html" class="nav__link">Background</a></li>
+      <li><a href="structure.html" class="nav__link">Structure</a></li>
+      <li><a href="examples.html" class="nav__link">Examples</a></li>
+      <li><a href="api.html" class="nav__link">API</a></li>
+      <li><a href="input-generator.html" class="nav__link">Input Generator</a></li>
+      <li><a href="cite.html" class="nav__link">Cite</a></li>
+      <li><a href="contact.html" class="nav__link">Contact</a></li>
+    </ul>
+    <div class="nav__actions">
+      <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon">☀️</span>
+      </button>
+      <a href="https://github.com/ifgroup/pytenso" class="btn-icon" aria-label="GitHub" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main class="article" style="max-width:860px; margin:0 auto; padding:2rem 1rem;">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <span class="breadcrumb__current">How to Cite</span>
+    </nav>
+
+    <h1>How to Cite</h1>
+    <p>If you use TENSO in your research, please cite the following papers. Citation formats are provided in BibTeX, APA, and ACS styles.</p>
+
+    <!-- TENSO software package -->
+    <h2 id="tenso-software">TENSO software package</h2>
+
+    <div class="paper-header">
+      <div>
+        <span class="tag">2026</span>
+        <span style="margin-left:0.5rem; font-size:0.9rem; color:var(--text-muted);">arXiv:2603.17711</span>
+      </div>
+      <a href="https://doi.org/10.48550/arXiv.2603.17711" class="doi-badge" target="_blank" rel="noopener">
+        <i class="fa fa-external-link-alt"></i> 10.48550/arXiv.2603.17711
+      </a>
+    </div>
+
+    <blockquote style="margin:0 0 1rem; padding:0.75rem 1rem; border-left:3px solid var(--accent); background:var(--bg-2); border-radius:0 4px 4px 0; font-size:0.95rem; line-height:1.7;">
+      <strong>Rodriguez Betancourt, J. C., Anderson, M. C., Niu, L., Chen, X. &amp; Franco, I.</strong><br>
+      <em>TENSO: Software Package for Numerically Exact Open Quantum Dynamics Based on Efficient Tree Tensor Network Decomposition of the Hierarchical Equations of Motion.</em><br>
+      arXiv:2603.17711 (2026).
+    </blockquote>
+
+    <p style="font-size:0.92rem; color:var(--text-muted);">This paper describes the TENSO software package for simulating open quantum dynamics in structured thermal environments using tree tensor network decomposition of the HEOM.</p>
+
+    <div class="cite-tabs" id="tabs-tenso-sw">
+      <button class="cite-tab-btn active" onclick="switchTab('tenso-sw','bibtex')">BibTeX</button>
+      <button class="cite-tab-btn" onclick="switchTab('tenso-sw','apa')">APA</button>
+      <button class="cite-tab-btn" onclick="switchTab('tenso-sw','acs')">ACS</button>
+    </div>
+    <div class="cite-switcher">
+      <div class="cite-tab-panel active" id="tenso-sw-bibtex">
+        <div class="code-block" style="margin:0;">
+          <button class="copy-btn" onclick="copyCode('tenso-sw-bibtex-code')"><i class="fa fa-copy"></i> Copy</button>
+          <pre><code class="language-bibtex" id="tenso-sw-bibtex-code">@misc{rodriguez2026tenso,
+  author        = {Rodriguez Betancourt, Juan C. and Anderson, Michelle C. and
+                   Niu, Luchang and Chen, Xinxian and Franco, Ignacio},
+  title         = {{TENSO}: Software Package for Numerically Exact Open Quantum
+                   Dynamics Based on Efficient Tree Tensor Network Decomposition
+                   of the Hierarchical Equations of Motion},
+  year          = {2026},
+  eprint        = {2603.17711},
+  archivePrefix = {arXiv},
+  primaryClass  = {physics.chem-ph},
+  doi           = {10.48550/arXiv.2603.17711}
+}</code></pre>
+        </div>
+      </div>
+      <div class="cite-tab-panel" id="tenso-sw-apa">
+        <blockquote>
+          Rodriguez Betancourt, J. C., Anderson, M. C., Niu, L., Chen, X., &amp; Franco, I. (2026). TENSO: Software Package for Numerically Exact Open Quantum Dynamics Based on Efficient Tree Tensor Network Decomposition of the Hierarchical Equations of Motion. <em>arXiv</em>. <a href="https://doi.org/10.48550/arXiv.2603.17711" target="_blank" rel="noopener">https://doi.org/10.48550/arXiv.2603.17711</a>
+        </blockquote>
+      </div>
+      <div class="cite-tab-panel" id="tenso-sw-acs">
+        <blockquote>
+          J. C. Rodriguez Betancourt, M. C. Anderson, L. Niu, X. Chen, and I. Franco, <em>arXiv</em> <strong>2026</strong>, 2603.17711.
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- Primary reference -->
+    <h2 id="primary" style="margin-top:2.5rem;">Primary reference — TTN-HEOM and TENSO</h2>
+
+    <div class="paper-header">
+      <div>
+        <span class="tag">2025</span>
+        <span style="margin-left:0.5rem; font-size:0.9rem; color:var(--text-muted);"><em>J. Chem. Phys.</em> <strong>163</strong>, 104109</span>
+      </div>
+      <a href="https://doi.org/10.1063/5.0278591" class="doi-badge" target="_blank" rel="noopener">
+        <i class="fa fa-external-link-alt"></i> 10.1063/5.0278591
+      </a>
+    </div>
+
+    <blockquote style="margin:0 0 1rem; padding:0.75rem 1rem; border-left:3px solid var(--accent); background:var(--bg-2); border-radius:0 4px 4px 0; font-size:0.95rem; line-height:1.7;">
+      <strong>Chen, X. &amp; Franco, I.</strong><br>
+      <em>Tree tensor network hierarchical equations of motion based on time-dependent variational principle for efficient open quantum dynamics in structured thermal environments.</em><br>
+      J. Chem. Phys. <strong>163</strong>, 104109 (2025).
+    </blockquote>
+
+    <p style="font-size:0.92rem; color:var(--text-muted);">This paper introduces the TTN-HEOM method, derives the TDVP-based master equations for all core tensors, describes the three propagation strategies (direct integration VMF, fixed-rank PS1, adaptive-rank PS2), and presents the TENSO implementation.</p>
+
+    <div class="cite-tabs" id="tabs-primary">
+      <button class="cite-tab-btn active" onclick="switchTab('primary','bibtex')">BibTeX</button>
+      <button class="cite-tab-btn" onclick="switchTab('primary','apa')">APA</button>
+      <button class="cite-tab-btn" onclick="switchTab('primary','acs')">ACS</button>
+    </div>
+    <div class="cite-switcher">
+      <div class="cite-tab-panel active" id="primary-bibtex">
+        <div class="code-block" style="margin:0;">
+          <button class="copy-btn" onclick="copyCode('primary-bibtex-code')"><i class="fa fa-copy"></i> Copy</button>
+          <pre><code class="language-bibtex" id="primary-bibtex-code">@article{chen2025ttnheom,
+  author  = {Chen, Xinxian and Franco, Ignacio},
+  title   = {Tree tensor network hierarchical equations of motion based on
+             time-dependent variational principle for efficient open quantum
+             dynamics in structured thermal environments},
+  journal = {J. Chem. Phys.},
+  volume  = {163},
+  pages   = {104109},
+  year    = {2025},
+  doi     = {10.1063/5.0278591}
+}</code></pre>
+        </div>
+      </div>
+      <div class="cite-tab-panel" id="primary-apa">
+        <blockquote>
+          Chen, X., &amp; Franco, I. (2025). Tree tensor network hierarchical equations of motion based on time-dependent variational principle for efficient open quantum dynamics in structured thermal environments. <em>The Journal of Chemical Physics</em>, <em>163</em>, 104109. <a href="https://doi.org/10.1063/5.0278591" target="_blank" rel="noopener">https://doi.org/10.1063/5.0278591</a>
+        </blockquote>
+      </div>
+      <div class="cite-tab-panel" id="primary-acs">
+        <blockquote>
+          X. Chen and I. Franco, <em>J. Chem. Phys.</em> <strong>2025</strong>, <em>163</em>, 104109.
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- Bexcitonics -->
+    <h2 id="bexcitonics" style="margin-top:2.5rem;">Bexcitonics — theoretical foundation</h2>
+
+    <div class="paper-header">
+      <div>
+        <span class="tag tag--purple">2024</span>
+        <span style="margin-left:0.5rem; font-size:0.9rem; color:var(--text-muted);"><em>J. Chem. Phys.</em> <strong>160</strong>, 204116</span>
+      </div>
+      <a href="https://doi.org/10.1063/5.0198567" class="doi-badge" target="_blank" rel="noopener">
+        <i class="fa fa-external-link-alt"></i> 10.1063/5.0198567
+      </a>
+    </div>
+
+    <blockquote style="margin:0 0 1rem; padding:0.75rem 1rem; border-left:3px solid var(--accent); background:var(--bg-2); border-radius:0 4px 4px 0; font-size:0.95rem; line-height:1.7;">
+      <strong>Chen, X. &amp; Franco, I.</strong><br>
+      <em>Bexcitonics: Quasiparticle approach to open quantum dynamics.</em><br>
+      J. Chem. Phys. <strong>160</strong>, 204116 (2024).
+    </blockquote>
+
+    <p style="font-size:0.92rem; color:var(--text-muted);">This paper develops the bexcitonic quasiparticle picture that underlies the HEOM generalization used in TENSO. It demonstrates that all HEOM variants share a common bexcitonic structure parameterized by the choice of metric and representation.</p>
+
+    <div class="cite-tabs" id="tabs-bexc">
+      <button class="cite-tab-btn active" onclick="switchTab('bexc','bibtex')">BibTeX</button>
+      <button class="cite-tab-btn" onclick="switchTab('bexc','apa')">APA</button>
+      <button class="cite-tab-btn" onclick="switchTab('bexc','acs')">ACS</button>
+    </div>
+    <div class="cite-switcher">
+      <div class="cite-tab-panel active" id="bexc-bibtex">
+        <div class="code-block" style="margin:0;">
+          <button class="copy-btn" onclick="copyCode('bexc-bibtex-code')"><i class="fa fa-copy"></i> Copy</button>
+          <pre><code class="language-bibtex" id="bexc-bibtex-code">@article{chen2024bexcitonics,
+  author  = {Chen, Xinxian and Franco, Ignacio},
+  title   = {Bexcitonics: Quasiparticle approach to open quantum dynamics},
+  journal = {J. Chem. Phys.},
+  volume  = {160},
+  pages   = {204116},
+  year    = {2024},
+  doi     = {10.1063/5.0198567}
+}</code></pre>
+        </div>
+      </div>
+      <div class="cite-tab-panel" id="bexc-apa">
+        <blockquote>
+          Chen, X., &amp; Franco, I. (2024). Bexcitonics: Quasiparticle approach to open quantum dynamics. <em>The Journal of Chemical Physics</em>, <em>160</em>, 204116. <a href="https://doi.org/10.1063/5.0198567" target="_blank" rel="noopener">https://doi.org/10.1063/5.0198567</a>
+        </blockquote>
+      </div>
+      <div class="cite-tab-panel" id="bexc-acs">
+        <blockquote>
+          X. Chen and I. Franco, <em>J. Chem. Phys.</em> <strong>2024</strong>, <em>160</em>, 204116.
+        </blockquote>
+      </div>
+    </div>
+
+    <!-- Funding -->
+    <h2 id="funding" style="margin-top:2.5rem;">Funding acknowledgment</h2>
+    <div class="callout callout--tip">
+      <span class="callout__icon"><i class="fa fa-hand-holding-usd"></i></span>
+      <div>
+        <p style="margin:0;">Development of TENSO was supported by the U.S. Department of Energy, Office of Science, Office of Basic Energy Sciences, Quantum Information Science Research in Chemical Sciences, Geosciences, and Biosciences Program under Award No. DE-SC0025334, and partially by the National Science Foundation under Grant Nos. CHE-2511834 and PHY-2310657.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__grid">
+      <div>
+        <div class="footer__brand-name">TENSO</div>
+        <p class="footer__tagline">Exact open quantum dynamics via Tree Tensor Network HEOM</p>
+        <p style="font-size:0.8rem; color: var(--text-muted);">Franco Group · University of Rochester</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Docs</div>
+        <ul class="footer__links">
+          <li><a href="installation.html" class="footer__link">Installation</a></li>
+          <li><a href="getting-started.html" class="footer__link">Getting Started</a></li>
+          <li><a href="background.html" class="footer__link">Background</a></li>
+          <li><a href="structure.html" class="footer__link">Structure</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">More</div>
+        <ul class="footer__links">
+          <li><a href="examples.html" class="footer__link">Examples</a></li>
+          <li><a href="api.html" class="footer__link">API Reference</a></li>
+          <li><a href="cite.html" class="footer__link">Cite</a></li>
+          <li><a href="contact.html" class="footer__link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Links</div>
+        <ul class="footer__links">
+          <li><a href="https://github.com/ifgroup/pytenso" class="footer__link" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></li>
+          <li><a href="https://doi.org/10.1063/5.0278591" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2025)</a></li>
+          <li><a href="https://doi.org/10.1063/5.0198567" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-file-alt"></i> Paper (2024)</a></li>
+          <li><a href="https://github.com/ifgroup/pytenso/issues" class="footer__link" target="_blank" rel="noopener"><i class="fa fa-bug"></i> Issues</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span class="footer__copyright">© 2025 Franco Group, University of Rochester. MIT License.</span>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn-icon" data-theme-toggle aria-label="Toggle theme">
+          <span class="theme-toggle-icon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/search-index.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    function switchTab(group, format) {
+      // Deactivate all panels and buttons for this group
+      const switcher = document.getElementById('tabs-' + group).nextElementSibling;
+      switcher.querySelectorAll('.cite-tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tabs-' + group).querySelectorAll('.cite-tab-btn').forEach(b => b.classList.remove('active'));
+
+      // Activate selected
+      document.getElementById(group + '-' + format).classList.add('active');
+      const btns = document.getElementById('tabs-' + group).querySelectorAll('.cite-tab-btn');
+      const formatIndex = { bibtex: 0, apa: 1, acs: 2 };
+      btns[formatIndex[format]].classList.add('active');
+    }
+
+    function copyCode(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('[onclick="copyCode(\'' + id + '\')"]');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa fa-check"></i> Copied';
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+      });
+    }
+  </script>
+</body>
+</html>
