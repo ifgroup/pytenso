@@ -31,9 +31,10 @@ MAX_EINSUM_AXES = 52  # restrition from torch.einsum as of PyTorch 1.10
 PI = math.pi
 
 # PyTorch package settings
-_opt.set_grad_enabled(False)  # disable autograd by defalt
-DOUBLE_PRECISION = True
-FORCE_CPU = True
+_opt.set_grad_enabled(False)  # disable autograd by default
+_opt.set_num_threads(1)
+DOUBLE_PRECISION = True # Use double precision mathematics
+FORCE_CPU = True # Force pytorch to use CPU's only
 ON_DEVICE_EIGEN_SOLVER = False
 if FORCE_CPU:
     opt_device = 'cpu'
