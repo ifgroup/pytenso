@@ -235,7 +235,7 @@ propagator = system_multibath(
 )
 
 progress_bar = tqdm(propagator, total=ceil(end_time / dt))
-for t in (progress_bar):
+for _t in progress_bar:
     progress_bar.set_description(f'@{_t:.2f} fs')</code></pre>
         </div>
 
@@ -244,7 +244,7 @@ for t in (progress_bar):
           <table>
             <thead><tr><th>File</th><th>Contents</th></tr></thead>
             <tbody>
-              <tr><td><code>out.dat.log</code></td><td>Space-separated text (complex128). Columns: <code>t, ρ_11, ρ_eg, ρ_ge, ρ_00</code></td></tr>
+              <tr><td><code>out.dat.log</code></td><td>Space-separated text (complex128). Columns: <code>t, ρ_00, ρ_01, ρ_10, ρ_11</code> (row-major flattening of $\rho_\textrm{S}$)</td></tr>
               <tr><td><code>out.debug.log</code></td><td>Human-readable convergence diagnostics</td></tr>
               <tr><td><code>out.pt</code></td><td>PyTorch checkpoint of the full TTN state at the final time step</td></tr>
             </tbody>
@@ -259,14 +259,14 @@ import matplotlib.pyplot as plt
 data = np.loadtxt('out.dat.log', dtype=np.complex128)
 
 t       = data[:, 0].real    # time (fs)
-pop_exc = data[:, 1].real    # excited state population  [ρ_S(t)]_11
-coh_eg  = data[:, 2]         # coherence ρ_eg = [ρ_S(t)]_10  (complex)
-coh_ge  = data[:, 3]         # coherence ρ_ge = [ρ_S(t)]_01 = ρ_eg*  (complex)
-pop_gnd = data[:, 4].real    # ground state population   [ρ_S(t)]_00
+pop_exc = data[:, 1].real    # excited state population  [ρ_S(t)]_00  (|↑⟩ is index 0)
+coh_eg  = data[:, 2]         # coherence ρ_eg = [ρ_S(t)]_01  (complex)
+coh_ge  = data[:, 3]         # coherence ρ_ge = [ρ_S(t)]_10 = ρ_eg*  (complex)
+pop_gnd = data[:, 4].real    # ground state population   [ρ_S(t)]_11
 
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
-axes[0].plot(t, pop_exc, label=r'$[\rho_\mathrm{S}]_{11}$')
-axes[0].plot(t, pop_gnd, '--', label=r'$[\rho_\mathrm{S}]_{00}$')
+axes[0].plot(t, pop_exc, label=r'$[\rho_\mathrm{S}]_{00}$')
+axes[0].plot(t, pop_gnd, '--', label=r'$[\rho_\mathrm{S}]_{11}$')
 axes[0].set(xlabel='Time (fs)', ylabel='Population')
 axes[0].legend()
 axes[1].plot(t, np.abs(coh_eg), color='tab:purple')
@@ -304,6 +304,8 @@ bath = gen_bcf(
     temperature=300, decomposition_method='Pade', n_ltc=1,
 )
 
+end_time      = 100.0   # fs
+dt            = 0.05    # fs
 ranks         = [5, 10, 15, 20, 25, 32]
 frame_methods = ['train', 'tree2']
 
@@ -314,12 +316,12 @@ for method in frame_methods:
             fname=fname, init_rdo=init_rdo,
             sys_ham=sys_ham, sys_ops=[sys_op],
             bath_correlations=[bath],
-            dim=20, end_time=100.0, step_time=0.05,
+            dim=20, end_time=end_time, step_time=dt,
             frame_method=method, rank=rank,
             stepwise_method='simple', ps_method='ps1',
         )
         progress_bar = tqdm(propagator, total=ceil(end_time / dt))
-            for t in (progress_bar):
+        for _t in progress_bar:
             progress_bar.set_description(f'@{_t:.2f} fs')</code></pre>
       </div>
 
@@ -337,7 +339,7 @@ for method in ['train', 'tree2']:
         pop_exc = data[:, 1].real
         ax.plot(t, pop_exc, label=f'{method} R={rank}')
 
-ax.set(xlabel='Time (fs)', ylabel=r'$[\rho_\mathrm{S}]_{11}$')
+ax.set(xlabel='Time (fs)', ylabel=r'$[\rho_\mathrm{S}]_{00}$')
 ax.legend(fontsize=7)
 plt.show()</code></pre>
       </div>

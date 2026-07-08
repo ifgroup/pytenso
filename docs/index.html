@@ -259,7 +259,7 @@ propagator = system_multibath(
 )
 
 progress_bar = tqdm(propagator, total=ceil(end_time / dt))
-for t in (progress_bar):
+for _t in progress_bar:
     progress_bar.set_description(f'@{_t:.2f} fs')</code></pre>
           </div>
         </div>
@@ -277,8 +277,8 @@ pop_gnd = data[:, 4].real    # ground state population
 coh_eg  = data[:, 2]         # coherence ρ_eg (complex)
 
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
-axes[0].plot(t, pop_exc, label=r'$[\rho_S]_{11}$')
-axes[0].plot(t, pop_gnd, '--', label=r'$[\rho_S]_{00}$')
+axes[0].plot(t, pop_exc, label=r'$[\rho_S]_{00}$')
+axes[0].plot(t, pop_gnd, '--', label=r'$[\rho_S]_{11}$')
 axes[0].set(xlabel='Time (fs)', ylabel='Population')
 axes[0].legend()
 axes[1].plot(t, np.abs(coh_eg), color='tab:purple')
