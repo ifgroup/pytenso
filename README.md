@@ -61,7 +61,7 @@ If you use TENSO in your research, please consider citing our work:
 ```
 </details>
 
-### 2. Primary Method Reference (TTN-HEOM)
+### 2. TTN-HEOM theory and algorithms
 *Introduces the underlying TTN-HEOM method and time-dependent variational principle.*
 
 > Chen, X. & Franco, I. (2025). Tree tensor network hierarchical equations of motion based on time-dependent variational principle for efficient open quantum dynamics in structured thermal environments. *The Journal of Chemical Physics* **163**, 104109. [DOI: 10.1063/5.0278591](https://doi.org/10.1063/5.0278591)
